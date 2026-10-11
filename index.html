@@ -1,4 +1,203 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEDGER Login</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #03052f;
+  color: white;
+  min-height: 100vh;
+}
+
+.login-page {
+  min-height: 100vh;
+  position: relative;
+  padding: 20px 24px;
+}
+
+.logo {
+  position: absolute;
+  top: 15%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #13c900;
+}
+
+.dice {
+  font-size: 125px;
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-family: Impact, sans-serif;
+  font-size: clamp(65px, 17vw, 110px);
+  font-weight: normal;
+  letter-spacing: 1px;
+}
+
+.login-form {
+  position: absolute;
+  bottom: 7%;
+  left: 24px;
+  right: 24px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  height: 72px;
+  border: none;
+  outline: none;
+  border-radius: 24px;
+  padding: 0 16px;
+  font-size: 27px;
+  font-weight: bold;
+  background: #fff;
+  color: #111;
+  margin-bottom: 23px;
+}
+
+button {
+  width: 100%;
+  height: 72px;
+  border: none;
+  border-radius: 24px;
+  background: #14c000;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:active {
+  opacity: 0.8;
+}
+
+#error {
+  color: #ff7777;
+  text-align: center;
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+#dashboard {
+  display: none;
+  padding: 25px;
+}
+
+#dashboard h1 {
+  color: #16d000;
+  text-align: center;
+}
+
+.menu {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #101446;
+  font-size: 19px;
+}
+
+.menu button {
+  margin-top: 15px;
+  height: 55px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+
+@media (max-height: 650px) {
+  .logo { top: 7%; }
+  .dice { font-size: 75px; }
+  .logo h1 { font-size: 65px; }
+  .login-form { bottom: 4%; }
+  input, button { height: 58px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-page" id="loginPage">
+
+  <div class="logo">
+    <div class="dice">🎲🎲</div>
+    <h1>LEDGER</h1>
+  </div>
+
+  <form class="login-form" id="loginForm">
+    <input
+      type="password"
+      id="passcode"
+      placeholder="Passcode"
+      inputmode="numeric"
+      autocomplete="off"
+      aria-label="Passcode"
+      required
+    >
+
+    <p id="error" role="alert"></p>
+
+    <button type="submit">PROCEED</button>
+  </form>
+
+</div>
+
+<div id="dashboard">
+  <h1>LEDGER</h1>
+
+  <div class="menu">
+    <h2>Welcome</h2>
+    <p>Login successful!</p>
+    <p>Your Ledger page is open.</p>
+
+    <button onclick="logout()">LOGOUT</button>
+  </div>
+</div>
+
+<script>
+const correctPasscode = "8941";
+
+document.getElementById("loginForm")
+.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const enteredPasscode =
+    document.getElementById("passcode").value;
+
+  if (enteredPasscode === correctPasscode) {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    document.getElementById("error").textContent = "";
+  } else {
+    document.getElementById("error").textContent =
+      "Wrong Passcode! Please try again.";
+
+    document.getElementById("passcode").value = "";
+    document.getElementById("passcode").focus();
+  }
+});
+
+function logout() {
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("loginPage").style.display = "block";
+  document.getElementById("passcode").value = "";
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
@@ -156,3 +355,4 @@ function fallbackCopy(text) {
 </script>
 </body>
 </html>
+
