@@ -2,215 +2,243 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Number Total Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEDGER Login</title>
+
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f1f5f9;
-  padding: 15px;
-  margin: 0;
-}
-.container {
-  max-width: 700px;
-  margin: auto;
-  background: white;
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px #ccc;
-}
-h2 { text-align: center; color: #123b68; }
-textarea {
-  width: 100%;
-  height: 310px;
+* {
   box-sizing: border-box;
-  padding: 12px;
-  font-size: 15px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
 }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #00052f;
+  color: white;
+}
+
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 65px;
+}
+
+.logo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 25px;
+}
+
+.dice {
+  width: min(75vw, 350px);
+  height: auto;
+  overflow: visible;
+}
+
+.brand {
+  margin-top: 25px;
+  color: #16d000;
+  font-family: "Arial Narrow", "Trebuchet MS", sans-serif;
+  font-size: clamp(55px, 15vw, 95px);
+  font-weight: 300;
+  letter-spacing: -4px;
+  transform: scaleX(.82);
+}
+
+.login {
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  height: 72px;
+  border: none;
+  outline: none;
+  border-radius: 25px;
+  background: white;
+  color: #111;
+  padding: 0 15px;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 23px;
+}
+
+input::placeholder {
+  color: #666;
+  opacity: 1;
+}
+
 button {
   width: 100%;
-  padding: 13px;
-  margin-top: 10px;
+  height: 72px;
   border: none;
-  border-radius: 7px;
-  font-size: 17px;
+  border-radius: 25px;
+  background: #16bd00;
   color: white;
-  background: #1769aa;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
 }
-.result {
-  background: #e8f5e9;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-  overflow-wrap: anywhere;
+
+button:active {
+  background: #119b00;
 }
-.line { border-bottom: 1px solid #ddd; padding: 8px 0; }
-.total { font-size: 22px; font-weight: bold; color: #08752c; }
+
+.message {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 12px;
+  color: #fff;
+}
+
+@media (max-height: 650px) {
+  .app { padding-top: 10px; }
+  .dice { width: 200px; }
+  .brand { font-size: 55px; margin-top: 10px; }
+  input, button { height: 58px; }
+}
 </style>
 </head>
+
 <body>
-//////////////////////////////////////////////////
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Number Total Calculator</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f1f5f9;
-  padding: 15px;
-  margin: 0;
-}
-.container {
-  max-width: 700px;
-  margin: auto;
-  background: white;
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px #ccc;
-}
-h2 { text-align: center; color: #123b68; }
-textarea {
-  width: 100%;
-  height: 310px;
-  box-sizing: border-box;
-  padding: 12px;
-  font-size: 15px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
-}
-button {
-  width: 100%;
-  padding: 13px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 7px;
-  font-size: 17px;
-  color: white;
-  background: #1769aa;
-}
-.result {
-  background: #e8f5e9;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-  overflow-wrap: anywhere;
-}
-.line { border-bottom: 1px solid #ddd; padding: 8px 0; }
-.total { font-size: 22px; font-weight: bold; color: #08752c; }
-</style>
-</head>
-<body>
-<div class="container">
-<h2>Number Total Calculator</h2>
+<div class="app">
 
-<p>हर लाइन में नंबर लिखें और आखिरी में (वैल्यू) लगाएँ।</p>
+  <div class="logo">
 
-<textarea id="data">03(10
-13(25
-23 33 43 53 63 73 83 93(25
-14(450
-41(20
-28(350
-20 21 23 24 25 26 27 29(25
-79(100
-82(750
-04(400
-66(130
-73(50
-51(130
-44(300
-29 68 92(30
-45(720
-45(200
-02 03 07 08 10 13 15 16 17 19 20 24 28 29 30 31 32 34 35 36 37 38 39 40 43 44 45 46 47 48 49 50 52 53 54 56 57 58 59 63 64 67 68 69 71 72 73 78 81 82 84 86 89 90 91 92 93 94 95 97 98 99(25)</textarea>
+    <!-- Dice Logo -->
+    <svg class="dice" viewBox="0 0 350 300"
+         xmlns="http://www.w3.org/2000/svg">
 
-<button onclick="calculate()">Calculate Total</button>
-<button onclick="copyResult()" style="background:#16804a">Copy Result</button>
+      <g stroke="#00052f" stroke-width="3"
+         stroke-linejoin="round">
 
-<div id="result" class="result">
-हिसाब देखने के लिए Calculate Total दबाएँ।
-</div>
+        <!-- Back dice top -->
+        <path d="M35 55 L105 20 Q120 12 137 17
+                 L195 29 Q213 34 218 49
+                 L150 88 Z"
+              fill="#16d000"/>
+
+        <!-- Back dice left -->
+        <path d="M35 55 Q30 58 30 75
+                 L30 160 Q30 179 45 185
+                 L105 205 Q120 210 121 192
+                 L121 89 Z"
+              fill="#16d000"/>
+
+        <!-- Back dice right -->
+        <path d="M121 89 L218 49
+                 L218 139 Q218 155 204 163
+                 L121 205 Z"
+              fill="#16d000"/>
+
+        <!-- Back top dots -->
+        <g fill="#00052f" stroke="none">
+          <ellipse cx="111" cy="33" rx="7" ry="4"/>
+          <ellipse cx="137" cy="48" rx="7" ry="4"/>
+        </g>
+
+        <!-- Back left dots -->
+        <g fill="#00052f" stroke="none">
+          <ellipse cx="53" cy="78" rx="6" ry="9"/>
+          <ellipse cx="53" cy="105" rx="6" ry="9"/>
+          <ellipse cx="53" cy="132" rx="6" ry="9"/>
+          <ellipse cx="91" cy="88" rx="6" ry="9"/>
+          <ellipse cx="91" cy="116" rx="6" ry="9"/>
+          <ellipse cx="91" cy="145" rx="6" ry="9"/>
+        </g>
+
+        <!-- Back right dots -->
+        <g fill="#00052f" stroke="none">
+          <ellipse cx="178" cy="72" rx="6" ry="9"/>
+          <ellipse cx="160" cy="106" rx="6" ry="9"/>
+          <ellipse cx="145" cy="143" rx="6" ry="9"/>
+        </g>
+
+        <!-- Front dice top -->
+        <path d="M170 172 L240 146
+                 Q255 141 270 147
+                 L320 168 Q335 175 335 190
+                 L264 222 Z"
+              fill="#16d000"/>
+
+        <!-- Front dice left -->
+        <path d="M170 172 L264 222
+                 L264 286 Q263 300 248 294
+                 L185 267 Q170 261 170 243 Z"
+              fill="#16d000"/>
+
+        <!-- Front dice right -->
+        <path d="M264 222 L335 190
+                 L335 263 Q335 280 320 287
+                 L264 300 Z"
+              fill="#16d000"/>
+
+        <!-- Front top dot -->
+        <ellipse cx="268" cy="165" rx="7" ry="4"
+                 fill="#00052f" stroke="none"/>
+
+        <!-- Front left dots -->
+        <g fill="#00052f" stroke="none">
+          <ellipse cx="191" cy="193" rx="5" ry="8"/>
+          <ellipse cx="213" cy="221" rx="6" ry="8"/>
+          <ellipse cx="190" cy="248" rx="5" ry="8"/>
+          <ellipse cx="235" cy="207" rx="5" ry="8"/>
+          <ellipse cx="238" cy="263" rx="5" ry="8"/>
+        </g>
+
+        <!-- Front right dots -->
+        <g fill="#00052f" stroke="none">
+          <ellipse cx="285" cy="211" rx="6" ry="9"/>
+          <ellipse cx="318" cy="198" rx="6" ry="9"/>
+          <ellipse cx="285" cy="267" rx="6" ry="9"/>
+          <ellipse cx="318" cy="254" rx="6" ry="9"/>
+        </g>
+
+      </g>
+    </svg>
+
+    <div class="brand">LEDGER</div>
+  </div>
+
+  <form class="login" id="loginForm">
+    <input
+      type="password"
+      id="passcode"
+      placeholder="Passcode"
+      aria-label="Passcode"
+      autocomplete="current-password"
+      required
+    >
+
+    <button type="submit">PROCEED</button>
+
+    <div class="message" id="message"></div>
+  </form>
+
 </div>
 
 <script>
-function calculate() {
-  const input = document.getElementById("data").value;
-  const lines = input.split(/\n/);
-  let grandTotal = 0;
-  let output = "";
-  let validLines = 0;
+document.getElementById("loginForm")
+  .addEventListener("submit", function(event) {
+    event.preventDefault();
 
-  lines.forEach((line, index) => {
-    line = line.trim();
-    if (!line) return;
+    const passcode =
+      document.getElementById("passcode").value;
 
-    // Bracket se pehle numbers aur baad ki value
-    const match = line.match(/^(.*?)\s*\(\s*(\d+)\s*\)?\s*$/);
-    if (!match) {
-      output += `<div class="line">${index + 1}. गलत फॉर्मेट: ${line}</div>`;
+    if (!passcode.trim()) {
+      document.getElementById("message").textContent =
+        "Please enter passcode";
       return;
     }
 
-    const numbersText = match[1].trim();
-    const value = Number(match[2]);
-    const numbers = numbersText.match(/\d+/g);
-
-    if (!numbers || numbersText.replace(/[\d\s.,]+/g, "").length) {
-      output += `<div class="line">${line} — नंबर जाँचें</div>`;
-      return;
-    }
-
-    const count = numbers.length;
-    const total = count * value;
-    grandTotal += total;
-    validLines++;
-
-    output += `<div class="line">
-      ${numbers.join(" ")} (${value})<br>
-      ${count} × ${value} = <b>${total.toLocaleString("en-IN")}</b>
-    </div>`;
+    document.getElementById("message").textContent =
+      "Demo screen only. Add secure authentication to login.";
   });
-
-  output += `<p>कुल सही लाइनें: ${validLines}</p>
-    <div class="total">Grand Total = ${grandTotal.toLocaleString("en-IN")}</div>`;
-
-  document.getElementById("result").innerHTML = output;
-}
-
-function copyResult() {
-  const text = document.getElementById("result").innerText;
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(
-      () => alert("Result copied!"),
-      () => fallbackCopy(text)
-    );
-  } else {
-    fallbackCopy(text);
-  }
-}
-
-function fallbackCopy(text) {
-  const area = document.createElement("textarea");
-  area.value = text;
-  document.body.appendChild(area);
-  area.select();
-  try {
-    document.execCommand("copy");
-    alert("Result copied!");
-  } catch (e) {
-    alert("Copy नहीं हुआ। Result को manually select करें।");
-  }
-  area.remove();
-}
 </script>
 </body>
 </html>
-//////////////////////
-
-  
-  
