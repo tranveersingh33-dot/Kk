@@ -355,4 +355,121 @@ function fallbackCopy(text) {
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Number Count Calculator</title>
 
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f4f9;
+  padding: 20px;
+}
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px #ccc;
+}
+h2 {
+  text-align: center;
+  color: #174ea6;
+}
+textarea, button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+  border-radius: 7px;
+}
+textarea {
+  height: 130px;
+  border: 1px solid #aaa;
+}
+button {
+  border: none;
+  background: #1769e0;
+  color: white;
+  font-weight: bold;
+}
+.result {
+  margin-top: 18px;
+  padding: 15px;
+  background: #e8f5e9;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Number Count Calculator</h2>
+
+  <textarea id="data"
+    placeholder="यहाँ अपना टेक्स्ट डालें&#10;Example: 23,45.56:55;78/79=67_99 34(10)"></textarea>
+
+  <button onclick="calculate()">Calculate Total</button>
+  <button onclick="clearAll()" style="background:#d93025">
+    Clear
+  </button>
+
+  <div class="result" id="result">Result यहाँ दिखेगा</div>
+</div>
+
+<script>
+function calculate() {
+  const text = document.getElementById("data").value;
+  const result = document.getElementById("result");
+
+  // ब्रैकेट से पहले का टेक्स्ट और ब्रैकेट की वैल्यू
+  const regex = /([^()]*?)\(\s*(\d+)\s*\)/g;
+  let match;
+  let output = [];
+  let grandTotal = 0;
+  let found = false;
+
+  while ((match = regex.exec(text)) !== null) {
+    found = true;
+
+    // ब्रैकेट से पहले के सभी 1 या अधिक अंकों वाले नंबर
+    const numbers = match[1].match(/\d+/g) || [];
+    const multiplier = Number(match[2]);
+    const count = numbers.length;
+    const total = count * multiplier;
+
+    output.push(
+      "नंबर: " + (numbers.join(", ") || "कोई नंबर नहीं") +
+      "\nकुल नंबर = " + count +
+      "\n" + count + " × " + multiplier + " = " + total
+    );
+
+    grandTotal += total;
+  }
+
+  if (!found) {
+    result.textContent =
+      "ब्रैकेट की वैल्यू नहीं मिली। उदाहरण: 23,45,56(10)";
+    return;
+  }
+
+  output.push("कुल टोटल = " + grandTotal);
+  result.textContent = output.join("\n\n");
+}
+
+function clearAll() {
+  document.getElementById("data").value = "";
+  document.getElementById("result").textContent =
+    "Result यहाँ दिखेगा";
+}
+</script>
+</body>
+</html>
