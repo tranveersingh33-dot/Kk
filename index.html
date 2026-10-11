@@ -197,6 +197,298 @@ button {
 }
 </style>
 </head>
+  ////////////////////////////////////////////
+  <!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ededed;
+  color: #111;
+}
+
+.header {
+  height: 83px;
+  background: #00052f;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 23px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.points-count {
+  font-size: 22px;
+}
+
+.container {
+  padding: 14px 23px;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  box-shadow: 0 2px 4px #bbb;
+}
+
+.dark {
+  background: #00052f;
+  height: 44px;
+  border-radius: 25px;
+  flex: 1;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+
+.green {
+  background: #16bb00;
+  height: 44px;
+  border-radius: 25px;
+  width: 223px;
+  max-width: 36%;
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.input-row {
+  height: 55px;
+  background: white;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.input-row .green {
+  margin: 0;
+  height: 44px;
+}
+
+.input-row input {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-size: 23px;
+  font-weight: bold;
+  padding: 0 10px;
+}
+
+.input-row input::placeholder {
+  color: #888;
+  opacity: 1;
+}
+
+.fromto {
+  height: 96px;
+}
+
+.fromto .green {
+  align-self: flex-start;
+  margin-top: 30px;
+}
+
+.fromto input {
+  font-size: 28px;
+  border-bottom: 2px solid #888;
+  margin: 0 17px 0 0;
+  height: 72px;
+  align-self: center;
+}
+
+#output {
+  margin-top: 15px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+
+@media(max-width: 380px) {
+  .container { padding-left: 12px; padding-right: 12px; }
+  .header { padding: 0 14px; }
+  button { font-size: 16px; }
+  .green { max-width: 37%; }
+  .points-count { font-size: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <span>Ledger</span>
+  <span class="points-count">POINTS: <span id="points">0</span></span>
+</div>
+
+<div class="container">
+
+  <div class="top-buttons">
+    <button class="dark" onclick="less()">LESS</button>
+    <button class="dark" onclick="deleteAll()">DELETE ALL</button>
+    <button class="dark" onclick="sendTo()">SEND TO ..</button>
+  </div>
+
+  <div class="input-row">
+    <button class="green" onclick="jantri()">JANTRI</button>
+    <input id="jantriPoints" type="number" placeholder="Points">
+  </div>
+
+  <div class="input-row fromto">
+    <button class="green" onclick="finalJantri()">FINAL JANTRI</button>
+    <input id="finalPoints" type="number" placeholder="Points">
+  </div>
+
+  <div class="input-row fromto">
+    <button class="green" onclick="fromTo()">FROM - TO</button>
+    <input id="fromToInput" type="text" placeholder="Points">
+  </div>
+
+  <button class="green" onclick="messageCopy()">MESSAGE COPY</button>
+  <br>
+  <button class="green" onclick="cross()">CROSS</button>
+  <br>
+  <button class="green" onclick="joda()">JODA</button>
+  <br>
+  <button class="green" onclick="changePasscode()">PASSCODE</button>
+
+  <div id="output"></div>
+
+</div>
+
+<script>
+let totalPoints = 0;
+let messages = [];
+
+function updatePoints() {
+  document.getElementById("points").textContent = totalPoints;
+}
+
+function show(message) {
+  document.getElementById("output").textContent = message;
+}
+
+function jantri() {
+  let value = Number(document.getElementById("jantriPoints").value);
+  if (!value || value < 0) {
+    alert("Points डालें");
+    return;
+  }
+  totalPoints += value;
+  messages.push("JANTRI: " + value + " Points");
+  updatePoints();
+  show(messages.join("\n"));
+}
+
+function finalJantri() {
+  let value = Number(document.getElementById("finalPoints").value);
+  if (!value || value < 0) {
+    alert("Points डालें");
+    return;
+  }
+  totalPoints += value;
+  messages.push("FINAL JANTRI: " + value + " Points");
+  updatePoints();
+  show(messages.join("\n"));
+}
+
+function fromTo() {
+  let value = document.getElementById("fromToInput").value.trim();
+  if (!value) {
+    alert("FROM - TO की जानकारी डालें");
+    return;
+  }
+  messages.push("FROM - TO: " + value);
+  show(messages.join("\n"));
+}
+
+function less() {
+  let value = prompt("कितने Points कम करने हैं?");
+  if (value === null || value.trim() === "") return;
+  value = Number(value);
+  if (!Number.isFinite(value) || value < 0) {
+    alert("सही Points डालें");
+    return;
+  }
+  totalPoints = Math.max(0, totalPoints - value);
+  updatePoints();
+}
+
+function deleteAll() {
+  if (!confirm("क्या आप पूरा हिसाब Delete करना चाहते हैं?")) return;
+  totalPoints = 0;
+  messages = [];
+  document.getElementById("jantriPoints").value = "";
+  document.getElementById("finalPoints").value = "";
+  document.getElementById("fromToInput").value = "";
+  updatePoints();
+  show("");
+}
+
+function messageCopy() {
+  let text = messages.join("\n") + "\nPOINTS: " + totalPoints;
+  if (!text.trim()) return;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert("Message Copy हो गया"))
+      .catch(() => prompt("यहाँ से कॉपी करें:", text));
+  } else {
+    prompt("यहाँ से कॉपी करें:", text);
+  }
+}
+
+function sendTo() {
+  let text = messages.join("\n") + "\nPOINTS: " + totalPoints;
+  if (navigator.share) {
+    navigator.share({title: "Ledger", text: text})
+      .catch(() => {});
+  } else {
+    messageCopy();
+  }
+}
+
+function cross() {
+  show("CROSS\nइस बटन के लिए आपका हिसाब लगाने का नियम जोड़ना बाकी है।");
+}
+
+function joda() {
+  show("JODA\nइस बटन के लिए आपका हिसाब लगाने का नियम जोड़ना बाकी है।");
+}
+
+function changePasscode() {
+  alert("Passcode बदलने के लिए सुरक्षित लॉगिन सिस्टम जोड़ना होगा।");
+}
+
+updatePoints();
+</script>
+
+</body>
+</html>
+/////////////////////////////
+
 <body>
 <div class="container">
 <h2>Number Calculator</h2>
