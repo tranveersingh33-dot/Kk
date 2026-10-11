@@ -1,4 +1,161 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Number Total Calculator</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  padding: 15px;
+  margin: 0;
+}
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px #ccc;
+}
+h2 { text-align: center; color: #123b68; }
+textarea {
+  width: 100%;
+  height: 310px;
+  box-sizing: border-box;
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+}
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 7px;
+  font-size: 17px;
+  color: white;
+  background: #1769aa;
+}
+.result {
+  background: #e8f5e9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+.line { border-bottom: 1px solid #ddd; padding: 8px 0; }
+.total { font-size: 22px; font-weight: bold; color: #08752c; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Number Total Calculator</h2>
 
+<p>हर लाइन में नंबर लिखें और आखिरी में (वैल्यू) लगाएँ।</p>
+
+<textarea id="data">03(10
+13(25
+23 33 43 53 63 73 83 93(25
+14(450
+41(20
+28(350
+20 21 23 24 25 26 27 29(25
+79(100
+82(750
+04(400
+66(130
+73(50
+51(130
+44(300
+29 68 92(30
+45(720
+45(200
+02 03 07 08 10 13 15 16 17 19 20 24 28 29 30 31 32 34 35 36 37 38 39 40 43 44 45 46 47 48 49 50 52 53 54 56 57 58 59 63 64 67 68 69 71 72 73 78 81 82 84 86 89 90 91 92 93 94 95 97 98 99(25)</textarea>
+
+<button onclick="calculate()">Calculate Total</button>
+<button onclick="copyResult()" style="background:#16804a">Copy Result</button>
+
+<div id="result" class="result">
+हिसाब देखने के लिए Calculate Total दबाएँ।
+</div>
+</div>
+
+<script>
+function calculate() {
+  const input = document.getElementById("data").value;
+  const lines = input.split(/\n/);
+  let grandTotal = 0;
+  let output = "";
+  let validLines = 0;
+
+  lines.forEach((line, index) => {
+    line = line.trim();
+    if (!line) return;
+
+    // Bracket se pehle numbers aur baad ki value
+    const match = line.match(/^(.*?)\s*\(\s*(\d+)\s*\)?\s*$/);
+    if (!match) {
+      output += `<div class="line">${index + 1}. गलत फॉर्मेट: ${line}</div>`;
+      return;
+    }
+
+    const numbersText = match[1].trim();
+    const value = Number(match[2]);
+    const numbers = numbersText.match(/\d+/g);
+
+    if (!numbers || numbersText.replace(/[\d\s.,]+/g, "").length) {
+      output += `<div class="line">${line} — नंबर जाँचें</div>`;
+      return;
+    }
+
+    const count = numbers.length;
+    const total = count * value;
+    grandTotal += total;
+    validLines++;
+
+    output += `<div class="line">
+      ${numbers.join(" ")} (${value})<br>
+      ${count} × ${value} = <b>${total.toLocaleString("en-IN")}</b>
+    </div>`;
+  });
+
+  output += `<p>कुल सही लाइनें: ${validLines}</p>
+    <div class="total">Grand Total = ${grandTotal.toLocaleString("en-IN")}</div>`;
+
+  document.getElementById("result").innerHTML = output;
+}
+
+function copyResult() {
+  const text = document.getElementById("result").innerText;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(
+      () => alert("Result copied!"),
+      () => fallbackCopy(text)
+    );
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  document.body.appendChild(area);
+  area.select();
+  try {
+    document.execCommand("copy");
+    alert("Result copied!");
+  } catch (e) {
+    alert("Copy नहीं हुआ। Result को manually select करें।");
+  }
+  area.remove();
+}
+</script>
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="hi">
 <head>
