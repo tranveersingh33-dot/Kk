@@ -1,135 +1,42 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jantri Ledger</title>
-<style>
-body{font-family:Arial;background:#eee;margin:0;padding:15px}
-h2{background:#03072f;color:white;padding:18px}
-textarea,input{width:100%;padding:12px;margin:6px 0;box-sizing:border-box}
-button{background:#16bf00;color:white;border:0;padding:12px;margin:4px;border-radius:20px}
-.card{background:white;padding:12px;margin:10px 0;border-radius:8px}
-</style>
-</head>
-<body>
 
-<h2>Jantri Ledger <span id="total">POINTS: 0</span></h2>
+function calculateJantri(text) {
+  let total = 0;
+  const results = [];
 
-<div class="card">
-  <h3>Paste Message</h3>
-  <textarea id="message" placeholder="23,45.67(10"></textarea>
-  <button onclick="submitMessage()">SUBMIT</button>
-  <button onclick="document.getElementById('message').value=''">CLEAR</button>
-</div>
+  const lines = text.split(/\r?\n/);
 
-<div class="card">
-  <h3>Jantri Board</h3>
-  <div id="board"></div>
-  <button onclick="copyBoard()">MESSAGE COPY</button>
-  <button onclick="deleteAll()">DELETE ALL</button>
-</div>
+  lines.forEach(line => {
+    // Number groups followed by a bracket value
+    const regex = /([^()]*?)\s*\(\s*(\d+)\s*\)?/g;
+    let match;
 
-<div class="card">
-  <h3>Find & Replace</h3>
-  <input id="find" placeholder="Find text">
-  <input id="replace" placeholder="Replace with (blank removes)">
-  <button onclick="findReplace()">FIND & REPLACE</button>
-  <textarea id="cleaned" placeholder="Cleaned message"></textarea>
-</div>
+    while ((match = regex.exec(line)) !== null) {
+      const before = match[1];
 
-<div class="card">
-  <h3>Jodi Multiply</h3>
-  <textarea id="jodi" placeholder="23,45.67(10"></textarea>
-  <button onclick="calculateJodi()">CALCULATE</button>
-  <div id="answer"></div>
-</div>
+      // Treat commas, dots, spaces and symbols as separators
+      const numbers = before.match(/\d+/g) || [];
+      if (numbers.length === 0) continue;
 
-<script>
-let entries=[];
+      const multiplier = Number(match[2]);
+      const count = numbers.length;
+      const result = count * multiplier;
 
-function parseLine(line){
-  let m=line.match(/\(\s*(\d+(?:\.\d+)?)\s*\)/);
-  if(!m) return null;
+      total += result;
 
-  let before=line.slice(0,m.index);
-  let nums=before.match(/\d+/g)||[];
-  if(!nums.length) return null;
-
-  let multiplier=Number(m[1]);
-  if(/\b(wp|plt)\b/i.test(before)) multiplier*=2;
-
-  return {
-    text:line.trim(),
-    count:nums.length,
-    multiplier,
-    total:nums.length*multiplier
-  };
-}
-
-function submitMessage(){
-  const lines=document.getElementById('message').value.split(/\r?\n/);
-  let added=0;
-
-  lines.forEach(line=>{
-    if(!line.trim()) return;
-    const item=parseLine(line);
-    if(item){entries.push(item);added++;}
+      results.push(
+        `${numbers.join(', ')} (${count} × ${multiplier} = ${result})`
+      );
+    }
   });
 
-  render();
-  alert(added+' line(s) Jantri Board mein add hui.');
+  results.push('--------------------');
+  results.push(`GRAND TOTAL = ${total}`);
+
+  return results.join('\n');
 }
 
-function render(){
-  const board=document.getElementById('board');
-  board.innerHTML='';
-  let total=0;
-
-  entries.forEach((e,i)=>{
-    total+=e.total;
-    const row=document.createElement('div');
-    row.className='card';
-    row.textContent=e.text+' = '+e.count+' × '+e.multiplier+' = '+e.total;
-    board.appendChild(row);
-  });
-
-  document.getElementById('total').textContent='POINTS: '+total;
+function calculateButton() {
+  const input = document.getElementById('calcText').value;
+  document.getElementById('calcOutput').value =
+    calculateJantri(input);
 }
-
-function calculateJodi(){
-  const lines=document.getElementById('jodi').value.split(/\r?\n/);
-  const results=[];
-
-  lines.forEach(line=>{
-    const item=parseLine(line);
-    if(item) results.push(item.count+' × '+item.multiplier+' = '+item.total);
-  });
-
-  document.getElementById('answer').textContent=results.join('\n');
-}
-
-function findReplace(){
-  const find=document.getElementById('find').value;
-  const replace=document.getElementById('replace').value;
-  let text=document.getElementById('message').value;
-
-  if(find) text=text.split(find).join(replace);
-  text=text.replace(/[.,/\\;:_]+/g,' ');
-  document.getElementById('cleaned').value=text;
-}
-
-function copyBoard(){
-  const text=entries.map(e=>e.text+' = '+e.total).join('\n');
-  navigator.clipboard?.writeText(text);
-}
-
-function deleteAll(){
-  if(confirm('Delete all entries?')){
-    entries=[];
-    render();
-  }
-}
-</script>
-</body>
-</html>
