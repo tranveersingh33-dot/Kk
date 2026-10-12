@@ -6,247 +6,274 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jantri Ledger</title>
 <style>
-body{font-family:Arial;background:#eee;margin:0;color:#222}
-header{background:#03072f;color:white;padding:20px;display:flex;justify-content:space-between;font-weight:bold}
-main{padding:12px}
-button{padding:11px;border:0;border-radius:20px;cursor:pointer;font-weight:bold;margin:3px}
-.menu button,.green{background:#16bf00;color:white}
-.dark{background:#03072f;color:white}
-input,textarea{width:100%;box-sizing:border-box;padding:12px;margin:5px 0;border:1px solid #aaa;border-radius:6px;font-size:16px}
-.card{background:white;padding:12px;margin:10px 0;border-radius:8px}
-.row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:8px;border-bottom:1px solid #ddd}
-.panel{display:none;background:white;padding:12px;margin:10px 0;border-radius:8px}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eee;
+}
+header {
+  background: #03072f;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: #16bf00;
+  color: white;
+  font-weight: bold;
+  margin: 3px;
+}
+input, textarea {
+  padding: 12px;
+  width: 90%;
+  margin: 5px 0;
+}
+.panel, .entrybox, .record {
+  background: white;
+  padding: 12px;
+  margin: 12px;
+  border-radius: 8px;
+}
+.panel { display: none; }
+.row {
+  display: flex;
+  gap: 8px;
+}
+.row input { width: 50%; }
+#records { margin-top: 10px; }
 </style>
 </head>
 <body>
+
 <header>
-  <span>JANTRI LEDGER</span>
-  <span id="total">TOTAL: 0</span>
+  <span>Jantri Ledger</span>
+  <span id="total">POINTS: 0</span>
 </header>
-<main>
-  <button class="dark" onclick="toggleMenu()">MORE / LESS</button>
-  <button class="dark" onclick="deleteAll()">DELETE ALL</button>
-  <button class="dark" onclick="copyAll()">MESSAGE COPY</button>
 
-  <div id="menu" class="menu" style="display:none">
-    <button onclick="show('paste')">PASTE MESSAGE</button>
-    <button onclick="show('final')">FINAL JANTRI</button>
-    <button onclick="show('clean')">FIND & REPLACE</button>
-    <button onclick="show('joda')">JODA</button>
-    <button onclick="show('range')">JANTRI</button>
+<div class="entrybox">
+  <div class="row">
+    <input id="number" placeholder="Number">
+    <input id="points" type="number" placeholder="Points">
   </div>
+  <button onclick="addEntry()">ADD ENTRY</button>
+  <button onclick="clearFields()">CROSS</button>
+</div>
 
-  <div class="card">
-    <h3>ADD ENTRY</h3>
-    <input id="num" placeholder="Number">
-    <input id="pts" type="number" placeholder="Points">
-    <button class="green" onclick="addEntry()">ADD ENTRY</button>
-    <button onclick="clearEntry()">CROSS</button>
-  </div>
+<div class="entrybox">
+  <button onclick="openPanel('paste')">PASTE MESSAGE</button>
+  <button onclick="openPanel('board')">JANTRI BOARD</button>
+  <button onclick="openPanel('final')">FINAL JANTRI</button>
+  <button onclick="openPanel('copy')">MESSAGE COPY</button>
+  <button onclick="deleteAll()">DELETE ALL</button>
+</div>
 
-  <div class="card">
-    <h3>JANTRI BOARD</h3>
-    <div id="board"></div>
-  </div>
+<div id="records"></div>
 
-  <section id="paste" class="panel">
-    <h3>Paste Message</h3>
-    <textarea id="msg" rows="7" placeholder="03(10)
-13(25)
-23 33 43(25)
-02 03 07 into 20"></textarea>
-    <button class="green" onclick="submitMessage()">SUBMIT TO BOARD</button>
-    <button onclick="document.getElementById('msg').value=''">CLEAR TEXT</button>
-    <button onclick="closePanels()">CLOSE</button>
-    <p id="pasteResult"></p>
-  </section>
+<section id="paste" class="panel">
+  <h3>Paste Message</h3>
+  <textarea id="message" placeholder="23,45.67(10"></textarea>
+  <button onclick="processMessage()">SUBMIT</button>
+  <button onclick="closePanel('paste')">CLOSE</button>
+  <div id="preview"></div>
+</section>
 
-  <section id="final" class="panel">
-    <h3>FINAL JANTRI</h3>
-    <div id="summary"></div>
-    <button class="green" onclick="copyAll()">COPY FINAL</button>
-    <button onclick="closePanels()">CLOSE</button>
-  </section>
+<section id="board" class="panel">
+  <h3>JANTRI BOARD</h3>
+  <div id="boardResult"></div>
+  <button onclick="closePanel('board')">CLOSE</button>
+</section>
 
-  <section id="clean" class="panel">
-    <h3>FIND & REPLACE</h3>
-    <textarea id="cleanInput" rows="6" placeholder="Paste message"></textarea>
-    <input id="find" placeholder="Find text or symbol">
-    <input id="replace" placeholder="Replace with (blank removes it)">
-    <label><input type="checkbox" id="symbols" style="width:auto"> Remove brackets, dots and slashes</label>
-    <button class="green" onclick="cleanText()">FIND / REPLACE</button>
-    <textarea id="cleanOutput" rows="6" placeholder="Result"></textarea>
-    <button class="green" onclick="copyText(document.getElementById('cleanOutput').value)">COPY</button>
-    <button onclick="document.getElementById('msg').value=document.getElementById('cleanOutput').value;show('paste')">USE IN PASTE MESSAGE</button>
-    <button onclick="closePanels()">CLOSE</button>
-  </section>
+<section id="final" class="panel">
+  <h3>FINAL JANTRI</h3>
+  <div id="finalResult"></div>
+  <button onclick="copyFinal()">COPY FINAL</button>
+  <button onclick="closePanel('final')">CLOSE</button>
+</section>
 
-  <section id="joda" class="panel">
-    <h3>JODA</h3>
-    <textarea id="jodaInput" rows="5" placeholder="12 34 56 78 90"></textarea>
-    <input id="jodaPoints" type="number" placeholder="Points per number">
-    <button class="green" onclick="formatJoda()">FORMAT PAIRS</button>
-    <textarea id="jodaOutput" rows="5"></textarea>
-    <button class="green" onclick="addJoda()">ADD TO BOARD</button>
-    <button onclick="closePanels()">CLOSE</button>
-  </section>
-
-  <section id="range" class="panel">
-    <h3>JANTRI NUMBER RANGE</h3>
-    <input id="from" value="00" placeholder="From">
-    <input id="to" value="99" placeholder="To">
-    <button class="green" onclick="makeRange()">CREATE LIST</button>
-    <textarea id="rangeOutput" rows="5"></textarea>
-    <button class="green" onclick="copyText(document.getElementById('rangeOutput').value)">COPY LIST</button>
-    <button onclick="closePanels()">CLOSE</button>
-  </section>
-</main>
+<section id="copy" class="panel">
+  <h3>MESSAGE COPY / FIND & REPLACE</h3>
+  <textarea id="copyText" placeholder="Message"></textarea>
+  <input id="find" placeholder="Find text">
+  <input id="replace" placeholder="Replace with">
+  <button onclick="findReplace()">FIND & REPLACE</button>
+  <button onclick="removeSymbols()">REMOVE SYMBOLS</button>
+  <button onclick="copyMessage()">COPY</button>
+  <button onclick="closePanel('copy')">CLOSE</button>
+</section>
 
 <script>
-let entries=[];
-try {
- entries=JSON.parse(localStorage.getItem('jantriEntries')||'[]');
- if(!Array.isArray(entries))entries=[];
-} catch(e){entries=[];}
+let entries = [];
 
-function save(){
- try{localStorage.setItem('jantriEntries',JSON.stringify(entries));}
- catch(e){alert('Browser storage unavailable');}
+try {
+  entries = JSON.parse(localStorage.getItem('jantriEntries') || '[]');
+  if (!Array.isArray(entries)) entries = [];
+} catch(e) { entries = []; }
+
+function save() {
+  localStorage.setItem('jantriEntries', JSON.stringify(entries));
 }
-function total(){
- return entries.reduce((s,e)=>s+(Number(e.points)||0),0);
-}
-function render(){
- const board=document.getElementById('board');
- board.innerHTML='';
- entries.forEach((e,i)=>{
-  const row=document.createElement('div');
-  row.className='row';
-  const n=document.createElement('span');
-  n.textContent=e.number;
-  const p=document.createElement('span');
-  p.textContent=e.points;
-  const del=document.createElement('button');
-  del.textContent='DELETE';
-  del.onclick=()=>{entries.splice(i,1);save();render();};
-  row.append(n,p,del);
-  board.appendChild(row);
- });
- document.getElementById('total').textContent='TOTAL: '+total();
- document.getElementById('summary').textContent=
-  'Entries: '+entries.length+' | Total Points: '+total();
-}
-function addEntry(){
- const number=document.getElementById('num').value.trim();
- const points=document.getElementById('pts').value.trim();
- if(!number||points===''||!Number.isFinite(Number(points))){
-  alert('Number aur Points bharein');return;
- }
- entries.push({number,points:Number(points)});
- save();render();clearEntry();
-}
-function clearEntry(){
- document.getElementById('num').value='';
- document.getElementById('pts').value='';
-}
-function deleteAll(){
- if(confirm('Saari entries delete karein?')){
-  entries=[];save();render();
- }
-}
-function toggleMenu(){
- const m=document.getElementById('menu');
- m.style.display=m.style.display==='none'?'block':'none';
-}
-function show(id){
- closePanels();
- document.getElementById(id).style.display='block';
- document.getElementById(id).scrollIntoView({behavior:'smooth'});
-}
-function closePanels(){
- document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-}
-function submitMessage(){
- const text=document.getElementById('msg').value.trim();
- if(!text){alert('Pehle message paste karein');return;}
- let added=0,skipped=0;
- text.split(/\r?\n/).forEach(line=>{
-  line=line.trim();
-  if(!line)return;
-  let m=line.match(/[\(\[\{]\s*(-?\d+(?:\.\d+)?)\s*[\)\]\}]\s*$/);
-  if(!m)m=line.match(/(?:into|intu|×|x|=)\s*(-?\d+(?:\.\d+)?)\s*$/i);
-  if(!m){skipped++;return;}
-  const points=Number(m[1]);
-  const numbers=line.slice(0,m.index).match(/\d{1,4}/g)||[];
-  if(!numbers.length){skipped++;return;}
-  numbers.forEach(number=>{
-   entries.push({number:number.length===1?number.padStart(2,'0'):number,points});
-   added++;
+
+function render() {
+  const records = document.getElementById('records');
+  records.innerHTML = '';
+  let total = 0;
+
+  entries.forEach((e, i) => {
+    total += Number(e.points) || 0;
+
+    const row = document.createElement('div');
+    row.className = 'record';
+    row.textContent = e.number + ' — ' + e.points + ' points ';
+
+    const del = document.createElement('button');
+    del.textContent = 'DELETE';
+    del.onclick = () => {
+      entries.splice(i, 1);
+      save();
+      render();
+    };
+
+    row.appendChild(del);
+    records.appendChild(row);
   });
- });
- save();render();
- document.getElementById('pasteResult').textContent=
-  'Added: '+added+' | Skipped lines: '+skipped;
+
+  document.getElementById('total').textContent =
+    'POINTS: ' + total;
+
+  document.getElementById('finalResult').textContent =
+    entries.map(e => e.number + ' = ' + e.points).join('\n') +
+    '\nGrand Total: ' + total;
 }
-function cleanText(){
- let text=document.getElementById('cleanInput').value;
- const find=document.getElementById('find').value;
- const replacement=document.getElementById('replace').value;
- if(find)text=text.split(find).join(replacement);
- if(document.getElementById('symbols').checked){
-  text=text.replace(/[()[\]{}.,/\\:=#@*_'"%!?;|+—–-]/g,' ');
-  text=text.replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n');
- }
- document.getElementById('cleanOutput').value=text.trim();
+
+function addEntry() {
+  const number = document.getElementById('number').value.trim();
+  const points = document.getElementById('points').value;
+
+  if (!number || points === '' || !Number.isFinite(Number(points))) {
+    alert('Number aur Points bharein.');
+    return;
+  }
+
+  entries.push({number, points: Number(points)});
+  save();
+  render();
+  clearFields();
 }
-function formatJoda(){
- const nums=document.getElementById('jodaInput').value.match(/\d{1,4}/g)||[];
- if(!nums.length){alert('Numbers paste karein');return;}
- let out=[];
- for(let i=0;i<nums.length;i+=2)out.push(nums.slice(i,i+2).join(' - '));
- document.getElementById('jodaOutput').value=out.join('\n');
+
+function clearFields() {
+  document.getElementById('number').value = '';
+  document.getElementById('points').value = '';
 }
-function addJoda(){
- const nums=document.getElementById('jodaInput').value.match(/\d{1,4}/g)||[];
- const points=document.getElementById('jodaPoints').value.trim();
- if(!nums.length||points===''||!Number.isFinite(Number(points))){
-  alert('Numbers aur points bharein');return;
- }
- nums.forEach(number=>entries.push({
-  number:number.length===1?number.padStart(2,'0'):number,
-  points:Number(points)
- }));
- save();render();
+
+function deleteAll() {
+  if (confirm('Sabhi entries delete karein?')) {
+    entries = [];
+    save();
+    render();
+  }
 }
-function makeRange(){
- const a=Number(document.getElementById('from').value);
- const b=Number(document.getElementById('to').value);
- if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>1999){
-  alert('Valid range bharein (maximum 2000 numbers)');return;
- }
- const width=Math.max(2,document.getElementById('from').value.length,
-  document.getElementById('to').value.length);
- let list=[];
- for(let i=a;i<=b;i++)list.push(String(i).padStart(width,'0'));
- document.getElementById('rangeOutput').value=list.join(' ');
+
+function openPanel(id) {
+  document.querySelectorAll('.panel').forEach(
+    p => p.style.display = 'none'
+  );
+  document.getElementById(id).style.display = 'block';
+
+  if (id === 'board') {
+    document.getElementById('boardResult').textContent =
+      entries.map(e => e.number + ' (' + e.points + ')').join('\n');
+  }
 }
-async function copyText(text){
- if(!text){alert('Copy karne ke liye text nahi hai');return;}
- try{
-  await navigator.clipboard.writeText(text);
-  alert('Copied');
- }catch(e){
-  const box=document.createElement('textarea');
-  box.value=text;document.body.appendChild(box);box.select();
-  const ok=document.execCommand('copy');box.remove();
-  if(!ok)prompt('Copy text:',text);
- }
+
+function closePanel(id) {
+  document.getElementById(id).style.display = 'none';
 }
-function copyAll(){
- copyText('JANTRI LEDGER\n'+
- entries.map(e=>e.number+'('+e.points+')').join('\n')+
- '\nTOTAL='+total());
+
+function processMessage() {
+  const text = document.getElementById('message').value;
+  const groups = [];
+  const lines = text.split(/\n/);
+
+  lines.forEach(line => {
+    const re = /([^()\n]*?)\(\s*(\d+(?:\.\d+)?)\s*\)/g;
+    let match;
+
+    while ((match = re.exec(line)) !== null) {
+      const nums = match[1].match(/\d+/g) || [];
+      if (!nums.length) continue;
+
+      const amount = Number(match[2]);
+      groups.push({
+        nums,
+        amount,
+        total: nums.length * amount
+      });
+    }
+  });
+
+  if (!groups.length) {
+    alert('Bracket wali line nahi mili.');
+    return;
+  }
+
+  groups.forEach(g => {
+    g.nums.forEach(n => entries.push({
+      number: n,
+      points: g.amount
+    }));
+  });
+
+  document.getElementById('preview').textContent =
+    groups.map(g => g.nums.join(',') + '(' + g.amount + ') = ' +
+      g.nums.length + ' × ' + g.amount + ' = ' + g.total).join('\n');
+
+  save();
+  render();
+  openPanel('board');
 }
+
+function findReplace() {
+  const source = document.getElementById('copyText');
+  const find = document.getElementById('find').value;
+
+  if (!find) {
+    alert('Find text bharein.');
+    return;
+  }
+
+  source.value = source.value.split(find).join(
+    document.getElementById('replace').value
+  );
+}
+
+function removeSymbols() {
+  const field = document.getElementById('copyText');
+  field.value = field.value.replace(/[.,/\\'"_#@*%:;=+\-]+/g, ' ');
+}
+
+function copyMessage() {
+  copyText(document.getElementById('copyText').value);
+}
+
+function copyFinal() {
+  copyText(document.getElementById('finalResult').textContent);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('Copied'))
+      .catch(() => prompt('Copy text:', text));
+  } else {
+    prompt('Copy text:', text);
+  }
+}
+
 render();
 </script>
 </body>
