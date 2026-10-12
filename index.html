@@ -3,183 +3,273 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jantri Bracket Calculator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jantri Ledger</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #eef2f7;
-  margin: 0;
-  padding: 15px;
-}
-.container {
-  max-width: 650px;
-  margin: auto;
-}
-h2 { color: #061b49; }
-textarea {
-  width: 100%;
-  min-height: 140px;
-  padding: 12px;
-  box-sizing: border-box;
-  border: 1px solid #bbb;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-button {
-  padding: 12px;
-  border: none;
-  border-radius: 7px;
-  color: white;
-  background: #07852b;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-  margin: 4px 0;
-}
-.buttons {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-.buttons button { flex: 1; }
-.blue { background: #0868d7; }
-.red { background: #dc2626; }
-.result {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  min-height: 80px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#edf1f5;font-family:Arial;color:#10234c}
+header{background:#06183f;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:26px;margin:0}
+.top{display:flex;gap:7px;padding:10px}
+button{border:0;padding:11px;border-radius:9px;background:#078b2c;color:white;font-weight:bold;cursor:pointer}
+.top button{background:#06183f;flex:1}
+.layout{display:grid;grid-template-columns:180px minmax(0,1fr) 260px;gap:10px;padding:0 10px 15px}
+nav{display:flex;flex-direction:column;gap:7px}
+nav button{border-radius:25px}
+main,.side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:white;border:1px solid #d6e3ef;border-radius:12px;padding:12px;min-width:0}
+h2{font-size:18px;color:#06183f;margin:0 0 10px}
+h3{font-size:15px;margin:12px 0 7px}
+textarea,input{width:100%;padding:10px;border:1px solid #b9c9d9;border-radius:7px;font:inherit;margin:4px 0 8px}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:7px;flex-wrap:wrap}
+.row button{flex:1}
+.blue{background:#087af0}.red{background:#ef3035}.dark{background:#06183f}.light{background:#e5edf6;color:#06183f}
+.result{background:#f2f6fb;border:1px solid #d6e3ef;border-radius:7px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:65px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 4px;border-bottom:1px solid #e1e8ef;text-align:left}
+td button{padding:7px;font-size:11px;margin:2px}
+.tablewrap{overflow:auto}
+.total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:7px}
+.example{background:#e7f7ed;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.8}
+.hidden{display:none!important}
+#boardGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+#boardGrid button{background:white;color:#06183f;border:1px solid #ccd5df}
+#toast{display:none;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px;border-radius:20px;z-index:9}
+footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.layout nav{display:grid;grid-template-columns:repeat(2,1fr)}header h1{font-size:22px}.side{display:grid;grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="container">
-
-<h2>Jantri Bracket Calculator</h2>
-
-<label>WhatsApp message paste karein:</label>
-<textarea id="message"
-placeholder="Example:&#10;23,45,67(10wp&#10;12,34(5)wp&#10;55/66/77(20)"></textarea>
-
-<div class="buttons">
-<button onclick="calculate()">CALCULATED / TOTAL</button>
-<button class="red" onclick="clearAll()">CLEAR</button>
+<header><h1>Jantri Ledger</h1><b>POINTS: <span id="headTotal">0</span></b></header>
+<div class="top">
+<button onclick="toggleMenu()">MORE / LESS</button>
+<button onclick="deleteAll()">DELETE ALL</button>
+<button onclick="shareLedger()">SEND TO</button>
 </div>
 
-<h3>Calculation Result</h3>
-<div id="output" class="result">Result yahan aayega.</div>
+<div class="layout">
+<nav id="menu">
+<button onclick="show('board')">▦ JANTRI BOARD</button>
+<button onclick="show('final')">☷ FINAL JANTRI</button>
+<button onclick="show('range')">⇄ FROM - TO</button>
+<button onclick="show('messageCopy')">▤ MESSAGE COPY</button>
+<button onclick="show('calc')">▦ CALCULATED / TOTAL</button>
+<button onclick="show('find')">⌕ FIND & REPLACE</button>
+<button onclick="show('jodi')">↗ JODI PASTE</button>
+<button onclick="show('pass')">🔒 PASSCODE</button>
+<button onclick="show('help')">? HELP</button>
+</nav>
 
-<button class="blue" onclick="copyResult()">COPY RESULT</button>
+<main>
+<section class="card" id="calc">
+<h2>Message Paste (WhatsApp / Any Text)</h2>
+<textarea id="message" placeholder="WhatsApp message yahan paste karein...&#10;23,45,67(10wp&#10;12,34(5)"></textarea>
+<div class="row">
+<button onclick="pasteMessage()">PASTE</button>
+<button class="blue" onclick="calculate()">SUBMIT</button>
+<button class="red" onclick="clearMessage()">CLOSE</button>
+</div>
+</section>
+
+<section class="card">
+<h2>Calculation Result</h2>
+<div id="calcOutput" class="result">Calculation result yahan aayega.</div>
+<div class="row">
+<button onclick="copy('calcOutput')">COPY RESULT</button>
+<button onclick="addResults()">ADD TO LEDGER</button>
+<button class="dark" onclick="clearCalc()">CLEAR</button>
+</div>
+</section>
+
+<section class="card" id="ledger">
+<h2>Current Ledger</h2>
+<div class="row">
+<input id="entryNumber" placeholder="Number / Jodi">
+<input id="entryPoints" type="number" placeholder="Points">
+<button id="saveBtn" onclick="saveEntry()">ADD</button>
+</div>
+<div class="tablewrap">
+<table><thead><tr><th>No.</th><th>Number</th><th>Points</th><th>Action</th></tr></thead>
+<tbody id="rows"></tbody></table>
+</div>
+<div class="total">Total Points: <span id="ledgerTotal">0</span></div>
+</section>
+
+<section class="card" id="final">
+<h2>Final Jantri Summary</h2>
+<p>Total Entries: <b id="entriesCount">0</b></p>
+<p>Grand Total: <b id="grandTotal">0</b></p>
+<div id="finalOutput" class="result"></div>
+<div class="row">
+<button onclick="buildFinal()">REFRESH FINAL</button>
+<button onclick="copy('finalOutput')">COPY FINAL JANTRI</button>
+<button class="blue" onclick="downloadCSV()">DOWNLOAD CSV</button>
+</div>
+</section>
+
+<section class="card hidden" id="board">
+<h2>Jantri Board</h2>
+<div class="row"><input id="boardStart" value="00"><input id="boardEnd" value="99"></div>
+<div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div>
+<div id="boardGrid"></div>
+<label>Points per number</label><input id="boardPoints" type="number" placeholder="Points">
+<button onclick="addBoard()">ADD SELECTED</button>
+</section>
+
+<section class="card hidden" id="range">
+<h2>From - To</h2>
+<div class="row"><input id="from" value="00"><input id="to" value="99"></div>
+<button onclick="makeRange()">GENERATE RANGE</button>
+<textarea id="rangeOutput"></textarea>
+<button onclick="copy('rangeOutput')">COPY RANGE</button>
+</section>
+
+<section class="card hidden" id="messageCopy">
+<h2>Message Copy</h2>
+<textarea id="original" placeholder="Message paste karein"></textarea>
+<div class="row"><input id="findText" placeholder="Find"><input id="replaceText" placeholder="Replace"></div>
+<div class="row">
+<button onclick="replaceText()">REPLACE</button>
+<button onclick="removeSymbols()">REMOVE SYMBOLS</button>
+<button onclick="copy('cleanOutput')">COPY RESULT</button>
+</div>
+<textarea id="cleanOutput" placeholder="Result"></textarea>
+</section>
+
+<section class="card hidden" id="find">
+<h2>Find & Replace</h2>
+<p>Find & Replace ka tool Message Copy section mein hai.</p>
+<button onclick="show('messageCopy')">OPEN MESSAGE COPY</button>
+</section>
+
+<section class="card hidden" id="jodi">
+<h2>Jodi Paste</h2>
+<textarea id="jodiInput" placeholder="23 45 67 89"></textarea>
+<button onclick="formatJodi()">FORMAT JODI</button>
+<textarea id="jodiOutput" placeholder="Jodi result"></textarea>
+<input id="jodiPoints" type="number" placeholder="Points per jodi">
+<button onclick="addJodis()">ADD JODI TO LEDGER</button>
+</section>
+
+<section class="card hidden" id="pass">
+<h2>Passcode</h2><p>Default passcode: 8941</p>
+<input id="oldPass" type="password" placeholder="Current passcode">
+<input id="newPass" type="password" placeholder="New passcode">
+<button onclick="changePass()">CHECK / CHANGE</button><p id="passMessage"></p>
+</section>
+
+<section class="card hidden" id="help">
+<h2>Help</h2>
+<p>Har line mein ek bracket group likhein. Bracket se pehle ke numbers count hote hain.</p>
+<p>Example: 23,45,67(10wp = 3 × 20 = 60.</p>
+</section>
+</main>
+
+<aside class="side">
+<section class="card">
+<h2>Calculation Rules</h2>
+<ol>
+<li>Bracket se pehle ke sabhi numbers count honge.</li>
+<li>Count × bracket value = points.</li>
+<li>Bracket ke baad wp ho to value double.</li>
+<li>Single aur double brackets supported.</li>
+<li>Sabhi groups ka total Grand Total.</li>
+</ol>
+<h3>Examples</h3>
+<div class="example">23,45,67(10 = 3 × 10 = 30
+23,45,67(10wp = 3 × 20 = 60
+23,45,67(10)wp = 3 × 20 = 60
+12,34(5)wp = 2 × 10 = 20</div>
+</section>
+<section class="card">
+<h2>Find & Replace</h2>
+<input id="sideFind" placeholder="Find">
+<input id="sideReplace" placeholder="Replace">
+<button onclick="sideReplaceText()">REPLACE IN MESSAGE</button>
+</section>
+<section class="card">
+<h2>Jodi Paste</h2>
+<textarea id="sideJodi" placeholder="23 45 67 89"></textarea>
+<button onclick="sideJodiFormat()">FORMAT JODI</button>
+</section>
+</aside>
+</div>
+<footer>Jantri Ledger | Calculate • Save • Share</footer>
+<div id="toast"></div>
 
 <script>
-function calculate() {
-  const text = document.getElementById("message").value;
-  const output = document.getElementById("output");
-
-  let total = 0;
-  let groupCount = 0;
-  let results = [];
-
-  /*
-    Bracket examples:
-    (10
-    (10)
-    ((10))
-    (10wp
-    (10)wp
-    ((10))wp
-  */
-
-  const lines = text.split(/\r?\n/);
-
-  for (const line of lines) {
-    // Har bracket group ko alag process karein.
-    const regex =
-      /([^()]*?)\s*\({1,2}\s*(\d+)\s*\){0,2}\s*(wp)?/gi;
-
-    let match;
-
-    while ((match = regex.exec(line)) !== null) {
-      const beforeBracket = match[1];
-      const numbers = beforeBracket.match(/\d+/g) || [];
-
-      if (numbers.length === 0) {
-        if (match[0].length === 0) regex.lastIndex++;
-        continue;
-      }
-
-      const count = numbers.length;
-      const originalValue = Number(match[2]);
-      const hasWP = Boolean(match[3]);
-
-      // WP ke saath bracket value double hogi.
-      const multiplier = hasWP
-        ? originalValue * 2
-        : originalValue;
-
-      const answer = count * multiplier;
-      total += answer;
-      groupCount++;
-
-      results.push(
-        numbers.join(", ") +
-        " | Count: " + count +
-        " | Bracket: " + originalValue +
-        (hasWP ? " | WP Double: " + multiplier : "") +
-        " | " + count + " × " + multiplier +
-        " = " + answer
-      );
-
-      if (match[0].length === 0) regex.lastIndex++;
-    }
-  }
-
-  if (groupCount === 0) {
-    output.textContent =
-      "Bracket nahi mila. Example: 23,45,67(10wp";
-    return;
-  }
-
-  results.push("----------------------------");
-  results.push("TOTAL GROUPS = " + groupCount);
-  results.push("GRAND TOTAL = " + total);
-
-  output.textContent = results.join("\n");
+const $=id=>document.getElementById(id);
+let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[];
+try{entries=JSON.parse(localStorage.getItem('jantriLedgerV4')||'[]')}catch(e){entries=[]}
+if(!Array.isArray(entries))entries=[];
+function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function save(){localStorage.setItem('jantriLedgerV4',JSON.stringify(entries))}
+function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
+function render(){
+ $('headTotal').textContent=total();$('ledgerTotal').textContent=total();
+ $('rows').innerHTML='';
+ entries.forEach((e,i)=>{
+  const tr=document.createElement('tr');
+  [i+1,e.number,e.points].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
+  let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');
+  ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE'};
+  del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render();buildFinal()}};
+  td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr);
+ });
+ $('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal();
 }
-
-function copyResult() {
-  const text = document.getElementById("output").innerText;
-
-  if (!text || text === "Result yahan aayega.") {
-    alert("Pehle calculation karein.");
-    return;
-  }
-
-  const area = document.createElement("textarea");
-  area.value = text;
-  document.body.appendChild(area);
-  area.select();
-
-  try {
-    document.execCommand("copy");
-    alert("Result copied!");
-  } catch (e) {
-    alert("Result ko manually copy karein.");
-  }
-
-  area.remove();
+function saveEntry(){
+ let n=$('entryNumber').value.trim(),p=$('entryPoints').value;
+ if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');
+ let e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);
+ if(i>=0)entries[i]=e;else entries.push(e);
+ editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';
+ save();render();notify('Entry saved');
 }
-
-function clearAll() {
-  document.getElementById("message").value = "";
-  document.getElementById("output").textContent =
-    "Result yahan aayega.";
+function deleteAll(){if(confirm('Saari entries delete karein?')){entries=[];save();render();notify('All entries deleted')}}
+function toggleMenu(){$('menu').classList.toggle('hidden')}
+function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start'})}
+function clearMessage(){$('message').value='';notify('Message cleared')}
+async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}
+function calculate(){
+ lastResults=[];let out=[],grand=0;
+ for(const line of $('message').value.split(/\r?\n/)){
+  if(!line.trim())continue;
+  // Process one bracket group per line; WP can follow the closing bracket.
+  const m=line.match(/^(.*?)\s*\({1,2}\s*(\d+)\s*\){0,2}\s*(wp)?\s*$/i);
+  if(!m){out.push('Skipped: '+line);continue}
+  const nums=m[1].match(/\d+/g)||[];
+  if(!nums.length){out.push('Numbers nahi mile: '+line);continue}
+  const original=Number(m[2]),wp=!!m[3],mult=original*(wp?2:1),answer=nums.length*mult;
+  grand+=answer;lastResults.push({number:nums.join(','),points:answer});
+  out.push(nums.join(', ')+' | '+nums.length+' × '+mult+(wp?' (WP double)':'')+' = '+answer);
+ }
+ if(!lastResults.length){$('calcOutput').textContent='Format: 23,45,67(10wp';return}
+ out.push('--------------------','GROUPS = '+lastResults.length,'GRAND TOTAL = '+grand);
+ $('calcOutput').textContent=out.join('\n');notify('Total: '+grand);
 }
+function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(x=>entries.push({id:uid(),number:x.number,points:x.points}));save();render();notify('Results added')}
+function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
+async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
+function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
+function makeRange(){let a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
+function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
+function drawBoard(){$('boardGrid').innerHTML='';board.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};$('boardGrid').appendChild(b)})}
+function selectAll(on){selected=on?new Set(board):new Set();drawBoard()}
+function addBoard(){let p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Select numbers aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board entries added')}
+function replaceText(){let s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceText').value)}
+function removeSymbols(){$('cleanOutput').value=$('original').value.replace(/[()[\]{}.,/\\:;=#!_"'`~|+?<>-]+/g,' ').replace(/[ \t]{2,}/g,' ').trim()}
+function sideReplaceText(){let f=$('sideFind').value;if(!f)return alert('Find text daalein');$('message').value=$('message').value.split(f).join($('sideReplace').value);notify('Message replaced')}
+function formatJodi(){jodis=$('jodiInput').value.match(/(?<!\d)\d{2}(?!\d)/g)||[];$('jodiOutput').value=jodis.join(' ');notify(jodis.length+' jodi found')}
+function sideJodiFormat(){$('jodiInput').value=$('sideJodi').value;show('jodi');formatJodi()}
+function addJodis(){if(!jodis.length)formatJodi();let p=$('jodiPoints').value;if(!jodis.length||p===''||!Number.isFinite(Number(p)))return alert('Jodi aur points daalein');jodis.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Jodi added')}
+function downloadCSV(){if(!entries.length)return notify('Ledger empty');let csv=[['Number','Points'],...entries.map(e=>[e.number,e.points])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='jantri-ledger.csv';a.click();URL.revokeObjectURL(a.href)}
+async function shareLedger(){let text='JANTRI LEDGER\n'+entries.map(e=>e.number+' = '+e.points).join('\n')+'\nGRAND TOTAL = '+total();if(navigator.share){try{await navigator.share({title:'Jantri Ledger',text})}catch(e){}}else{let t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Ledger copied')}}
+function changePass(){let old=localStorage.getItem('jantriPass')||'8941';if($('oldPass').value!==old){$('passMessage').textContent='Incorrect passcode';return}let n=$('newPass').value;if(n&&n.length<4){$('passMessage').textContent='Minimum 4 characters';return}if(n)localStorage.setItem('jantriPass',n);$('passMessage').textContent=n?'Passcode changed':'Passcode accepted'}
+$('entryPoints').addEventListener('keydown',e=>{if(e.key==='Enter')saveEntry()});
+render();
 </script>
-</div>
 </body>
 </html>
