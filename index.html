@@ -552,3 +552,542 @@ header {
 
 <body>
   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jantri Ledger</title>
+
+<style>
+:root {
+  --navy: #03072f;
+  --green: #16bf00;
+  --bg: #ededed;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: Arial, sans-serif;
+  color: #222;
+}
+
+header {
+  height: 82px;
+  background: var(--navy);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  font-size: 25px;
+  font-weight: bold;
+}
+#pointsTotal { font-size: 20px; }
+
+.actions {
+  display: flex;
+  padding: 14px 22px 10px;
+}
+button {
+  border: 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+.dark {
+  background: var(--navy);
+  color: white;
+  border-radius: 28px;
+  height: 44px;
+  font-size: 17px;
+  flex: 1;
+  margin-right: 1px;
+}
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: absolute;
+  left: 22px;
+  top: 205px;
+  width: 222px;
+  z-index: 2;
+}
+.tool {
+  height: 44px;
+  border-radius: 28px;
+  background: var(--green);
+  color: white;
+  font-size: 18px;
+  box-shadow: 0 2px 4px #aaa;
+}
+#toolMenu.hidden { display: none; }
+
+.labels, .entrybox, .panel {
+  background: white;
+  border-radius: 7px;
+  margin: 0 22px 12px;
+  padding: 12px 17px;
+}
+.labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+  color: #777;
+  font-size: 23px;
+  font-weight: bold;
+  min-height: 55px;
+  align-items: center;
+}
+.entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+input, textarea, select { font: inherit; }
+
+.entry input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 2px solid #888;
+  outline: none;
+  padding: 17px 0 5px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #555;
+  background: transparent;
+}
+.entry input::placeholder {
+  color: #707070;
+  opacity: 1;
+}
+
+#records { margin-top: 12px; }
+
+.record {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  margin: 0 22px 8px;
+  padding: 13px 17px;
+  border-radius: 7px;
+  font-size: 20px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+.smallx {
+  background: #f1eeee;
+  color: #a00;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+.panel {
+  margin-top: 14px;
+  padding: 16px;
+  display: none;
+}
+.panel h3 { margin: 0 0 12px; }
+.panel textarea, .panel input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 7px;
+  margin: 5px 0 10px;
+}
+.greenbtn {
+  background: var(--green);
+  color: white;
+  border-radius: 22px;
+  padding: 12px 18px;
+  font-size: 16px;
+  margin: 4px;
+}
+.notice {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+@media(max-width:420px) {
+  header { padding: 0 14px; font-size: 22px; }
+  .actions { padding-left: 12px; padding-right: 12px; }
+  .dark { font-size: 14px; }
+  .labels, .entrybox, .panel {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+  .tools { left: 12px; width: min(222px,64vw); }
+  .tool { font-size: 16px; }
+  .record { margin-left: 12px; margin-right: 12px; }
+  .entry input { font-size: 22px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <span>Ledger</span>
+  <span id="pointsTotal">POINTS: 0</span>
+</header>
+
+<div class="actions">
+  <button class="dark" id="lessBtn"
+    onclick="toggleTools()">LESS</button>
+  <button class="dark" onclick="deleteAll()">DELETE ALL</button>
+  <button class="dark" onclick="sendTo()">SEND TO ..</button>
+</div>
+
+<div id="toolMenu" class="tools">
+  <button class="tool" onclick="openPanel('jantriPanel')">JANTRI</button>
+  <button class="tool" onclick="openPanel('finalPanel')">FINAL JANTRI</button>
+  <button class="tool" onclick="openPanel('rangePanel')">FROM - TO</button>
+  <button class="tool" onclick="copyMessage()">MESSAGE COPY</button>
+  <button class="tool" onclick="clearInputs()">CROSS</button>
+  <button class="tool" onclick="openPanel('jodaPanel')">JODA</button>
+  <button class="tool" onclick="openPanel('passPanel')">PASSCODE</button>
+</div>
+
+<div class="labels">
+  <span>Number</span>
+  <span>Points</span>
+</div>
+
+<div class="entrybox">
+  <div class="entry">
+    <input id="number" placeholder="Number" autocomplete="off">
+    <input id="points" type="number"
+      inputmode="decimal" placeholder="Points">
+  </div>
+  <div style="text-align:right;margin-top:12px">
+    <button class="greenbtn" onclick="addEntry()">ADD ENTRY</button>
+  </div>
+</div>
+
+<div id="records"></div>
+
+<section id="jantriPanel" class="panel">
+  <h3>JANTRI — Number List</h3>
+  <p class="notice">Create a numbered list for record-keeping.</p>
+  <label>Start number
+    <input id="janStart" value="00" inputmode="numeric">
+  </label>
+  <label>End number
+    <input id="janEnd" value="99" inputmode="numeric">
+  </label>
+  <button class="greenbtn" onclick="makeJantri()">CREATE LIST</button>
+  <textarea id="janOutput" rows="4"
+    placeholder="Generated list appears here"></textarea>
+  <button class="greenbtn" onclick="copyText('janOutput')">COPY LIST</button>
+</section>
+
+<section id="finalPanel" class="panel">
+  <h3>FINAL JANTRI — Summary</h3>
+  <p class="notice">Current saved entries and total points.</p>
+  <div id="summary"></div>
+  <button class="greenbtn" onclick="copySummary()">COPY SUMMARY</button>
+</section>
+
+<section id="rangePanel" class="panel">
+  <h3>FROM - TO</h3>
+  <label>From
+    <input id="fromNum" placeholder="e.g. 00" inputmode="numeric">
+  </label>
+  <label>To
+    <input id="toNum" placeholder="e.g. 99" inputmode="numeric">
+  </label>
+  <button class="greenbtn" onclick="makeRange()">SHOW RANGE</button>
+  <textarea id="rangeOutput" rows="4"
+    placeholder="Range appears here"></textarea>
+  <button class="greenbtn" onclick="copyText('rangeOutput')">COPY RANGE</button>
+</section>
+
+<section id="jodaPanel" class="panel">
+  <h3>JODA — Pair Formatter</h3>
+  <p class="notice">Enter numbers separated by spaces or commas.</p>
+  <textarea id="jodaInput" rows="3"
+    placeholder="Example: 12 34 56 78"></textarea>
+  <button class="greenbtn" onclick="makeJoda()">FORMAT PAIRS</button>
+  <textarea id="jodaOutput" rows="3"
+    placeholder="Pairs appear here"></textarea>
+  <button class="greenbtn" onclick="copyText('jodaOutput')">COPY PAIRS</button>
+</section>
+
+<section id="passPanel" class="panel">
+  <h3>PASSCODE</h3>
+  <p class="notice">First-time passcode: 8941. Local browser lock only.</p>
+  <input id="passInput" type="password"
+    inputmode="numeric" placeholder="Current passcode">
+  <input id="newPass" type="password"
+    inputmode="numeric" placeholder="New passcode (optional)">
+  <button class="greenbtn" onclick="checkPass()">CHECK / CHANGE</button>
+  <div id="passMessage" class="notice"></div>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+let entries = [];
+
+try {
+  entries = JSON.parse(
+    localStorage.getItem('jantriLedgerEntries') || '[]'
+  );
+} catch(e) {
+  entries = [];
+}
+
+function save() {
+  try {
+    localStorage.setItem(
+      'jantriLedgerEntries', JSON.stringify(entries)
+    );
+  } catch(e) {}
+}
+
+function render() {
+  $('records').innerHTML = '';
+  let total = 0;
+
+  entries.forEach((e, i) => {
+    total += Number(e.points) || 0;
+
+    const row = document.createElement('div');
+    row.className = 'record';
+
+    const n = document.createElement('span');
+    n.textContent = e.number;
+
+    const p = document.createElement('span');
+    p.textContent = e.points;
+
+    const del = document.createElement('button');
+    del.className = 'smallx';
+    del.textContent = '×';
+    del.title = 'Remove entry';
+
+    del.onclick = () => {
+      entries.splice(i, 1);
+      save();
+      render();
+    };
+
+    row.append(n, p, del);
+    $('records').appendChild(row);
+  });
+
+  $('pointsTotal').textContent =
+    'POINTS: ' + total.toLocaleString('en-IN');
+}
+
+function addEntry() {
+  const number = $('number').value.trim();
+  const points = $('points').value.trim();
+
+  if (!number || points === '' ||
+      !Number.isFinite(Number(points))) {
+    alert('Enter Number and Points first.');
+    return;
+  }
+
+  entries.push({number, points: Number(points)});
+  save();
+  render();
+  clearInputs();
+  $('number').focus();
+}
+
+function clearInputs() {
+  $('number').value = '';
+  $('points').value = '';
+}
+
+function deleteAll() {
+  if (!entries.length) {
+    alert('No entries to delete.');
+    return;
+  }
+
+  if (confirm('Delete all saved entries?')) {
+    entries = [];
+    save();
+    render();
+  }
+}
+
+function toggleTools() {
+  const menu = $('toolMenu');
+  menu.classList.toggle('hidden');
+  $('lessBtn').textContent =
+    menu.classList.contains('hidden') ? 'MORE' : 'LESS';
+}
+
+function openPanel(id) {
+  document.querySelectorAll('.panel').forEach(
+    p => p.style.display = 'none'
+  );
+
+  $(id).style.display = 'block';
+
+  if (id === 'finalPanel') {
+    const total = entries.reduce(
+      (s, e) => s + (Number(e.points) || 0), 0
+    );
+    $('summary').textContent =
+      entries.length + ' entries · Total points: ' +
+      total.toLocaleString('en-IN');
+  }
+
+  $(id).scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function sendTo() {
+  if (!entries.length) {
+    alert('No entries to send.');
+    return;
+  }
+
+  const text = makeMessage();
+
+  if (navigator.share) {
+    navigator.share({title:'Ledger', text}).catch(() => {});
+  } else {
+    copyString(text);
+  }
+}
+
+function makeMessage() {
+  const total = entries.reduce(
+    (s, e) => s + (Number(e.points) || 0), 0
+  );
+
+  return 'Ledger\nNumber\tPoints\n' +
+    entries.map(e => e.number + '\t' + e.points).join('\n') +
+    '\n\nPOINTS: ' + total;
+}
+
+function copyMessage() {
+  copyString(makeMessage());
+}
+
+function copyString(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert('Copied!'))
+      .catch(() => prompt('Copy text:', text));
+  } else {
+    prompt('Copy text below:', text);
+  }
+}
+
+function copyText(id) {
+  copyString($(id).value);
+}
+
+function copySummary() {
+  copyString(makeMessage());
+}
+
+function makeJantri() {
+  let a = Number($('janStart').value);
+  let b = Number($('janEnd').value);
+
+  if (!Number.isInteger(a) || !Number.isInteger(b) ||
+      a < 0 || b > 9999 || b < a || b-a > 999) {
+    alert('Enter a valid range (maximum 1000 numbers).');
+    return;
+  }
+
+  const width = Math.max(
+    $('janStart').value.length,
+    $('janEnd').value.length, 2
+  );
+
+  let out = [];
+  for (let i = a; i <= b; i++) {
+    out.push(String(i).padStart(width, '0'));
+  }
+
+  $('janOutput').value = out.join(' ');
+}
+
+function makeRange() {
+  let a = Number($('fromNum').value);
+  let b = Number($('toNum').value);
+
+  if ($('fromNum').value.trim() === '' ||
+      $('toNum').value.trim() === '' ||
+      !Number.isInteger(a) || !Number.isInteger(b) ||
+      a < 0 || b < a || b > 9999 || b-a > 999) {
+    alert('Enter a valid range (maximum 1000 numbers).');
+    return;
+  }
+
+  let width = Math.max(
+    $('fromNum').value.length,
+    $('toNum').value.length, 2
+  );
+
+  let out = [];
+  for (let i = a; i <= b; i++) {
+    out.push(String(i).padStart(width, '0'));
+  }
+
+  $('rangeOutput').value = out.join(' ');
+}
+
+function makeJoda() {
+  const vals = $('jodaInput').value.trim()
+    .split(/[\s,;]+/).filter(Boolean);
+
+  if (!vals.length) {
+    alert('Enter some numbers first.');
+    return;
+  }
+
+  const pairs = [];
+  for (let i = 0; i < vals.length; i += 2) {
+    pairs.push(vals.slice(i, i + 2).join(' - '));
+  }
+
+  $('jodaOutput').value = pairs.join('\n');
+}
+
+function checkPass() {
+  let saved = localStorage.getItem('jantriLedgerPass') || '8941';
+
+  if ($('passInput').value !== saved) {
+    $('passMessage').textContent = 'Incorrect passcode.';
+    return;
+  }
+
+  const next = $('newPass').value.trim();
+
+  if (next) {
+    localStorage.setItem('jantriLedgerPass', next);
+    $('passMessage').textContent =
+      'Passcode changed on this device.';
+  } else {
+    $('passMessage').textContent = 'Passcode accepted.';
+  }
+
+  $('passInput').value = '';
+  $('newPass').value = '';
+}
+
+$('points').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addEntry();
+});
+
+$('number').addEventListener('keydown', e => {
+  if (e.key === 'Enter') $('points').focus();
+});
+
+render();
+</script>
+</body>
+</html>
+
