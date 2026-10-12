@@ -1,557 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LEDGER Login</title>
 
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #03052f;
-  color: white;
-  min-height: 100vh;
-}
-
-.login-page {
-  min-height: 100vh;
-  position: relative;
-  padding: 20px 24px;
-}
-
-.logo {
-  position: absolute;
-  top: 15%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  color: #13c900;
-}
-
-.dice {
-  font-size: 125px;
-  line-height: 1.2;
-  margin-bottom: 15px;
-}
-
-.logo h1 {
-  margin: 0;
-  font-family: Impact, sans-serif;
-  font-size: clamp(65px, 17vw, 110px);
-  font-weight: normal;
-  letter-spacing: 1px;
-}
-
-.login-form {
-  position: absolute;
-  bottom: 7%;
-  left: 24px;
-  right: 24px;
-}
-
-input {
-  display: block;
-  width: 100%;
-  height: 72px;
-  border: none;
-  outline: none;
-  border-radius: 24px;
-  padding: 0 16px;
-  font-size: 27px;
-  font-weight: bold;
-  background: #fff;
-  color: #111;
-  margin-bottom: 23px;
-}
-
-button {
-  width: 100%;
-  height: 72px;
-  border: none;
-  border-radius: 24px;
-  background: #14c000;
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:active {
-  opacity: 0.8;
-}
-
-#error {
-  color: #ff7777;
-  text-align: center;
-  margin: 0 0 12px;
-  font-size: 16px;
-}
-
-#dashboard {
-  display: none;
-  padding: 25px;
-}
-
-#dashboard h1 {
-  color: #16d000;
-  text-align: center;
-}
-
-.menu {
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 12px;
-  background: #101446;
-  font-size: 19px;
-}
-
-.menu button {
-  margin-top: 15px;
-  height: 55px;
-  font-size: 17px;
-  border-radius: 12px;
-}
-
-@media (max-height: 650px) {
-  .logo { top: 7%; }
-  .dice { font-size: 75px; }
-  .logo h1 { font-size: 65px; }
-  .login-form { bottom: 4%; }
-  input, button { height: 58px; }
-}
-</style>
-</head>
-
-<body>
-
-<div class="login-page" id="loginPage">
-
-  <div class="logo">
-    <div class="dice">🎲🎲</div>
-    <h1>LEDGER</h1>
-  </div>
-
-  <form class="login-form" id="loginForm">
-    <input
-      type="password"
-      id="passcode"
-      placeholder="Passcode"
-      inputmode="numeric"
-      autocomplete="off"
-      aria-label="Passcode"
-      required
-    >
-
-    <p id="error" role="alert"></p>
-
-    <button type="submit">PROCEED</button>
-  </form>
-
-</div>
-
-<div id="dashboard">
-  <h1>LEDGER</h1>
-
-  <div class="menu">
-    <h2>Welcome</h2>
-    <p>Login successful!</p>
-    <p>Your Ledger page is open.</p>
-
-    <button onclick="logout()">LOGOUT</button>
-  </div>
-</div>
-
-<script>
-const correctPasscode = "8941";
-
-document.getElementById("loginForm")
-.addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  const enteredPasscode =
-    document.getElementById("passcode").value;
-
-  if (enteredPasscode === correctPasscode) {
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    document.getElementById("error").textContent = "";
-  } else {
-    document.getElementById("error").textContent =
-      "Wrong Passcode! Please try again.";
-
-    document.getElementById("passcode").value = "";
-    document.getElementById("passcode").focus();
-  }
-});
-
-function logout() {
-  document.getElementById("dashboard").style.display = "none";
-  document.getElementById("loginPage").style.display = "block";
-  document.getElementById("passcode").value = "";
-}
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Number Total Calculator</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f1f5f9;
-  padding: 15px;
-  margin: 0;
-}
-.container {
-  max-width: 700px;
-  margin: auto;
-  background: white;
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px #ccc;
-}
-h2 { text-align: center; color: #123b68; }
-textarea {
-  width: 100%;
-  height: 310px;
-  box-sizing: border-box;
-  padding: 12px;
-  font-size: 15px;
-  border: 1px solid #aaa;
-  border-radius: 8px;
-}
-button {
-  width: 100%;
-  padding: 13px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 7px;
-  font-size: 17px;
-  color: white;
-  background: #1769aa;
-}
-.result {
-  background: #e8f5e9;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-  overflow-wrap: anywhere;
-}
-.line { border-bottom: 1px solid #ddd; padding: 8px 0; }
-.total { font-size: 22px; font-weight: bold; color: #08752c; }
-</style>
-</head>
-<body>
-<div class="container">
-<h2>Number Total Calculator</h2>
-
-<p>हर लाइन में नंबर लिखें और आखिरी में (वैल्यू) लगाएँ।</p>
-
-<textarea id="data">03(10
-13(25
-23 33 43 53 63 73 83 93(25
-14(450
-41(20
-28(350
-20 21 23 24 25 26 27 29(25
-79(100
-82(750
-04(400
-66(130
-73(50
-51(130
-44(300
-29 68 92(30
-45(720
-45(200
-02 03 07 08 10 13 15 16 17 19 20 24 28 29 30 31 32 34 35 36 37 38 39 40 43 44 45 46 47 48 49 50 52 53 54 56 57 58 59 63 64 67 68 69 71 72 73 78 81 82 84 86 89 90 91 92 93 94 95 97 98 99(25)</textarea>
-
-<button onclick="calculate()">Calculate Total</button>
-<button onclick="copyResult()" style="background:#16804a">Copy Result</button>
-
-<div id="result" class="result">
-हिसाब देखने के लिए Calculate Total दबाएँ।
-</div>
-</div>
-
-<script>
-function calculate() {
-  const input = document.getElementById("data").value;
-  const lines = input.split(/\n/);
-  let grandTotal = 0;
-  let output = "";
-  let validLines = 0;
-
-  lines.forEach((line, index) => {
-    line = line.trim();
-    if (!line) return;
-
-    // Bracket se pehle numbers aur baad ki value
-    const match = line.match(/^(.*?)\s*\(\s*(\d+)\s*\)?\s*$/);
-    if (!match) {
-      output += `<div class="line">${index + 1}. गलत फॉर्मेट: ${line}</div>`;
-      return;
-    }
-
-    const numbersText = match[1].trim();
-    const value = Number(match[2]);
-    const numbers = numbersText.match(/\d+/g);
-
-    if (!numbers || numbersText.replace(/[\d\s.,]+/g, "").length) {
-      output += `<div class="line">${line} — नंबर जाँचें</div>`;
-      return;
-    }
-
-    const count = numbers.length;
-    const total = count * value;
-    grandTotal += total;
-    validLines++;
-
-    output += `<div class="line">
-      ${numbers.join(" ")} (${value})<br>
-      ${count} × ${value} = <b>${total.toLocaleString("en-IN")}</b>
-    </div>`;
-  });
-
-  output += `<p>कुल सही लाइनें: ${validLines}</p>
-    <div class="total">Grand Total = ${grandTotal.toLocaleString("en-IN")}</div>`;
-
-  document.getElementById("result").innerHTML = output;
-}
-
-function copyResult() {
-  const text = document.getElementById("result").innerText;
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(
-      () => alert("Result copied!"),
-      () => fallbackCopy(text)
-    );
-  } else {
-    fallbackCopy(text);
-  }
-}
-
-function fallbackCopy(text) {
-  const area = document.createElement("textarea");
-  area.value = text;
-  document.body.appendChild(area);
-  area.select();
-  try {
-    document.execCommand("copy");
-    alert("Result copied!");
-  } catch (e) {
-    alert("Copy नहीं हुआ। Result को manually select करें।");
-  }
-  area.remove();
-}
-</script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Number Count Calculator</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f1f4f9;
-  padding: 20px;
-}
-.container {
-  max-width: 500px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px #ccc;
-}
-h2 {
-  text-align: center;
-  color: #174ea6;
-}
-textarea, button {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-  border-radius: 7px;
-}
-textarea {
-  height: 130px;
-  border: 1px solid #aaa;
-}
-button {
-  border: none;
-  background: #1769e0;
-  color: white;
-  font-weight: bold;
-}
-.result {
-  margin-top: 18px;
-  padding: 15px;
-  background: #e8f5e9;
-  border-radius: 8px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-size: 18px;
-}
-</style>
-</head>
-
-<body>
-<div class="container">
-  
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ledger</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #ededed;
-  color: #111;
-}
-
-header {
-  height: 83px;
-  background: #03072f;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 23px;
-  font-size: 25px;
-  font-weight: bold;
-}
-
-#total {
-  font-size: 21px;
-}
-
-.actions {
-  display: flex;
-  gap: 0;
-  padding: 15px 23px 11px;
-}
-
-.actions button {
-  flex: 1;
-  min-width: 0;
-  height: 44px;
-  border: 1px solid #ddd;
-  border-radius: 30px;
-  background: #03072f;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.actions button:active {
-  opacity: .75;
-}
-
-.card {
-  margin: 0 23px 12px;
-  background: white;
-  border-radius: 7px;
-  padding: 12px 17px;
-}
-
-.labels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  text-align: center;
-  color: #777;
-  font-size: 23px;
-  font-weight: bold;
-  min-height: 55px;
-  align-items: center;
-}
-
-.entry {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  align-items: center;
-}
-
-.entry input {
-  width: 100%;
-  min-width: 0;
-  border: none;
-  border-bottom: 2px solid #888;
-  border-radius: 0;
-  outline: none;
-  padding: 16px 0 5px;
-  font-size: 27px;
-  font-weight: bold;
-  color: #555;
-  background: transparent;
-}
-
-.entry input::placeholder {
-  color: #707070;
-  opacity: 1;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 13px 0;
-  border-bottom: 1px solid #ddd;
-  font-size: 21px;
-  font-weight: bold;
-}
-
-.row:last-child {
-  border-bottom: none;
-}
-
-.row span:last-child {
-  text-align: left;
-}
-
-#records {
-  margin-top: 12px;
-}
-
-#records .card {
-  margin-bottom: 8px;
-}
-
-@media (max-width: 400px) {
-  header { padding: 0 14px; }
-  .actions { padding-left: 12px; padding-right: 12px; }
-  .actions button { font-size: 14px; }
-  .card { margin-left: 12px; margin-right: 12px; }
-  .entry input { font-size: 23px; }
-}
-</style>
-</head>
-
-<body>
-  
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -571,160 +18,82 @@ body {
   margin: 0;
   background: var(--bg);
   font-family: Arial, sans-serif;
-  color: #222;
 }
-
 header {
-  height: 82px;
   background: var(--navy);
   color: white;
+  padding: 22px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 22px;
-  font-size: 25px;
+  font-size: 23px;
   font-weight: bold;
-}
-#pointsTotal { font-size: 20px; }
-
-.actions {
-  display: flex;
-  padding: 14px 22px 10px;
 }
 button {
-  border: 0;
+  border: none;
   cursor: pointer;
   font-weight: bold;
+  padding: 12px;
 }
 .dark {
   background: var(--navy);
   color: white;
-  border-radius: 28px;
-  height: 44px;
-  font-size: 17px;
+  border-radius: 25px;
   flex: 1;
-  margin-right: 1px;
 }
-.tools {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: absolute;
-  left: 22px;
-  top: 205px;
-  width: 222px;
-  z-index: 2;
-}
-.tool {
-  height: 44px;
-  border-radius: 28px;
+.green {
   background: var(--green);
   color: white;
-  font-size: 18px;
-  box-shadow: 0 2px 4px #aaa;
+  border-radius: 25px;
+  width: 100%;
+  margin: 4px 0;
 }
-#toolMenu.hidden { display: none; }
-
-.labels, .entrybox, .panel {
+.actions {
+  display: flex;
+  gap: 2px;
+  padding: 12px;
+}
+.menu {
+  width: 220px;
+  padding: 0 12px;
+}
+.hidden { display: none !important; }
+.labels, .entrybox, .record, .panel {
   background: white;
+  margin: 10px 12px;
+  padding: 14px;
   border-radius: 7px;
-  margin: 0 22px 12px;
-  padding: 12px 17px;
+}
+.labels, .entry, .record {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 .labels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   text-align: center;
-  color: #777;
-  font-size: 23px;
   font-weight: bold;
-  min-height: 55px;
-  align-items: center;
+  color: #777;
 }
-.entry {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-input, textarea, select { font: inherit; }
-
 .entry input {
   width: 100%;
   min-width: 0;
-  border: 0;
+  border: none;
   border-bottom: 2px solid #888;
-  outline: none;
-  padding: 17px 0 5px;
-  font-size: 26px;
-  font-weight: bold;
-  color: #555;
-  background: transparent;
+  padding: 12px 0;
+  font-size: 21px;
 }
-.entry input::placeholder {
-  color: #707070;
-  opacity: 1;
-}
-
-#records { margin-top: 12px; }
-
 .record {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 8px;
-  align-items: center;
-  background: white;
-  margin: 0 22px 8px;
-  padding: 13px 17px;
-  border-radius: 7px;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 19px;
   overflow-wrap: anywhere;
 }
-.smallx {
-  background: #f1eeee;
-  color: #a00;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-}
-.panel {
-  margin-top: 14px;
-  padding: 16px;
-  display: none;
-}
-.panel h3 { margin: 0 0 12px; }
-.panel textarea, .panel input {
+.panel { display: none; }
+.panel input, .panel textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #aaa;
-  border-radius: 7px;
-  margin: 5px 0 10px;
-}
-.greenbtn {
-  background: var(--green);
-  color: white;
-  border-radius: 22px;
-  padding: 12px 18px;
-  font-size: 16px;
-  margin: 4px;
-}
-.notice {
-  font-size: 13px;
-  color: #666;
-  line-height: 1.4;
+  margin: 6px 0;
 }
 @media(max-width:420px) {
-  header { padding: 0 14px; font-size: 22px; }
-  .actions { padding-left: 12px; padding-right: 12px; }
-  .dark { font-size: 14px; }
-  .labels, .entrybox, .panel {
-    margin-left: 12px;
-    margin-right: 12px;
-  }
-  .tools { left: 12px; width: min(222px,64vw); }
-  .tool { font-size: 16px; }
-  .record { margin-left: 12px; margin-right: 12px; }
-  .entry input { font-size: 22px; }
+  header { padding: 18px 12px; font-size: 20px; }
+  .menu { width: 65%; }
 }
 </style>
 </head>
@@ -732,24 +101,23 @@ input, textarea, select { font: inherit; }
 <body>
 <header>
   <span>Ledger</span>
-  <span id="pointsTotal">POINTS: 0</span>
+  <span id="total">POINTS: 0</span>
 </header>
 
 <div class="actions">
-  <button class="dark" id="lessBtn"
-    onclick="toggleTools()">LESS</button>
+  <button class="dark" onclick="toggleMenu()">MORE / LESS</button>
   <button class="dark" onclick="deleteAll()">DELETE ALL</button>
-  <button class="dark" onclick="sendTo()">SEND TO ..</button>
+  <button class="dark" onclick="sendData()">SEND TO ..</button>
 </div>
 
-<div id="toolMenu" class="tools">
-  <button class="tool" onclick="openPanel('jantriPanel')">JANTRI</button>
-  <button class="tool" onclick="openPanel('finalPanel')">FINAL JANTRI</button>
-  <button class="tool" onclick="openPanel('rangePanel')">FROM - TO</button>
-  <button class="tool" onclick="copyMessage()">MESSAGE COPY</button>
-  <button class="tool" onclick="clearInputs()">CROSS</button>
-  <button class="tool" onclick="openPanel('jodaPanel')">JODA</button>
-  <button class="tool" onclick="openPanel('passPanel')">PASSCODE</button>
+<div id="menu" class="menu">
+  <button class="green" onclick="showPanel('jantri')">JANTRI</button>
+  <button class="green" onclick="showPanel('final')">FINAL JANTRI</button>
+  <button class="green" onclick="showPanel('range')">FROM - TO</button>
+  <button class="green" onclick="copyData()">MESSAGE COPY</button>
+  <button class="green" onclick="clearFields()">CROSS</button>
+  <button class="green" onclick="showPanel('joda')">JODA</button>
+  <button class="green" onclick="showPanel('pass')">PASSCODE</button>
 </div>
 
 <div class="labels">
@@ -759,335 +127,266 @@ input, textarea, select { font: inherit; }
 
 <div class="entrybox">
   <div class="entry">
-    <input id="number" placeholder="Number" autocomplete="off">
-    <input id="points" type="number"
-      inputmode="decimal" placeholder="Points">
+    <input id="num" placeholder="Number">
+    <input id="pts" type="number" placeholder="Points">
   </div>
-  <div style="text-align:right;margin-top:12px">
-    <button class="greenbtn" onclick="addEntry()">ADD ENTRY</button>
-  </div>
+  <button class="green" onclick="addEntry()">ADD ENTRY</button>
 </div>
 
 <div id="records"></div>
 
-<section id="jantriPanel" class="panel">
-  <h3>JANTRI — Number List</h3>
-  <p class="notice">Create a numbered list for record-keeping.</p>
-  <label>Start number
-    <input id="janStart" value="00" inputmode="numeric">
-  </label>
-  <label>End number
-    <input id="janEnd" value="99" inputmode="numeric">
-  </label>
-  <button class="greenbtn" onclick="makeJantri()">CREATE LIST</button>
-  <textarea id="janOutput" rows="4"
-    placeholder="Generated list appears here"></textarea>
-  <button class="greenbtn" onclick="copyText('janOutput')">COPY LIST</button>
+<section id="jantri" class="panel">
+  <h3>JANTRI</h3>
+  <input id="jstart" value="00" placeholder="Start">
+  <input id="jend" value="99" placeholder="End">
+  <button class="green" onclick="makeRange('jstart','jend','jout')">CREATE LIST</button>
+  <textarea id="jout"></textarea>
+  <button class="green" onclick="copyField('jout')">COPY LIST</button>
 </section>
 
-<section id="finalPanel" class="panel">
-  <h3>FINAL JANTRI — Summary</h3>
-  <p class="notice">Current saved entries and total points.</p>
+<section id="final" class="panel">
+  <h3>FINAL JANTRI</h3>
   <div id="summary"></div>
-  <button class="greenbtn" onclick="copySummary()">COPY SUMMARY</button>
+  <button class="green" onclick="copyData()">COPY SUMMARY</button>
 </section>
 
-<section id="rangePanel" class="panel">
+<section id="range" class="panel">
   <h3>FROM - TO</h3>
-  <label>From
-    <input id="fromNum" placeholder="e.g. 00" inputmode="numeric">
-  </label>
-  <label>To
-    <input id="toNum" placeholder="e.g. 99" inputmode="numeric">
-  </label>
-  <button class="greenbtn" onclick="makeRange()">SHOW RANGE</button>
-  <textarea id="rangeOutput" rows="4"
-    placeholder="Range appears here"></textarea>
-  <button class="greenbtn" onclick="copyText('rangeOutput')">COPY RANGE</button>
+  <input id="rstart" placeholder="From">
+  <input id="rend" placeholder="To">
+  <button class="green" onclick="makeRange('rstart','rend','rout')">SHOW RANGE</button>
+  <textarea id="rout"></textarea>
+  <button class="green" onclick="copyField('rout')">COPY RANGE</button>
 </section>
 
-<section id="jodaPanel" class="panel">
-  <h3>JODA — Pair Formatter</h3>
-  <p class="notice">Enter numbers separated by spaces or commas.</p>
-  <textarea id="jodaInput" rows="3"
-    placeholder="Example: 12 34 56 78"></textarea>
-  <button class="greenbtn" onclick="makeJoda()">FORMAT PAIRS</button>
-  <textarea id="jodaOutput" rows="3"
-    placeholder="Pairs appear here"></textarea>
-  <button class="greenbtn" onclick="copyText('jodaOutput')">COPY PAIRS</button>
+<section id="joda" class="panel">
+  <h3>JODA</h3>
+  <textarea id="jinput" placeholder="12 34 56 78"></textarea>
+  <button class="green" onclick="makeJoda()">FORMAT PAIRS</button>
+  <textarea id="joutput"></textarea>
+  <button class="green" onclick="copyField('joutput')">COPY PAIRS</button>
 </section>
 
-<section id="passPanel" class="panel">
+<section id="pass" class="panel">
   <h3>PASSCODE</h3>
-  <p class="notice">First-time passcode: 8941. Local browser lock only.</p>
-  <input id="passInput" type="password"
-    inputmode="numeric" placeholder="Current passcode">
-  <input id="newPass" type="password"
-    inputmode="numeric" placeholder="New passcode (optional)">
-  <button class="greenbtn" onclick="checkPass()">CHECK / CHANGE</button>
-  <div id="passMessage" class="notice"></div>
+  <input id="oldpass" type="password" placeholder="Current passcode">
+  <input id="newpass" type="password" placeholder="New passcode">
+  <button class="green" onclick="changePass()">CHECK / CHANGE</button>
+  <p id="passmsg"></p>
 </section>
 
 <script>
 const $ = id => document.getElementById(id);
-let entries = [];
+let data = [];
+let editIndex = -1;
 
 try {
-  entries = JSON.parse(
-    localStorage.getItem('jantriLedgerEntries') || '[]'
-  );
-} catch(e) {
-  entries = [];
-}
+  data = JSON.parse(localStorage.getItem('ledgerData') || '[]');
+  if (!Array.isArray(data)) data = [];
+} catch(e) { data = []; }
 
 function save() {
-  try {
-    localStorage.setItem(
-      'jantriLedgerEntries', JSON.stringify(entries)
-    );
-  } catch(e) {}
+  localStorage.setItem('ledgerData', JSON.stringify(data));
 }
 
 function render() {
   $('records').innerHTML = '';
-  let total = 0;
+  let sum = 0;
 
-  entries.forEach((e, i) => {
-    total += Number(e.points) || 0;
+  data.forEach((item, i) => {
+    sum += Number(item.points) || 0;
 
     const row = document.createElement('div');
     row.className = 'record';
 
-    const n = document.createElement('span');
-    n.textContent = e.number;
+    const number = document.createElement('span');
+    number.textContent = item.number;
 
-    const p = document.createElement('span');
-    p.textContent = e.points;
+    const points = document.createElement('span');
+    points.textContent = item.points;
+
+    row.append(number, points);
+
+    const edit = document.createElement('button');
+    edit.textContent = 'EDIT';
+    edit.onclick = () => {
+      $('num').value = item.number;
+      $('pts').value = item.points;
+      editIndex = i;
+    };
 
     const del = document.createElement('button');
-    del.className = 'smallx';
-    del.textContent = '×';
-    del.title = 'Remove entry';
-
+    del.textContent = 'DELETE';
     del.onclick = () => {
-      entries.splice(i, 1);
+      data.splice(i, 1);
       save();
       render();
     };
 
-    row.append(n, p, del);
+    row.append(edit, del);
     $('records').appendChild(row);
   });
 
-  $('pointsTotal').textContent =
-    'POINTS: ' + total.toLocaleString('en-IN');
+  $('total').textContent = 'POINTS: ' + sum;
+  $('summary').textContent =
+    data.length + ' entries | Total: ' + sum;
 }
 
 function addEntry() {
-  const number = $('number').value.trim();
-  const points = $('points').value.trim();
+  const number = $('num').value.trim();
+  const points = $('pts').value.trim();
 
-  if (!number || points === '' ||
-      !Number.isFinite(Number(points))) {
-    alert('Enter Number and Points first.');
+  if (!number || points === '' || !Number.isFinite(Number(points))) {
+    alert('Enter Number and Points');
     return;
   }
 
-  entries.push({number, points: Number(points)});
+  const item = {number, points: Number(points)};
+
+  if (editIndex >= 0) data[editIndex] = item;
+  else data.push(item);
+
+  editIndex = -1;
   save();
   render();
-  clearInputs();
-  $('number').focus();
+  clearFields();
 }
 
-function clearInputs() {
-  $('number').value = '';
-  $('points').value = '';
+function clearFields() {
+  $('num').value = '';
+  $('pts').value = '';
+  editIndex = -1;
 }
 
 function deleteAll() {
-  if (!entries.length) {
-    alert('No entries to delete.');
-    return;
-  }
-
-  if (confirm('Delete all saved entries?')) {
-    entries = [];
+  if (confirm('Delete all entries?')) {
+    data = [];
     save();
     render();
   }
 }
 
-function toggleTools() {
-  const menu = $('toolMenu');
-  menu.classList.toggle('hidden');
-  $('lessBtn').textContent =
-    menu.classList.contains('hidden') ? 'MORE' : 'LESS';
+function toggleMenu() {
+  $('menu').classList.toggle('hidden');
 }
 
-function openPanel(id) {
+function showPanel(id) {
   document.querySelectorAll('.panel').forEach(
     p => p.style.display = 'none'
   );
-
   $(id).style.display = 'block';
 
-  if (id === 'finalPanel') {
-    const total = entries.reduce(
-      (s, e) => s + (Number(e.points) || 0), 0
-    );
-    $('summary').textContent =
-      entries.length + ' entries · Total points: ' +
-      total.toLocaleString('en-IN');
-  }
-
-  $(id).scrollIntoView({behavior:'smooth', block:'nearest'});
+  if (id === 'final') render();
 }
 
-function sendTo() {
-  if (!entries.length) {
-    alert('No entries to send.');
+function message() {
+  const sum = data.reduce(
+    (s, item) => s + Number(item.points), 0
+  );
+
+  return 'Ledger\n' +
+    data.map(item => item.number + ' : ' + item.points).join('\n') +
+    '\nTotal: ' + sum;
+}
+
+function copyData() {
+  copyText(message());
+}
+
+function sendData() {
+  if (!data.length) {
+    alert('No entries');
     return;
   }
-
-  const text = makeMessage();
 
   if (navigator.share) {
-    navigator.share({title:'Ledger', text}).catch(() => {});
+    navigator.share({title: 'Ledger', text: message()})
+      .catch(() => copyText(message()));
   } else {
-    copyString(text);
+    copyText(message());
   }
 }
 
-function makeMessage() {
-  const total = entries.reduce(
-    (s, e) => s + (Number(e.points) || 0), 0
-  );
-
-  return 'Ledger\nNumber\tPoints\n' +
-    entries.map(e => e.number + '\t' + e.points).join('\n') +
-    '\n\nPOINTS: ' + total;
-}
-
-function copyMessage() {
-  copyString(makeMessage());
-}
-
-function copyString(text) {
+function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(text)
-      .then(() => alert('Copied!'))
-      .catch(() => prompt('Copy text:', text));
+      .then(() => alert('Copied'))
+      .catch(() => prompt('Copy text', text));
   } else {
-    prompt('Copy text below:', text);
+    prompt('Copy text', text);
   }
 }
 
-function copyText(id) {
-  copyString($(id).value);
+function copyField(id) {
+  copyText($(id).value);
 }
 
-function copySummary() {
-  copyString(makeMessage());
-}
+function makeRange(startId, endId, outputId) {
+  const aText = $(startId).value.trim();
+  const bText = $(endId).value.trim();
+  const a = Number(aText), b = Number(bText);
 
-function makeJantri() {
-  let a = Number($('janStart').value);
-  let b = Number($('janEnd').value);
-
-  if (!Number.isInteger(a) || !Number.isInteger(b) ||
-      a < 0 || b > 9999 || b < a || b-a > 999) {
-    alert('Enter a valid range (maximum 1000 numbers).');
+  if (!aText || !bText || !Number.isInteger(a) ||
+      !Number.isInteger(b) || a < 0 || b < a ||
+      b > 9999 || b-a > 999) {
+    alert('Enter a valid range of up to 1000 numbers');
     return;
   }
 
-  const width = Math.max(
-    $('janStart').value.length,
-    $('janEnd').value.length, 2
-  );
+  const width = Math.max(aText.length, bText.length, 2);
+  const list = [];
 
-  let out = [];
   for (let i = a; i <= b; i++) {
-    out.push(String(i).padStart(width, '0'));
+    list.push(String(i).padStart(width, '0'));
   }
 
-  $('janOutput').value = out.join(' ');
-}
-
-function makeRange() {
-  let a = Number($('fromNum').value);
-  let b = Number($('toNum').value);
-
-  if ($('fromNum').value.trim() === '' ||
-      $('toNum').value.trim() === '' ||
-      !Number.isInteger(a) || !Number.isInteger(b) ||
-      a < 0 || b < a || b > 9999 || b-a > 999) {
-    alert('Enter a valid range (maximum 1000 numbers).');
-    return;
-  }
-
-  let width = Math.max(
-    $('fromNum').value.length,
-    $('toNum').value.length, 2
-  );
-
-  let out = [];
-  for (let i = a; i <= b; i++) {
-    out.push(String(i).padStart(width, '0'));
-  }
-
-  $('rangeOutput').value = out.join(' ');
+  $(outputId).value = list.join(' ');
 }
 
 function makeJoda() {
-  const vals = $('jodaInput').value.trim()
+  const nums = $('jinput').value.trim()
     .split(/[\s,;]+/).filter(Boolean);
 
-  if (!vals.length) {
-    alert('Enter some numbers first.');
+  if (!nums.length) {
+    alert('Enter numbers first');
     return;
   }
 
   const pairs = [];
-  for (let i = 0; i < vals.length; i += 2) {
-    pairs.push(vals.slice(i, i + 2).join(' - '));
+  for (let i = 0; i < nums.length; i += 2) {
+    pairs.push(nums.slice(i, i + 2).join(' - '));
   }
 
-  $('jodaOutput').value = pairs.join('\n');
+  $('joutput').value = pairs.join('\n');
 }
 
-function checkPass() {
-  let saved = localStorage.getItem('jantriLedgerPass') || '8941';
+function changePass() {
+  const current = localStorage.getItem('ledgerPass') || '8941';
 
-  if ($('passInput').value !== saved) {
-    $('passMessage').textContent = 'Incorrect passcode.';
+  if ($('oldpass').value !== current) {
+    $('passmsg').textContent = 'Incorrect passcode';
     return;
   }
 
-  const next = $('newPass').value.trim();
+  const next = $('newpass').value.trim();
 
   if (next) {
-    localStorage.setItem('jantriLedgerPass', next);
-    $('passMessage').textContent =
-      'Passcode changed on this device.';
+    if (next.length < 4) {
+      $('passmsg').textContent = 'Use at least 4 characters';
+      return;
+    }
+
+    localStorage.setItem('ledgerPass', next);
+    $('passmsg').textContent = 'Passcode changed';
   } else {
-    $('passMessage').textContent = 'Passcode accepted.';
+    $('passmsg').textContent = 'Passcode accepted';
   }
 
-  $('passInput').value = '';
-  $('newPass').value = '';
+  $('oldpass').value = '';
+  $('newpass').value = '';
 }
-
-$('points').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addEntry();
-});
-
-$('number').addEventListener('keydown', e => {
-  if (e.key === 'Enter') $('points').focus();
-});
 
 render();
 </script>
 </body>
 </html>
-
