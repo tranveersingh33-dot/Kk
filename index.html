@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -6,275 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jantri Ledger</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #eee;
-}
-header {
-  background: #03072f;
-  color: white;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-}
-button {
-  padding: 12px;
-  border: none;
-  border-radius: 20px;
-  background: #16bf00;
-  color: white;
-  font-weight: bold;
-  margin: 3px;
-}
-input, textarea {
-  padding: 12px;
-  width: 90%;
-  margin: 5px 0;
-}
-.panel, .entrybox, .record {
-  background: white;
-  padding: 12px;
-  margin: 12px;
-  border-radius: 8px;
-}
-.panel { display: none; }
-.row {
-  display: flex;
-  gap: 8px;
-}
-.row input { width: 50%; }
-#records { margin-top: 10px; }
+body{font-family:Arial;background:#eee;margin:0;padding:15px}
+h2{background:#03072f;color:white;padding:18px}
+textarea,input{width:100%;padding:12px;margin:6px 0;box-sizing:border-box}
+button{background:#16bf00;color:white;border:0;padding:12px;margin:4px;border-radius:20px}
+.card{background:white;padding:12px;margin:10px 0;border-radius:8px}
 </style>
 </head>
 <body>
 
-<header>
-  <span>Jantri Ledger</span>
-  <span id="total">POINTS: 0</span>
-</header>
+<h2>Jantri Ledger <span id="total">POINTS: 0</span></h2>
 
-<div class="entrybox">
-  <div class="row">
-    <input id="number" placeholder="Number">
-    <input id="points" type="number" placeholder="Points">
-  </div>
-  <button onclick="addEntry()">ADD ENTRY</button>
-  <button onclick="clearFields()">CROSS</button>
+<div class="card">
+  <h3>Paste Message</h3>
+  <textarea id="message" placeholder="23,45.67(10"></textarea>
+  <button onclick="submitMessage()">SUBMIT</button>
+  <button onclick="document.getElementById('message').value=''">CLEAR</button>
 </div>
 
-<div class="entrybox">
-  <button onclick="openPanel('paste')">PASTE MESSAGE</button>
-  <button onclick="openPanel('board')">JANTRI BOARD</button>
-  <button onclick="openPanel('final')">FINAL JANTRI</button>
-  <button onclick="openPanel('copy')">MESSAGE COPY</button>
+<div class="card">
+  <h3>Jantri Board</h3>
+  <div id="board"></div>
+  <button onclick="copyBoard()">MESSAGE COPY</button>
   <button onclick="deleteAll()">DELETE ALL</button>
 </div>
 
-<div id="records"></div>
-
-<section id="paste" class="panel">
-  <h3>Paste Message</h3>
-  <textarea id="message" placeholder="23,45.67(10"></textarea>
-  <button onclick="processMessage()">SUBMIT</button>
-  <button onclick="closePanel('paste')">CLOSE</button>
-  <div id="preview"></div>
-</section>
-
-<section id="board" class="panel">
-  <h3>JANTRI BOARD</h3>
-  <div id="boardResult"></div>
-  <button onclick="closePanel('board')">CLOSE</button>
-</section>
-
-<section id="final" class="panel">
-  <h3>FINAL JANTRI</h3>
-  <div id="finalResult"></div>
-  <button onclick="copyFinal()">COPY FINAL</button>
-  <button onclick="closePanel('final')">CLOSE</button>
-</section>
-
-<section id="copy" class="panel">
-  <h3>MESSAGE COPY / FIND & REPLACE</h3>
-  <textarea id="copyText" placeholder="Message"></textarea>
+<div class="card">
+  <h3>Find & Replace</h3>
   <input id="find" placeholder="Find text">
-  <input id="replace" placeholder="Replace with">
+  <input id="replace" placeholder="Replace with (blank removes)">
   <button onclick="findReplace()">FIND & REPLACE</button>
-  <button onclick="removeSymbols()">REMOVE SYMBOLS</button>
-  <button onclick="copyMessage()">COPY</button>
-  <button onclick="closePanel('copy')">CLOSE</button>
-</section>
+  <textarea id="cleaned" placeholder="Cleaned message"></textarea>
+</div>
+
+<div class="card">
+  <h3>Jodi Multiply</h3>
+  <textarea id="jodi" placeholder="23,45.67(10"></textarea>
+  <button onclick="calculateJodi()">CALCULATE</button>
+  <div id="answer"></div>
+</div>
 
 <script>
-let entries = [];
+let entries=[];
 
-try {
-  entries = JSON.parse(localStorage.getItem('jantriEntries') || '[]');
-  if (!Array.isArray(entries)) entries = [];
-} catch(e) { entries = []; }
+function parseLine(line){
+  let m=line.match(/\(\s*(\d+(?:\.\d+)?)\s*\)/);
+  if(!m) return null;
 
-function save() {
-  localStorage.setItem('jantriEntries', JSON.stringify(entries));
+  let before=line.slice(0,m.index);
+  let nums=before.match(/\d+/g)||[];
+  if(!nums.length) return null;
+
+  let multiplier=Number(m[1]);
+  if(/\b(wp|plt)\b/i.test(before)) multiplier*=2;
+
+  return {
+    text:line.trim(),
+    count:nums.length,
+    multiplier,
+    total:nums.length*multiplier
+  };
 }
 
-function render() {
-  const records = document.getElementById('records');
-  records.innerHTML = '';
-  let total = 0;
+function submitMessage(){
+  const lines=document.getElementById('message').value.split(/\r?\n/);
+  let added=0;
 
-  entries.forEach((e, i) => {
-    total += Number(e.points) || 0;
-
-    const row = document.createElement('div');
-    row.className = 'record';
-    row.textContent = e.number + ' — ' + e.points + ' points ';
-
-    const del = document.createElement('button');
-    del.textContent = 'DELETE';
-    del.onclick = () => {
-      entries.splice(i, 1);
-      save();
-      render();
-    };
-
-    row.appendChild(del);
-    records.appendChild(row);
+  lines.forEach(line=>{
+    if(!line.trim()) return;
+    const item=parseLine(line);
+    if(item){entries.push(item);added++;}
   });
 
-  document.getElementById('total').textContent =
-    'POINTS: ' + total;
-
-  document.getElementById('finalResult').textContent =
-    entries.map(e => e.number + ' = ' + e.points).join('\n') +
-    '\nGrand Total: ' + total;
-}
-
-function addEntry() {
-  const number = document.getElementById('number').value.trim();
-  const points = document.getElementById('points').value;
-
-  if (!number || points === '' || !Number.isFinite(Number(points))) {
-    alert('Number aur Points bharein.');
-    return;
-  }
-
-  entries.push({number, points: Number(points)});
-  save();
   render();
-  clearFields();
+  alert(added+' line(s) Jantri Board mein add hui.');
 }
 
-function clearFields() {
-  document.getElementById('number').value = '';
-  document.getElementById('points').value = '';
+function render(){
+  const board=document.getElementById('board');
+  board.innerHTML='';
+  let total=0;
+
+  entries.forEach((e,i)=>{
+    total+=e.total;
+    const row=document.createElement('div');
+    row.className='card';
+    row.textContent=e.text+' = '+e.count+' × '+e.multiplier+' = '+e.total;
+    board.appendChild(row);
+  });
+
+  document.getElementById('total').textContent='POINTS: '+total;
 }
 
-function deleteAll() {
-  if (confirm('Sabhi entries delete karein?')) {
-    entries = [];
-    save();
+function calculateJodi(){
+  const lines=document.getElementById('jodi').value.split(/\r?\n/);
+  const results=[];
+
+  lines.forEach(line=>{
+    const item=parseLine(line);
+    if(item) results.push(item.count+' × '+item.multiplier+' = '+item.total);
+  });
+
+  document.getElementById('answer').textContent=results.join('\n');
+}
+
+function findReplace(){
+  const find=document.getElementById('find').value;
+  const replace=document.getElementById('replace').value;
+  let text=document.getElementById('message').value;
+
+  if(find) text=text.split(find).join(replace);
+  text=text.replace(/[.,/\\;:_]+/g,' ');
+  document.getElementById('cleaned').value=text;
+}
+
+function copyBoard(){
+  const text=entries.map(e=>e.text+' = '+e.total).join('\n');
+  navigator.clipboard?.writeText(text);
+}
+
+function deleteAll(){
+  if(confirm('Delete all entries?')){
+    entries=[];
     render();
   }
 }
-
-function openPanel(id) {
-  document.querySelectorAll('.panel').forEach(
-    p => p.style.display = 'none'
-  );
-  document.getElementById(id).style.display = 'block';
-
-  if (id === 'board') {
-    document.getElementById('boardResult').textContent =
-      entries.map(e => e.number + ' (' + e.points + ')').join('\n');
-  }
-}
-
-function closePanel(id) {
-  document.getElementById(id).style.display = 'none';
-}
-
-function processMessage() {
-  const text = document.getElementById('message').value;
-  const groups = [];
-  const lines = text.split(/\n/);
-
-  lines.forEach(line => {
-    const re = /([^()\n]*?)\(\s*(\d+(?:\.\d+)?)\s*\)/g;
-    let match;
-
-    while ((match = re.exec(line)) !== null) {
-      const nums = match[1].match(/\d+/g) || [];
-      if (!nums.length) continue;
-
-      const amount = Number(match[2]);
-      groups.push({
-        nums,
-        amount,
-        total: nums.length * amount
-      });
-    }
-  });
-
-  if (!groups.length) {
-    alert('Bracket wali line nahi mili.');
-    return;
-  }
-
-  groups.forEach(g => {
-    g.nums.forEach(n => entries.push({
-      number: n,
-      points: g.amount
-    }));
-  });
-
-  document.getElementById('preview').textContent =
-    groups.map(g => g.nums.join(',') + '(' + g.amount + ') = ' +
-      g.nums.length + ' × ' + g.amount + ' = ' + g.total).join('\n');
-
-  save();
-  render();
-  openPanel('board');
-}
-
-function findReplace() {
-  const source = document.getElementById('copyText');
-  const find = document.getElementById('find').value;
-
-  if (!find) {
-    alert('Find text bharein.');
-    return;
-  }
-
-  source.value = source.value.split(find).join(
-    document.getElementById('replace').value
-  );
-}
-
-function removeSymbols() {
-  const field = document.getElementById('copyText');
-  field.value = field.value.replace(/[.,/\\'"_#@*%:;=+\-]+/g, ' ');
-}
-
-function copyMessage() {
-  copyText(document.getElementById('copyText').value);
-}
-
-function copyFinal() {
-  copyText(document.getElementById('finalResult').textContent);
-}
-
-function copyText(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text)
-      .then(() => alert('Copied'))
-      .catch(() => prompt('Copy text:', text));
-  } else {
-    prompt('Copy text:', text);
-  }
-}
-
-render();
 </script>
 </body>
 </html>
