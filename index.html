@@ -4,47 +4,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jantri Calculator</title>
+<title>Jantri Bracket Calculator</title>
 <style>
 body {
   font-family: Arial, sans-serif;
-  background: #f1f3f5;
+  background: #eef2f7;
+  margin: 0;
   padding: 15px;
 }
-textarea, button {
+.container {
+  max-width: 650px;
+  margin: auto;
+}
+h2 { color: #061b49; }
+textarea {
   width: 100%;
+  min-height: 140px;
   padding: 12px;
-  margin: 6px 0;
   box-sizing: border-box;
+  border: 1px solid #bbb;
+  border-radius: 8px;
   font-size: 16px;
+  margin-bottom: 10px;
 }
-textarea { min-height: 150px; }
 button {
-  background: #087f23;
-  color: white;
-  border: none;
-  border-radius: 6px;
-}
-#output {
-  background: white;
-  white-space: pre-wrap;
   padding: 12px;
+  border: none;
+  border-radius: 7px;
+  color: white;
+  background: #07852b;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin: 4px 0;
+}
+.buttons {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.buttons button { flex: 1; }
+.blue { background: #0868d7; }
+.red { background: #dc2626; }
+.result {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 80px;
 }
 </style>
 </head>
 <body>
+<div class="container">
 
 <h2>Jantri Bracket Calculator</h2>
 
+<label>WhatsApp message paste karein:</label>
 <textarea id="message"
-placeholder="WhatsApp message yahan paste karein"></textarea>
+placeholder="Example:&#10;23,45,67(10wp&#10;12,34(5)wp&#10;55/66/77(20)"></textarea>
 
+<div class="buttons">
 <button onclick="calculate()">CALCULATED / TOTAL</button>
-<button onclick="copyResult()">COPY RESULT</button>
-<button onclick="clearAll()">CLEAR</button>
+<button class="red" onclick="clearAll()">CLEAR</button>
+</div>
 
 <h3>Calculation Result</h3>
-<div id="output"></div>
+<div id="output" class="result">Result yahan aayega.</div>
+
+<button class="blue" onclick="copyResult()">COPY RESULT</button>
 
 <script>
 function calculate() {
@@ -52,41 +81,71 @@ function calculate() {
   const output = document.getElementById("output");
 
   let total = 0;
-  let groups = 0;
-  const results = [];
+  let groupCount = 0;
+  let results = [];
 
-  // Har bracket ke pehle wala number group padhein.
-  const regex = /([^()]*?)\(\s*(\d+)\s*\)?/g;
-  let match;
+  /*
+    Bracket examples:
+    (10
+    (10)
+    ((10))
+    (10wp
+    (10)wp
+    ((10))wp
+  */
 
-  while ((match = regex.exec(text)) !== null) {
-    const before = match[1];
+  const lines = text.split(/\r?\n/);
 
-    // Comma, dot, slash aur space se numbers alag honge.
-    const numbers = before.match(/\d+/g) || [];
-    if (numbers.length === 0) continue;
+  for (const line of lines) {
+    // Har bracket group ko alag process karein.
+    const regex =
+      /([^()]*?)\s*\({1,2}\s*(\d+)\s*\){0,2}\s*(wp)?/gi;
 
-    const multiplier = Number(match[2]);
-    const count = numbers.length;
-    const result = count * multiplier;
+    let match;
 
-    total += result;
-    groups++;
+    while ((match = regex.exec(line)) !== null) {
+      const beforeBracket = match[1];
+      const numbers = beforeBracket.match(/\d+/g) || [];
 
-    results.push(
-      numbers.join(", ") + " : " +
-      count + " × " + multiplier + " = " + result
-    );
+      if (numbers.length === 0) {
+        if (match[0].length === 0) regex.lastIndex++;
+        continue;
+      }
+
+      const count = numbers.length;
+      const originalValue = Number(match[2]);
+      const hasWP = Boolean(match[3]);
+
+      // WP ke saath bracket value double hogi.
+      const multiplier = hasWP
+        ? originalValue * 2
+        : originalValue;
+
+      const answer = count * multiplier;
+      total += answer;
+      groupCount++;
+
+      results.push(
+        numbers.join(", ") +
+        " | Count: " + count +
+        " | Bracket: " + originalValue +
+        (hasWP ? " | WP Double: " + multiplier : "") +
+        " | " + count + " × " + multiplier +
+        " = " + answer
+      );
+
+      if (match[0].length === 0) regex.lastIndex++;
+    }
   }
 
-  if (groups === 0) {
+  if (groupCount === 0) {
     output.textContent =
-      "Bracket format nahi mila. Example: 23,45.67(10";
+      "Bracket nahi mila. Example: 23,45,67(10wp";
     return;
   }
 
-  results.push("--------------------");
-  results.push("GROUPS = " + groups);
+  results.push("----------------------------");
+  results.push("TOTAL GROUPS = " + groupCount);
   results.push("GRAND TOTAL = " + total);
 
   output.textContent = results.join("\n");
@@ -94,22 +153,33 @@ function calculate() {
 
 function copyResult() {
   const text = document.getElementById("output").innerText;
-  if (!text) return alert("Pehle calculate karein.");
 
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text)
-      .then(() => alert("Result copied"))
-      .catch(() => prompt("Result copy karein:", text));
-  } else {
-    prompt("Result copy karein:", text);
+  if (!text || text === "Result yahan aayega.") {
+    alert("Pehle calculation karein.");
+    return;
   }
+
+  const area = document.createElement("textarea");
+  area.value = text;
+  document.body.appendChild(area);
+  area.select();
+
+  try {
+    document.execCommand("copy");
+    alert("Result copied!");
+  } catch (e) {
+    alert("Result ko manually copy karein.");
+  }
+
+  area.remove();
 }
 
 function clearAll() {
   document.getElementById("message").value = "";
-  document.getElementById("output").textContent = "";
+  document.getElementById("output").textContent =
+    "Result yahan aayega.";
 }
 </script>
-
+</div>
 </body>
 </html>
