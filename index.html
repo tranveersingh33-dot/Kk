@@ -413,3 +413,272 @@ button {
 <body>
 <div class="container">
   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ededed;
+  color: #111;
+}
+
+header {
+  height: 83px;
+  background: #03072f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 23px;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+#total {
+  font-size: 21px;
+}
+
+.actions {
+  display: flex;
+  gap: 0;
+  padding: 15px 23px 11px;
+}
+
+.actions button {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  background: #03072f;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.actions button:active {
+  opacity: .75;
+}
+
+.card {
+  margin: 0 23px 12px;
+  background: white;
+  border-radius: 7px;
+  padding: 12px 17px;
+}
+
+.labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+  color: #777;
+  font-size: 23px;
+  font-weight: bold;
+  min-height: 55px;
+  align-items: center;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.entry input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  border-bottom: 2px solid #888;
+  border-radius: 0;
+  outline: none;
+  padding: 16px 0 5px;
+  font-size: 27px;
+  font-weight: bold;
+  color: #555;
+  background: transparent;
+}
+
+.entry input::placeholder {
+  color: #707070;
+  opacity: 1;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 13px 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row span:last-child {
+  text-align: left;
+}
+
+#records {
+  margin-top: 12px;
+}
+
+#records .card {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 400px) {
+  header { padding: 0 14px; }
+  .actions { padding-left: 12px; padding-right: 12px; }
+  .actions button { font-size: 14px; }
+  .card { margin-left: 12px; margin-right: 12px; }
+  .entry input { font-size: 23px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <span>Ledger</span>
+  <span id="total">POINTS: 0</span>
+</header>
+
+<div class="actions">
+  <button onclick="more()">MORE</button>
+  <button onclick="deleteAll()">DELETE ALL</button>
+  <button onclick="sendTo()">SEND TO ..</button>
+</div>
+
+<div class="card labels">
+  <span>Number</span>
+  <span>Points</span>
+</div>
+
+<div class="card">
+  <div class="entry">
+    <input id="number" type="text"
+      placeholder="Number" autocomplete="off">
+    <input id="points" type="number"
+      placeholder="Points" inputmode="decimal">
+  </div>
+</div>
+
+<div id="records"></div>
+
+<script>
+let entries = [];
+
+function updateScreen() {
+  const records = document.getElementById("records");
+  records.innerHTML = "";
+  let total = 0;
+
+  entries.forEach((item, index) => {
+    total += Number(item.points) || 0;
+
+    const card = document.createElement("div");
+    card.className = "card row";
+
+    const number = document.createElement("span");
+    number.textContent = item.number;
+
+    const points = document.createElement("span");
+    points.textContent = item.points;
+
+    card.append(number, points);
+    card.title = "Tap to edit this entry";
+    card.style.cursor = "pointer";
+
+    card.onclick = () => {
+      document.getElementById("number").value = item.number;
+      document.getElementById("points").value = item.points;
+      entries.splice(index, 1);
+      updateScreen();
+    };
+
+    records.appendChild(card);
+  });
+
+  document.getElementById("total").textContent =
+    "POINTS: " + total.toLocaleString("en-IN");
+}
+
+function more() {
+  const number = document.getElementById("number").value.trim();
+  const points = document.getElementById("points").value.trim();
+
+  if (!number || points === "" || !Number.isFinite(Number(points))) {
+    alert("Please enter Number and Points");
+    return;
+  }
+
+  entries.push({ number, points: Number(points) });
+  document.getElementById("number").value = "";
+  document.getElementById("points").value = "";
+  updateScreen();
+  document.getElementById("number").focus();
+}
+
+function deleteAll() {
+  if (entries.length === 0) {
+    alert("No entries to delete");
+    return;
+  }
+
+  if (confirm("Delete all ledger entries?")) {
+    entries = [];
+    updateScreen();
+  }
+}
+
+function sendTo() {
+  if (entries.length === 0) {
+    alert("No ledger entries to send");
+    return;
+  }
+
+  let text = "Ledger\n\nNumber\tPoints\n";
+  entries.forEach(item => {
+    text += item.number + "\t" + item.points + "\n";
+  });
+
+  text += "\n" + document.getElementById("total").textContent;
+
+  if (navigator.share) {
+    navigator.share({ title: "Ledger", text }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert("Ledger copied. You can paste it anywhere."))
+      .catch(() => window.prompt("Copy your ledger:", text));
+  } else {
+    window.prompt("Copy your ledger:", text);
+  }
+}
+
+document.getElementById("points").addEventListener("keydown", event => {
+  if (event.key === "Enter") more();
+});
+
+document.getElementById("number").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    document.getElementById("points").focus();
+  }
+});
+</script>
+
+</body>
+</html>
