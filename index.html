@@ -76,7 +76,7 @@
         }
         textarea {
             resize: vertical;
-            height: 80px;
+            height: 90px;
         }
         .action-row {
             display: flex;
@@ -106,8 +106,8 @@
             background: #fff;
             border: 1px solid #ccc;
             padding: 8px;
-            min-height: 60px;
-            max-height: 140px;
+            min-height: 70px;
+            max-height: 150px;
             overflow-y: auto;
             font-size: 13px;
             border-radius: 4px;
@@ -170,13 +170,13 @@
         <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Direct Jodi paste formatting tool.')">↗ JODI PASTE</button>
         <button class="btn btn-green" onclick="openModal('Passcode', 'App security lock settings.')">🔒 PASSCODE</button>
         
-        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Message format: 23,45,67(10wp ya 12,34(5) likh kar submit karein.')">? HELP</button>
+        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Multi-bracket format supported: 23,45(10wp 67,89(5plt ya 12,34(10')">? HELP</button>
     </div>
 
     <!-- Message Paste Section -->
     <div class="card">
         <div class="card-title">Message Paste (WhatsApp / Any Text)</div>
-        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10)&#10;12,34(5)"></textarea>
+        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10wp 12,34(5plt&#10;Ya single bracket: 10,20(15"></textarea>
         <div class="action-row">
             <button class="btn btn-green" onclick="pasteText()">PASTE</button>
             <button class="btn btn-blue" onclick="processMessage()">SUBMIT</button>
@@ -231,7 +231,7 @@
 </div>
 
 <script>
-    let globalParsedData = []; // Stores calculation history items
+    let globalParsedData = [];
 
     function openModal(title, desc) {
         document.getElementById('modalTitle').innerText = title;
@@ -243,13 +243,12 @@
         document.getElementById('customModal').style.display = 'none';
     }
 
-    // Paste from clipboard
     async function pasteText() {
         try {
             const text = await navigator.clipboard.readText();
             document.getElementById('messageInput').value = text;
         } catch (err) {
-            alert("Clipboard access ki anumati nahi mili. Aap manually type ya paste kar sakte hain.");
+            alert("Clipboard access ki anumati nahi mili.");
         }
     }
 
@@ -257,7 +256,7 @@
         document.getElementById('messageInput').value = "";
     }
 
-    // Advanced Calculation & History Engine
+    // Advanced Multi-Bracket, Single-Bracket, wp/plt Supported Parser
     function processMessage() {
         let text = document.getElementById('messageInput').value.trim();
         if(!text) {
@@ -271,14 +270,24 @@
         let grandTotal = 0;
 
         lines.forEach(line => {
-            if(!line.trim()) return;
+            let cleanLine = line.trim();
+            if(!cleanLine) return;
 
-            // Check for bracket format like 23,45,67(10) or 23,45(10wp)
-            let match = line.match(/(.*?)\((.*?)\)/);
-            if(match) {
+            // Regex to find multiple bracket occurrences in a single line e.g., numbers(points)
+            // Works for closed brackets like (10) or single-side brackets like (10wp or (10
+            let regex = /([^\(\)]+?)\(([^,\)]+)(?:[\)]|$)/g;
+            let match;
+            let matchedAny = false;
+
+            while ((match = regex.exec(cleanLine)) !== null) {
+                matchedAny = true;
                 let numbersPart = match[1].trim();
-                let pointsVal = parseFloat(match[2].replace(/[^0-9.]/g, '')) || 0;
+                let rawPoints = match[2].trim();
                 
+                // Extract only numbers from points string (ignoring wp, plt, etc.)
+                let pointsVal = parseFloat(rawPoints.replace(/[^0-9.]/g, '')) || 0;
+
+                // Split numbers by comma, space, etc.
                 let nums = numbersPart.split(/[\s,]+/);
                 nums.forEach(n => {
                     let cleanNum = n.trim();
@@ -288,9 +297,11 @@
                         resultString += `Jodi: ${cleanNum} -> Points: ${pointsVal}\n`;
                     }
                 });
-            } else {
-                // Check if line contains comma or space separated numbers, assume default 10 points if no point specified
-                let parts = line.split(/[\s,]+/);
+            }
+
+            // If no brackets found in the line, handle comma/space separated text
+            if(!matchedAny) {
+                let parts = cleanLine.split(/[\s,]+/);
                 parts.forEach(p => {
                     let cleanNum = p.trim();
                     if(cleanNum !== "" && !isNaN(cleanNum)) {
@@ -304,7 +315,7 @@
         });
 
         if(globalParsedData.length === 0) {
-            document.getElementById('calculationResult').innerText = "Koi valid jodi/points nahi mila. Kripya sahi format me likhein.";
+            document.getElementById('calculationResult').innerText = "Koi valid jodi/points nahi mila. Kripya format check karein.";
             document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
             return;
         }
@@ -313,14 +324,12 @@
         document.getElementById('totalSumDisplay').innerText = `Total: ${grandTotal} Pts`;
     }
 
-    // Clear Calculator
     function clearCalc() {
         document.getElementById('calculationResult').innerText = "Calculation history aur result yahan dikhega...";
         document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
         globalParsedData = [];
     }
 
-    // Copy Result History
     function copyResult() {
         let resText = document.getElementById('calculationResult').innerText;
         if(globalParsedData.length === 0) {
@@ -341,7 +350,6 @@
         }
     }
 
-    // Delete All Data
     function deleteAllData() {
         if(confirm("Kya aap saara data aur history delete karna chahte hain?")) {
             document.getElementById('messageInput').value = "";
@@ -352,10 +360,8 @@
         }
     }
 
-    // Ledger Database Array
     let ledgerData = [];
 
-    // Add Calculated items to Ledger
     function addCalculatedToLedger() {
         if(globalParsedData.length === 0) {
             alert("Pehle message submit karke calculation result generate karein!");
@@ -368,7 +374,6 @@
         alert("Calculated history Current Ledger me add kar di gayi hai!");
     }
 
-    // Add manual entry to Ledger
     function addManualLedger() {
         let num = document.getElementById('ledgerNumber').value.trim();
         let pts = parseFloat(document.getElementById('ledgerPoints').value);
@@ -385,7 +390,6 @@
         document.getElementById('ledgerPoints').value = "";
     }
 
-    // Render Ledger Table
     function renderLedger() {
         let tbody = document.querySelector('#ledgerTable tbody');
         tbody.innerHTML = "";
@@ -406,13 +410,11 @@
         });
     }
 
-    // Delete single ledger row
     function deleteLedger(index) {
         ledgerData.splice(index, 1);
         renderLedger();
     }
 
-    // Initialize ledger view
     renderLedger();
 </script>
 
