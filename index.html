@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jantri Dashboard - Working</title>
+    <title>Jantri Calculator & Ledger App</title>
     <style>
         * {
             box-sizing: border-box;
@@ -40,9 +40,7 @@
             cursor: pointer;
             text-align: center;
         }
-        .btn:active {
-            opacity: 0.8;
-        }
+        .btn:active { opacity: 0.8; }
         .btn-dark-blue { background-color: #0d233a; }
         .btn-green { background-color: #198754; }
         .btn-blue { background-color: #0d6efd; }
@@ -64,6 +62,9 @@
             font-weight: bold;
             color: #0d233a;
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         textarea, input {
             width: 100%;
@@ -75,7 +76,7 @@
         }
         textarea {
             resize: vertical;
-            height: 70px;
+            height: 80px;
         }
         .action-row {
             display: flex;
@@ -101,8 +102,20 @@
             background-color: #0d233a;
             color: white;
         }
+        .result-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 8px;
+            min-height: 50px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 13px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            white-space: pre-line;
+        }
 
-        /* Modal Popup Styles */
+        /* Modal Popup */
         .modal {
             display: none;
             position: fixed;
@@ -124,15 +137,8 @@
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .modal-content h3 {
-            margin-bottom: 10px;
-            color: #0d233a;
-        }
-        .modal-content p {
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #555;
-        }
+        .modal-content h3 { margin-bottom: 10px; color: #0d233a; }
+        .modal-content p { margin-bottom: 15px; font-size: 14px; color: #555; }
         .close-modal {
             background-color: #dc3545;
             color: white;
@@ -148,43 +154,46 @@
 <div class="container">
     <!-- Top Action Buttons -->
     <div class="top-buttons">
-        <button class="btn btn-dark-blue full-span-1" onclick="openModal('More / Less', 'Yahan More / Less ki details show hongi.')">MORE / LESS</button>
+        <button class="btn btn-dark-blue full-span-1" onclick="openModal('More / Less', 'Yahan aap jantri ke data me plus ya minus points kar sakte hain.')">MORE / LESS</button>
         <button class="btn btn-dark-blue full-span-1" onclick="deleteAllData()">DELETE ALL</button>
-        <button class="btn btn-dark-blue full-span-1" onclick="openModal('Send To', 'Yahan se data share ya send kiya ja sakega.')">SEND TO</button>
+        <button class="btn btn-dark-blue full-span-1" onclick="openModal('Send To', 'Yahan se calculated report WhatsApp ya SMS par share ki ja sakti hai.')">SEND TO</button>
         
-        <button class="btn btn-green full-span-1" onclick="openModal('Jantri Board', 'Jantri Board ka panel yahan khulega.')">📊 JANTRI BOARD</button>
-        <button class="btn btn-green full-span-2" onclick="openModal('Final Jantri', 'Final Jantri ki report yahan dikhegi.')">📊 FINAL JANTRI</button>
+        <button class="btn btn-green full-span-1" onclick="openModal('Jantri Board', 'Jantri Board live tracking panel.')">📊 JANTRI BOARD</button>
+        <button class="btn btn-green full-span-2" onclick="openModal('Final Jantri', 'Final Jantri summary report.')">📊 FINAL JANTRI</button>
         
-        <button class="btn btn-green" onclick="openModal('From - To', 'From aur To range select karne ka option.')">⇄ FROM - TO</button>
+        <button class="btn btn-green" onclick="openModal('From - To', 'Number range filter karne ka tool.')">⇄ FROM - TO</button>
         <button class="btn btn-green" onclick="copyEntireMessage()">≡ MESSAGE COPY</button>
         
-        <button class="btn btn-green" onclick="openModal('Calculated / Total', 'Calculated aur Total summary yahan hai.')">🗂 CALCULATED / TOTAL</button>
-        <button class="btn btn-green" onclick="openModal('Find & Replace', 'Numbers ya text ko find aur replace karne ka tool.')">🔍 FIND & REPLACE</button>
+        <button class="btn btn-green" onclick="openModal('Calculated / Total', 'Total calculation history niche result box me dikh rahi hai.')">🗂 CALCULATED / TOTAL</button>
+        <button class="btn btn-green" onclick="openModal('Find & Replace', 'Specific jodi ya number ko find karke replace karein.')">🔍 FIND & REPLACE</button>
         
-        <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Jodi direct paste karne ka feature.')">↗ JODI PASTE</button>
-        <button class="btn btn-green" onclick="openModal('Passcode', 'App ka passcode ya lock set karein.')">🔒 PASSCODE</button>
+        <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Direct Jodi paste formatting tool.')">↗ JODI PASTE</button>
+        <button class="btn btn-green" onclick="openModal('Passcode', 'App security lock settings.')">🔒 PASSCODE</button>
         
-        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help & Support', 'Kisi bhi madad ke liye yahan guidelines hain.')">? HELP</button>
+        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Message format: 23,45,67(10wp ya 12,34(5 likh kar submit karein.')">? HELP</button>
     </div>
 
     <!-- Message Paste Section -->
     <div class="card">
         <div class="card-title">Message Paste (WhatsApp / Any Text)</div>
-        <textarea id="messageInput" placeholder="WhatsApp message yahan paste karein...&#10;23,45,67(10wp&#10;12,34(5)"></textarea>
+        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10&#10;12,34(5)"></textarea>
         <div class="action-row">
             <button class="btn btn-green" onclick="pasteText()">PASTE</button>
-            <button class="btn btn-blue" onclick="submitMessage()">SUBMIT</button>
+            <button class="btn btn-blue" onclick="processMessage()">SUBMIT</button>
             <button class="btn btn-red" onclick="closeMessage()">CLOSE</button>
         </div>
     </div>
 
-    <!-- Calculation Result Section -->
+    <!-- Calculation Result & History Section -->
     <div class="card">
-        <div class="card-title">Calculation Result</div>
-        <input type="text" id="calculationResult" value="Calculation result yahan aayega." readonly>
+        <div class="card-title">
+            Calculation Result & History
+            <span id="totalSumDisplay" style="font-size: 12px; color: #198754;">Total: 0 Pts</span>
+        </div>
+        <div id="calculationResult" class="result-box">Calculation history aur result yahan dikhega...</div>
         <div class="action-row">
             <button class="btn btn-green" onclick="copyResult()">COPY RESULT</button>
-            <button class="btn btn-green" onclick="addToLedgerFromCalc()">ADD TO LEDGER</button>
+            <button class="btn btn-green" onclick="addCalculatedToLedger()">ADD TO LEDGER</button>
             <button class="btn btn-dark-blue" onclick="clearCalc()">CLEAR</button>
         </div>
     </div>
@@ -192,9 +201,9 @@
     <!-- Current Ledger Section -->
     <div class="card">
         <div class="card-title">Current Ledger</div>
-        <input type="text" id="ledgerNumber" placeholder="Number / Jodi">
-        <input type="number" id="ledgerPoints" placeholder="Points">
-        <button class="btn btn-green" style="width: 100%; margin-bottom: 8px;" onclick="addLedger()">ADD</button>
+        <input type="text" id="ledgerNumber" placeholder="Number / Jodi (e.g. 23)">
+        <input type="number" id="ledgerPoints" placeholder="Points (e.g. 50)">
+        <button class="btn btn-green" style="width: 100%; margin-bottom: 8px;" onclick="addManualLedger()">ADD</button>
         
         <table id="ledgerTable">
             <thead>
@@ -212,17 +221,18 @@
     </div>
 </div>
 
-<!-- General Popup Modal -->
+<!-- Modal Popup Box -->
 <div id="customModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Title</h3>
         <p id="modalDesc">Description</p>
-        <button class="close-modal" onclick="closeModal()">OK / CLOSE</button>
+        <button class="close-modal" onclick="closeModal()">OK</button>
     </div>
 </div>
 
 <script>
-    // Modal Functions
+    let globalParsedData = []; // Stores calculation history items
+
     function openModal(title, desc) {
         document.getElementById('modalTitle').innerText = title;
         document.getElementById('modalDesc').innerText = desc;
@@ -233,96 +243,146 @@
         document.getElementById('customModal').style.display = 'none';
     }
 
-    // Delete All Data Function
-    function deleteAllData() {
-        if(confirm("Kya aap sabhi data delete karna chahte hain?")) {
-            document.getElementById('messageInput').value = "";
-            document.getElementById('calculationResult').value = "Calculation result yahan aayega.";
-            ledgerData = [];
-            renderLedger();
-            alert("Sabhi data clear kar diya gaya hai!");
-        }
-    }
-
-    // Paste Function
+    // Paste from clipboard
     async function pasteText() {
         try {
             const text = await navigator.clipboard.readText();
             document.getElementById('messageInput').value = text;
         } catch (err) {
-            alert("Clipboard permission nahi mili ya clipboard khali hai. Aap manual type ya paste kar sakte hain.");
+            alert("Clipboard access ki anumati nahi mili. Aap manually type ya paste kar sakte hain.");
         }
     }
 
-    // Submit Message Function
-    function submitMessage() {
-        let msg = document.getElementById('messageInput').value.trim();
-        if(msg === "") {
-            alert("Kripya pehle message box me kuch text likhein ya paste karein!");
-            return;
-        }
-        // Process message simulation
-        let lines = msg.split('\n').length;
-        document.getElementById('calculationResult').value = `Processed ${lines} lines successfully. Total Calculated.`;
-    }
-
-    // Close/Clear Message Box
     function closeMessage() {
         document.getElementById('messageInput').value = "";
     }
 
-    // Copy Result Function
-    function copyResult() {
-        let resText = document.getElementById('calculationResult').value;
-        navigator.clipboard.writeText(resText);
-        alert("Result clipboard par copy ho gaya hai!");
+    // Core Calculation & History Engine (Parses WhatsApp Jantri Formats)
+    function processMessage() {
+        let text = document.getElementById('messageInput').value.trim();
+        if(!text) {
+            alert("Kripya pehle message box me text daalein!");
+            return;
+        }
+
+        globalParsedData = [];
+        let lines = text.split('\n');
+        let resultString = "";
+        let grandTotal = 0;
+
+        lines.forEach(line => {
+            // Regex to find numbers and points pattern like numbers(...) 
+            let match = line.match(/(.*?)\((.*?)\)/);
+            if(match) {
+                let numbersPart = match[1].trim();
+                let pointsVal = parseFloat(match[2].replace(/[^0-9.]/g, '')) || 0;
+                
+                // Extract individual numbers separated by comma, space etc.
+                let nums = numbersPart.split(/[\s,]+/);
+                nums.forEach(n => {
+                    if(n.trim() !== "") {
+                        let pts = pointsVal;
+                        globalParsedData.push({ number: n.trim(), points: pts });
+                        grandTotal += pts;
+                        resultString += `Jodi: ${n.trim()} -> Points: ${pts}\n`;
+                    }
+                });
+            } else {
+                // If simple text without bracket, treat whole line or numbers
+                let parts = line.split(/[\s,]+/);
+                if(parts.length >= 2) {
+                    let pts = parseFloat(parts[parts.length - 1]) || 10;
+                    for(let i=0; i<parts.length-1; i++) {
+                        if(parts[i].trim() !== "") {
+                            globalParsedData.push({ number: parts[i].trim(), points: pts });
+                            grandTotal += pts;
+                            resultString += `Jodi: ${parts[i].trim()} -> Points: ${pts}\n`;
+                        }
+                    }
+                }
+            }
+        });
+
+        if(globalParsedData.length === 0) {
+            // Fallback: treat each line or comma separated as number with default 10 pts
+            let items = text.split(/[\s,]+/);
+            items.forEach(item => {
+                if(item.trim() !== "") {
+                    globalParsedData.push({ number: item.trim(), points: 10 });
+                    grandTotal += 10;
+                    resultString += `Jodi: ${item.trim()} -> Points: 10\n`;
+                }
+            });
+        }
+
+        document.getElementById('calculationResult').innerText = resultString;
+        document.getElementById('totalSumDisplay').innerText = `Total: ${grandTotal} Pts`;
     }
 
-    // Clear Calculation Box
+    // Clear Calculator
     function clearCalc() {
-        document.getElementById('calculationResult').value = "";
+        document.getElementById('calculationResult').innerText = "Calculation history aur result yahan dikhega...";
+        document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
+        globalParsedData = [];
     }
 
-    // Copy Entire Message
+    // Copy Result History
+    function copyResult() {
+        let resText = document.getElementById('calculationResult').innerText;
+        navigator.clipboard.writeText(resText);
+        alert("Calculation history copy ho gayi hai!");
+    }
+
     function copyEntireMessage() {
         let msg = document.getElementById('messageInput').value;
         if(msg) {
             navigator.clipboard.writeText(msg);
-            alert("Message copy ho gaya hai!");
+            alert("Message copy ho gaya!");
         } else {
-            alert("Copy karne ke liye koi message nahi hai!");
+            alert("Copy karne ke liye kuch nahi hai!");
         }
     }
 
-    // Ledger Data Array
+    // Delete All Data
+    function deleteAllData() {
+        if(confirm("Kya aap saara data aur history delete karna chahte hain?")) {
+            document.getElementById('messageInput').value = "";
+            clearCalc();
+            ledgerData = [];
+            renderLedger();
+            alert("Sabhi data clear kar diya gaya hai.");
+        }
+    }
+
+    // Ledger Database Array
     let ledgerData = [];
 
-    // Add Result to Ledger automatically
-    function addToLedgerFromCalc() {
-        let resText = document.getElementById('calculationResult').value;
-        if(resText.includes("yahan aayega") || resText === "") {
-            alert("Pehle valid calculation result generate karein!");
+    // Add Calculated items to Ledger
+    function addCalculatedToLedger() {
+        if(globalParsedData.length === 0) {
+            alert("Pehle message submit karke calculation result generate karein!");
             return;
         }
-        ledgerData.push({ number: "Calc-Res", points: "50" });
+        globalParsedData.forEach(item => {
+            ledgerData.push(item);
+        });
         renderLedger();
-        alert("Result Ledger me add kar diya gaya hai!");
+        alert("Calculated history Current Ledger me add kar di gayi hai!");
     }
 
-    // Add Manual Entry to Ledger
-    function addLedger() {
+    // Add manual entry to Ledger
+    function addManualLedger() {
         let num = document.getElementById('ledgerNumber').value.trim();
-        let pts = document.getElementById('ledgerPoints').value.trim();
+        let pts = parseFloat(document.getElementById('ledgerPoints').value);
 
-        if(num === "" || pts === "") {
-            alert("Kripya Number/Jodi aur Points dono enter karein!");
+        if(!num || isNaN(pts)) {
+            alert("Kripya sahi Number aur Points enter karein!");
             return;
         }
 
         ledgerData.push({ number: num, points: pts });
         renderLedger();
 
-        // Clear input fields
         document.getElementById('ledgerNumber').value = "";
         document.getElementById('ledgerPoints').value = "";
     }
@@ -331,9 +391,9 @@
     function renderLedger() {
         let tbody = document.querySelector('#ledgerTable tbody');
         tbody.innerHTML = "";
-        
+
         if(ledgerData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="color: #888;">No ledger records found</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="color: #888;">Ledger khali hai</td></tr>`;
             return;
         }
 
@@ -348,13 +408,13 @@
         });
     }
 
-    // Delete Single Ledger Item
+    // Delete single ledger row
     function deleteLedger(index) {
         ledgerData.splice(index, 1);
         renderLedger();
     }
 
-    // Initialize empty table on load
+    // Initialize ledger view
     renderLedger();
 </script>
 
