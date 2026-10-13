@@ -1,77 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screen Lock Passcode</title>
+    <title>Login Page - App</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
+        }
+        body {
             background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
-        .lock-container {
-            background: white;
+        .login-card {
+            background: #ffffff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 300px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 18px;
-        }
-        input {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            padding: 12px;
-            font-size: 18px;
+            max-width: 380px;
+        }
+        .login-card h2 {
+            margin-bottom: 20px;
+            color: #333333;
             text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
+            font-size: 14px;
         }
-        button {
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .btn-submit {
             width: 100%;
             padding: 12px;
             background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 5px;
+            color: white;
             font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s ease;
         }
-        button:hover {
+        .btn-submit:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
 
-    <div class="lock-container">
-        <h2>Enter Screen Lock Passcode</h2>
-        <input type="password" id="passcode" maxlength="4" placeholder="Enter 4-digit PIN (1988)">
-        <button onclick="checkPasscode()">Unlock</button>
+    <div class="login-card">
+        <h2>App Login</h2>
+        <form>
+            <div class="input-group">
+                <label for="passcode">Passcode / Username</label>
+                <input type="text" id="passcode" placeholder="Enter passcode" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
     </div>
-
-    <script>
-        function checkPasscode() {
-            var enteredPass = document.getElementById('passcode').value.trim();
-            if (enteredPass === "1988") {
-                alert("Access Granted!");
-                // Yahan aap agle page par redirect karne ka code likh sakte hain
-            } else {
-                alert("Incorrect Password! Try 1988");
-                document.getElementById('passcode').value = "";
-            }
-        }
-    </script>
 
 </body>
 </html>
