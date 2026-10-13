@@ -16,7 +16,6 @@
             color: #333;
             padding: 10px;
         }
-        /* Top Action Bar */
         .top-actions {
             display: flex;
             gap: 8px;
@@ -35,9 +34,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .btn-top:hover { background-color: #15294f; }
-        .btn-delete-all { background-color: #0b1d3a; }
-
-        /* Grid Menu Buttons */
         .grid-menu {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -57,8 +53,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .nav-btn:hover { background-color: #007018; }
-
-        /* Card Box Container */
         .card-box {
             background: #ffffff;
             border-radius: 8px;
@@ -104,8 +98,6 @@
         .btn-blue:hover { background-color: #005bc5; }
         .btn-red { background-color: #e11d48; }
         .btn-red:hover { background-color: #be123c; }
-
-        /* Form Inputs */
         .input-text {
             width: 100%;
             padding: 10px;
@@ -114,8 +106,6 @@
             margin-bottom: 8px;
             font-size: 14px;
         }
-
-        /* Ledger Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -159,49 +149,44 @@
 </head>
 <body>
 
-    <!-- Top Action Bar -->
     <div class="top-actions">
-        <button class="btn-top" onclick="toggleMoreLess()">MORE / LESS</button>
-        <button class="btn-top btn-delete-all" onclick="deleteAllEntries()">DELETE ALL</button>
-        <button class="btn-top" onclick="sendToApp()">SEND TO</button>
+        <button class="btn-top" onclick="alert('More / Less toggled!')">MORE / LESS</button>
+        <button class="btn-top" onclick="if(confirm('Delete all?')) { ledgerData=[]; renderLedger(); }">DELETE ALL</button>
+        <button class="btn-top" onclick="alert('Send to clicked!')">SEND TO</button>
     </div>
 
-    <!-- Grid Menu Buttons -->
     <div class="grid-menu">
-        <button class="nav-btn" onclick="alertNav('Jantri Board')">JANTRI BOARD</button>
-        <button class="nav-btn" onclick="alertNav('Final Jantri')">FINAL JANTRI</button>
-        <button class="nav-btn" onclick="alertNav('From - To')">FROM - TO</button>
-        <button class="nav-btn" onclick="alertNav('Message Copy')">MESSAGE COPY</button>
-        <button class="nav-btn" onclick="alertNav('Calculated / Total')">CALCULATED / TOTAL</button>
-        <button class="nav-btn" onclick="alertNav('Find & Replace')">FIND & REPLACE</button>
-        <button class="nav-btn" onclick="alertNav('Jodi Paste')">JODI PASTE</button>
-        <button class="nav-btn" onclick="alertNav('Passcode')">PASSCODE</button>
-        <button class="nav-btn" style="grid-column: span 2;" onclick="alertNav('Help')">HELP</button>
+        <button class="nav-btn" onclick="alert('Jantri Board')">JANTRI BOARD</button>
+        <button class="nav-btn" onclick="alert('Final Jantri')">FINAL JANTRI</button>
+        <button class="nav-btn" onclick="alert('From - To')">FROM - TO</button>
+        <button class="nav-btn" onclick="alert('Message Copy')">MESSAGE COPY</button>
+        <button class="nav-btn" onclick="alert('Calculated / Total')">CALCULATED / TOTAL</button>
+        <button class="nav-btn" onclick="alert('Find & Replace')">FIND & REPLACE</button>
+        <button class="nav-btn" onclick="alert('Jodi Paste')">JODI PASTE</button>
+        <button class="nav-btn" onclick="alert('Passcode')">PASSCODE</button>
+        <button class="nav-btn" style="grid-column: span 2;" onclick="alert('Help')">HELP</button>
     </div>
 
-    <!-- Message Paste Box -->
     <div class="card-box">
         <h3>Message Paste (WhatsApp / Any Text)</h3>
-        <textarea id="msg-input" placeholder="WhatsApp message yahan paste karein...&#10;23 45 78(20wp&#10;12 34 56(10)wp"></textarea>
+        <textarea id="msg-input" placeholder="Message paste karein...&#10;23 45 (20wp&#10;45 89(20"></textarea>
         <div class="btn-row">
             <button class="action-btn btn-green" onclick="pasteClipboard()">PASTE</button>
             <button class="action-btn btn-blue" onclick="submitMessage()">SUBMIT</button>
-            <button class="action-btn btn-red" onclick="clearMessage()">CLOSE</button>
+            <button class="action-btn btn-red" onclick="document.getElementById('msg-input').value=''">CLOSE</button>
         </div>
     </div>
 
-    <!-- Calculation Result Box -->
     <div class="card-box">
         <h3>Calculation Result</h3>
-        <textarea id="calc-result" readonly placeholder="Calculation result yahan aayega..."></textarea>
+        <textarea id="calc-result" readonly placeholder="Result yahan aayega..."></textarea>
         <div class="btn-row">
-            <button class="action-btn btn-green" onclick="copyResult()">COPY RESULT</button>
+            <button class="action-btn btn-green" onclick="navigator.clipboard.writeText(document.getElementById('calc-result').value); alert('Copied!');">COPY RESULT</button>
             <button class="action-btn btn-blue" onclick="addCalculatedToLedger()">ADD TO LEDGER</button>
-            <button class="action-btn btn-red" onclick="clearResult()">CLEAR</button>
+            <button class="action-btn btn-red" onclick="document.getElementById('calc-result').value=''">CLEAR</button>
         </div>
     </div>
 
-    <!-- Current Ledger Add Section -->
     <div class="card-box">
         <h3>Current Ledger</h3>
         <input type="text" id="ledger-num" class="input-text" placeholder="Number / Jodi">
@@ -217,28 +202,20 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="ledger-table-body">
-                <!-- Dynamic rows -->
-            </tbody>
+            <tbody id="ledger-table-body"></tbody>
         </table>
     </div>
 
-    <div class="app-footer">
-        Built with HTML to APK Builder
-    </div>
+    <div class="app-footer">Built with HTML to APK Builder</div>
 
     <script>
         let ledgerData = [];
-        let lastCalculatedPoints = 0;
-        let lastCalculatedNumber = "";
+        let lastPoints = 0;
+        let lastNumber = "";
 
-        // Message Parser supporting rules: (20wp or (20)wp
         function submitMessage() {
             let text = document.getElementById('msg-input').value.trim();
-            if(!text) {
-                alert("Kripya message paste karein!");
-                return;
-            }
+            if(!text) { alert("Kripya message dalein!"); return; }
 
             let lines = text.split('\n');
             let outputLines = [];
@@ -248,33 +225,27 @@
                 line = line.trim();
                 if(!line) return;
 
-                // Match number part and bracket part
-                // Example format: 23 45 78(20wp or 23 45 78(20)wp
                 let bracketIndex = line.indexOf('(');
                 if(bracketIndex !== -1) {
                     let numPart = line.substring(0, bracketIndex).trim();
-                    let restPart = line.substring(bracketIndex); // e.g., (20wp or (20)wp
+                    let restPart = line.substring(bracketIndex);
 
-                    // Count numbers in numPart separated by space, comma, etc.
-                    let numbers = numPart.split(/[\s,]+/).filter(Boolean);
-                    let count = numbers.length;
-
-                    // Check if 'wp' exists
-                    let hasWp = restPart.includes('wp');
+                    let count = numPart.split(/[\s,]+/).filter(Boolean).length;
                     
-                    // Extract multiplier inside bracket
+                    let hasWpOrPlt = restPart.includes('wp') || restPart.includes('plt');
+                    
                     let matchMult = restPart.match(/\d+/);
-                    let baseMultiplier = matchMult ? parseInt(matchMult[0]) : 10;
+                    let baseMult = matchMult ? parseInt(matchMult[0]) : 10;
 
-                    let adjustedMultiplier = hasWp ? baseMultiplier * 2 : baseMultiplier;
-                    let totalVal = count * adjustedMultiplier;
+                    let finalMult = hasWpOrPlt ? baseMult * 2 : baseMult;
+                    let totalVal = count * finalMult;
                     totalSum += totalVal;
 
-                    lastCalculatedNumber = numPart;
-                    lastCalculatedPoints = totalVal;
+                    lastNumber = numPart;
+                    lastPoints = totalVal;
 
-                    // Output format requirement: 23 45 78(20wp=3×40=120 or 23 45 78(20)wp=3×40=120
-                    outputLines.push(`${numPart}${restPart}=${count}×${adjustedMultiplier}=${totalVal}`);
+                    // Format matching your example: 23 45 (20wp=2×40=80
+                    outputLines.push(`${numPart}${restPart}=${count}×${finalMult}=${totalVal}`);
                 } else {
                     outputLines.push(line);
                 }
@@ -287,33 +258,18 @@
         function pasteClipboard() {
             navigator.clipboard.readText().then(clipText => {
                 document.getElementById('msg-input').value = clipText;
-            }).catch(err => {
-                document.getElementById('msg-input').value = "23 45 78(20wp";
+            }).catch(() => {
+                document.getElementById('msg-input').value = "23 45 (20wp\n45 89(20";
             });
         }
 
-        function clearMessage() {
-            document.getElementById('msg-input').value = '';
-        }
-
-        function clearResult() {
-            document.getElementById('calc-result').value = '';
-        }
-
-        function copyResult() {
-            let res = document.getElementById('calc-result');
-            res.select();
-            navigator.clipboard.writeText(res.value);
-            alert("Result copied!");
-        }
-
         function addCalculatedToLedger() {
-            if(lastCalculatedPoints > 0) {
-                ledgerData.push({ id: Date.now(), number: lastCalculatedNumber || '23 45 78', points: lastCalculatedPoints });
+            if(lastPoints > 0) {
+                ledgerData.push({ id: Date.now(), number: lastNumber, points: lastPoints });
                 renderLedger();
-                alert("Calculated result added to ledger!");
+                alert("Added to ledger!");
             } else {
-                alert("Pehle message submit karke calculate karein!");
+                alert("Pehle submit karein!");
             }
         }
 
@@ -326,7 +282,7 @@
                 document.getElementById('ledger-pts').value = '';
                 renderLedger();
             } else {
-                alert("Kripya number aur points dono bharein!");
+                alert("Sabhi fields bharein!");
             }
         }
 
@@ -340,39 +296,13 @@
                     <td>${item.number}</td>
                     <td>${item.points}</td>
                     <td>
-                        <button class="btn-table-edit" onclick="editEntry(${item.id})">EDIT</button>
-                        <button class="btn-table-del" onclick="deleteEntry(${item.id})">DEL</button>
+                        <button class="btn-table-edit" onclick="let p=prompt('Points:', ${item.points}); if(p!==null){item.points=Number(p); renderLedger();}">EDIT</button>
+                        <button class="btn-table-del" onclick="ledgerData=ledgerData.filter(i=>i.id!==${item.id}); renderLedger();">DEL</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
-
-        function deleteEntry(id) {
-            ledgerData = ledgerData.filter(i => i.id !== id);
-            renderLedger();
-        }
-
-        function editEntry(id) {
-            let item = ledgerData.find(i => i.id === id);
-            if(item) {
-                let newPts = prompt("Naye points darj karein:", item.points);
-                if(newPts !== null && !isNaN(newPts)) {
-                    item.points = Number(newPts);
-                    renderLedger();
-                }
-            }
-        }
-
-        function toggleMoreLess() { alert("More / Less toggled!"); }
-        function deleteAllEntries() {
-            if(confirm("Saari entries delete karni hain?")) {
-                ledgerData = [];
-                renderLedger();
-            }
-        }
-        function sendToApp() { alert("Data ready to send!"); }
-        function alertNav(name) { alert(`${name} clicked!`); }
     </script>
 </body>
 </html>
