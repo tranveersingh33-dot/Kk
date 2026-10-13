@@ -170,13 +170,13 @@
         <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Direct Jodi paste formatting tool.')">↗ JODI PASTE</button>
         <button class="btn btn-green" onclick="openModal('Passcode', 'App security lock settings.')">🔒 PASSCODE</button>
         
-        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Multi-bracket format supported: 23,45(10wp 67,89(5plt ya 12,34(10')">? HELP</button>
+        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Format: 23,45,67(10wp) - Har jodi ke sath 10 points multiply honge.')">? HELP</button>
     </div>
 
     <!-- Message Paste Section -->
     <div class="card">
         <div class="card-title">Message Paste (WhatsApp / Any Text)</div>
-        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10wp 12,34(5plt&#10;Ya single bracket: 10,20(15"></textarea>
+        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10wp)&#10;12,34(5)"></textarea>
         <div class="action-row">
             <button class="btn btn-green" onclick="pasteText()">PASTE</button>
             <button class="btn btn-blue" onclick="processMessage()">SUBMIT</button>
@@ -240,7 +240,7 @@
     }
 
     function closeModal() {
-        document.getElementById('customModal').style.display = 'none';
+        document.getElementById('customModal'].style.display = 'none';
     }
 
     async function pasteText() {
@@ -256,7 +256,7 @@
         document.getElementById('messageInput').value = "";
     }
 
-    // Advanced Multi-Bracket, Single-Bracket, wp/plt Supported Parser
+    // Exact Multi-Item Multiplier Parser for Brackets
     function processMessage() {
         let text = document.getElementById('messageInput').value.trim();
         if(!text) {
@@ -273,8 +273,7 @@
             let cleanLine = line.trim();
             if(!cleanLine) return;
 
-            // Regex to find multiple bracket occurrences in a single line e.g., numbers(points)
-            // Works for closed brackets like (10) or single-side brackets like (10wp or (10
+            // Regex to capture numbers before bracket and points inside bracket (supports wp, plt, single side)
             let regex = /([^\(\)]+?)\(([^,\)]+)(?:[\)]|$)/g;
             let match;
             let matchedAny = false;
@@ -284,14 +283,15 @@
                 let numbersPart = match[1].trim();
                 let rawPoints = match[2].trim();
                 
-                // Extract only numbers from points string (ignoring wp, plt, etc.)
+                // Extract points value (e.g. '10wp' -> 10)
                 let pointsVal = parseFloat(rawPoints.replace(/[^0-9.]/g, '')) || 0;
 
-                // Split numbers by comma, space, etc.
+                // Split all numbers/jodis inside the comma/space separated group
                 let nums = numbersPart.split(/[\s,]+/);
                 nums.forEach(n => {
                     let cleanNum = n.trim();
                     if(cleanNum !== "") {
+                        // Multiply points to each individual number inside the bracket group
                         globalParsedData.push({ number: cleanNum, points: pointsVal });
                         grandTotal += pointsVal;
                         resultString += `Jodi: ${cleanNum} -> Points: ${pointsVal}\n`;
@@ -299,7 +299,7 @@
                 });
             }
 
-            // If no brackets found in the line, handle comma/space separated text
+            // If line has no brackets, treat as normal numbers with default 10 points
             if(!matchedAny) {
                 let parts = cleanLine.split(/[\s,]+/);
                 parts.forEach(p => {
