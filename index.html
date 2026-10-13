@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ledger Dashboard</title>
+    <title>Ledger Dashboard - Interactive</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,8 +14,8 @@
         body {
             background-color: #f4f6f9;
             color: #333;
+            padding-bottom: 40px;
         }
-        /* Header */
         header {
             background-color: #007bff;
             color: white;
@@ -27,13 +27,11 @@
         header h1 {
             font-size: 20px;
         }
-        /* Container */
         .container {
             max-width: 900px;
             margin: 20px auto;
             padding: 0 15px;
         }
-        /* Summary Cards */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -58,18 +56,59 @@
         .amount.credit { color: #28a745; }
         .amount.debit { color: #dc3545; }
 
-        /* Ledger Table Section */
-        .ledger-section {
+        /* Form Section */
+        .form-section, .ledger-section {
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
-        .ledger-section h2 {
+        .form-section h2, .ledger-section h2 {
             font-size: 18px;
             margin-bottom: 15px;
             color: #444;
         }
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            align-self: flex-end;
+            margin-bottom: 10px;
+            height: 41px;
+        }
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -88,9 +127,11 @@
             text-align: right;
         }
         @media (max-width: 600px) {
-            th, td {
-                padding: 8px 6px;
-                font-size: 12px;
+            .form-row {
+                flex-direction: column;
+            }
+            .btn-add {
+                width: 100%;
             }
         }
     </style>
@@ -98,8 +139,8 @@
 <body>
 
     <header>
-        <h1>Ledger Manager</h1>
-        <span>User Account</span>
+        <h1>Ledger Manager App</h1>
+        <span id="current-user">User Account</span>
     </header>
 
     <div class="container">
@@ -107,17 +148,42 @@
         <div class="summary-cards">
             <div class="card">
                 <h3>Total Credit (Jama)</h3>
-                <div class="amount credit">₹ 25,400.00</div>
+                <div id="total-credit" class="amount credit">₹ 0.00</div>
             </div>
             <div class="card">
                 <h3>Total Debit (Naam)</h3>
-                <div class="amount debit">₹ 12,150.00</div>
+                <div id="total-debit" class="amount debit">₹ 0.00</div>
             </div>
+        </div>
+
+        <!-- Add Transaction Form -->
+        <div class="form-section">
+            <h2>Nayi Entry Jodein (Add Transaction)</h2>
+            <form id="transaction-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="desc">Description / Vivaran</label>
+                        <input type="text" id="desc" placeholder="Jaise: Cash Received" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type">
+                            <option value="credit">Credit (Jama +)</option>
+                            <option value="debit">Debit (Naam -)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" placeholder="0.00" required>
+                    </div>
+                    <button type="submit" class="btn-add">Add Entry</button>
+                </div>
+            </form>
         </div>
 
         <!-- Transactions Table -->
         <div class="ledger-section">
-            <h2>Recent Transactions</h2>
+            <h2>Transaction History</h2>
             <table>
                 <thead>
                     <tr>
@@ -126,31 +192,76 @@
                         <th class="text-right">Amount</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>12 Oct 2026</td>
-                        <td>Opening Balance / Cash Received</td>
-                        <td class="text-right credit">+₹ 10,000.00</td>
-                    </tr>
-                    <tr>
-                        <td>10 Oct 2026</td>
-                        <td>Office Supplies Purchase</td>
-                        <td class="text-right debit">-₹ 1,250.00</td>
-                    </tr>
-                    <tr>
-                        <td>08 Oct 2026</td>
-                        <td>Client Payment Received</td>
-                        <td class="text-right credit">+₹ 15,400.00</td>
-                    </tr>
-                    <tr>
-                        <td>05 Oct 2026</td>
-                        <td>Utility Bill Payment</td>
-                        <td class="text-right debit">-₹ 10,900.00</td>
-                    </tr>
+                <tbody id="ledger-table-body">
+                    <!-- JavaScript will insert rows here -->
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script>
+        // Sample Initial Data
+        let transactions = [
+            { date: '12 Oct 2026', desc: 'Opening Balance / Cash Received', type: 'credit', amount: 10000 },
+            { date: '10 Oct 2026', desc: 'Office Supplies Purchase', type: 'debit', amount: 1250 },
+            { date: '08 Oct 2026', desc: 'Client Payment Received', type: 'credit', amount: 15400 }
+        ];
+
+        function updateLedger() {
+            const tableBody = document.getElementById('ledger-table-body');
+            tableBody.innerHTML = '';
+            
+            let totalCredit = 0;
+            let totalDebit = 0;
+
+            transactions.forEach(item => {
+                if (item.type === 'credit') {
+                    totalCredit += Number(item.amount);
+                } else {
+                    totalDebit += Number(item.amount);
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${item.desc}</td>
+                    <td class="text-right ${item.type}">
+                        ${item.type === 'credit' ? '+' : '-'}₹ ${Number(item.amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('total-credit').innerText = `₹ ${totalCredit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-debit').innerText = `₹ ${totalDebit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        }
+
+        // Form Submit Handler
+        document.getElementById('transaction-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const desc = document.getElementById('desc').value;
+            const type = document.getElementById('type').value;
+            const amount = document.getElementById('amount').value;
+            
+            const today = new Date();
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-GB', options);
+
+            transactions.unshift({
+                date: dateStr,
+                desc: desc,
+                type: type,
+                amount: parseFloat(amount)
+            });
+
+            updateLedger();
+            this.reset();
+        });
+
+        // Initialize on load
+        updateLedger();
+    </script>
 
 </body>
 </html>
