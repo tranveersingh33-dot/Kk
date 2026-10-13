@@ -16,96 +16,54 @@
             color: #333;
             padding: 10px;
         }
-        /* Top Header */
-        .app-header {
-            background-color: #0b1d3a;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            font-size: 22px;
-            font-weight: bold;
-            border-bottom: 2px solid #1a365d;
-        }
-        .points-badge {
-            background-color: #071325;
-            padding: 5px 15px;
-            border-radius: 5px;
-            color: #fff;
-            border: 1px solid #1e3a8a;
-        }
         /* Top Action Bar */
         .top-actions {
             display: flex;
-            gap: 10px;
-            margin: 10px 0;
-            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
         }
         .btn-top {
             flex: 1;
-            min-width: 150px;
             padding: 12px;
-            background-color: #0f2b5c;
+            background-color: #0b1d3a;
             color: white;
-            border: none;
+            border: 1px solid #1e3a8a;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            transition: background 0.2s;
         }
-        .btn-top:hover { background-color: #1a365d; }
-        .btn-delete-all { background-color: #1e3a8a; }
-        .btn-delete-all:hover { background-color: #1d4ed8; }
+        .btn-top:hover { background-color: #15294f; }
+        .btn-delete-all { background-color: #0b1d3a; }
 
-        /* Main Layout Grid */
-        .main-grid {
+        /* Grid Menu Buttons */
+        .grid-menu {
             display: grid;
-            grid-template-columns: 240px 1fr 320px;
-            gap: 15px;
-        }
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Sidebar Navigation */
-        .nav-sidebar {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
+            margin-bottom: 15px;
         }
         .nav-btn {
             background-color: #00871d;
             color: white;
-            padding: 12px 15px;
+            padding: 12px 10px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
-            text-align: left;
+            text-align: center;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
+            font-size: 13px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background 0.2s;
         }
         .nav-btn:hover { background-color: #007018; }
 
-        /* Center Content Area */
-        .center-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        /* Card Box Container */
         .card-box {
             background: #ffffff;
             border-radius: 8px;
             padding: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .card-box h3 {
@@ -115,7 +73,7 @@
         }
         textarea {
             width: 100%;
-            height: 90px;
+            height: 80px;
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
@@ -124,8 +82,8 @@
         }
         .btn-row {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
         .action-btn {
             flex: 1;
@@ -138,7 +96,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            font-size: 13px;
         }
         .btn-green { background-color: #00871d; }
         .btn-green:hover { background-color: #007018; }
@@ -146,6 +104,16 @@
         .btn-blue:hover { background-color: #005bc5; }
         .btn-red { background-color: #e11d48; }
         .btn-red:hover { background-color: #be123c; }
+
+        /* Form Inputs */
+        .input-text {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
 
         /* Ledger Table */
         table {
@@ -163,320 +131,164 @@
             background-color: #f1f5f9;
             color: #475569;
         }
-        .table-footer {
-            background-color: #f8fafc;
-            padding: 10px 15px;
-            font-weight: bold;
-            text-align: right;
-            border-radius: 0 0 8px 8px;
-            color: #00871d;
-            font-size: 16px;
-        }
         .btn-table-edit {
             background-color: #00871d;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
         }
         .btn-table-del {
             background-color: #e11d48;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
         }
-
-        /* Right Sidebar */
-        .right-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .rule-box, .sub-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .rule-box h3, .sub-card h3 {
-            font-size: 15px;
-            color: #1e3a8a;
-            margin-bottom: 8px;
-        }
-        .rule-box ol {
-            padding-left: 18px;
-            font-size: 12px;
-            color: #334155;
-            line-height: 1.5;
-        }
-        .example-pre {
-            background: #f8fafc;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            margin-top: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .input-text {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-
-        /* Footer text */
         .app-footer {
             text-align: center;
             color: #94a3b8;
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 15px;
+            font-size: 11px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="app-header">
-        <span>Jantri Ledger</span>
-        <div class="points-badge" id="header-points">POINTS: 0</div>
-    </div>
-
     <!-- Top Action Bar -->
     <div class="top-actions">
-        <button class="btn-top" onclick="toggleMoreLess()">↓ MORE / LESS</button>
-        <button class="btn-top btn-delete-all" onclick="deleteAllEntries()">🗑️ DELETE ALL</button>
-        <button class="btn-top" onclick="sendToApp()">📤 SEND TO ..</button>
+        <button class="btn-top" onclick="toggleMoreLess()">MORE / LESS</button>
+        <button class="btn-top btn-delete-all" onclick="deleteAllEntries()">DELETE ALL</button>
+        <button class="btn-top" onclick="sendToApp()">SEND TO</button>
     </div>
 
-    <!-- Main Grid Container -->
-    <div class="main-grid">
+    <!-- Grid Menu Buttons -->
+    <div class="grid-menu">
+        <button class="nav-btn" onclick="alertNav('Jantri Board')">JANTRI BOARD</button>
+        <button class="nav-btn" onclick="alertNav('Final Jantri')">FINAL JANTRI</button>
+        <button class="nav-btn" onclick="alertNav('From - To')">FROM - TO</button>
+        <button class="nav-btn" onclick="alertNav('Message Copy')">MESSAGE COPY</button>
+        <button class="nav-btn" onclick="alertNav('Calculated / Total')">CALCULATED / TOTAL</button>
+        <button class="nav-btn" onclick="alertNav('Find & Replace')">FIND & REPLACE</button>
+        <button class="nav-btn" onclick="alertNav('Jodi Paste')">JODI PASTE</button>
+        <button class="nav-btn" onclick="alertNav('Passcode')">PASSCODE</button>
+        <button class="nav-btn" style="grid-column: span 2;" onclick="alertNav('Help')">HELP</button>
+    </div>
+
+    <!-- Message Paste Box -->
+    <div class="card-box">
+        <h3>Message Paste (WhatsApp / Any Text)</h3>
+        <textarea id="msg-input" placeholder="WhatsApp message yahan paste karein...&#10;23 45 78(20wp&#10;12 34 56(10)wp"></textarea>
+        <div class="btn-row">
+            <button class="action-btn btn-green" onclick="pasteClipboard()">PASTE</button>
+            <button class="action-btn btn-blue" onclick="submitMessage()">SUBMIT</button>
+            <button class="action-btn btn-red" onclick="clearMessage()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Calculation Result Box -->
+    <div class="card-box">
+        <h3>Calculation Result</h3>
+        <textarea id="calc-result" readonly placeholder="Calculation result yahan aayega..."></textarea>
+        <div class="btn-row">
+            <button class="action-btn btn-green" onclick="copyResult()">COPY RESULT</button>
+            <button class="action-btn btn-blue" onclick="addCalculatedToLedger()">ADD TO LEDGER</button>
+            <button class="action-btn btn-red" onclick="clearResult()">CLEAR</button>
+        </div>
+    </div>
+
+    <!-- Current Ledger Add Section -->
+    <div class="card-box">
+        <h3>Current Ledger</h3>
+        <input type="text" id="ledger-num" class="input-text" placeholder="Number / Jodi">
+        <input type="number" id="ledger-pts" class="input-text" placeholder="Points">
+        <button class="action-btn btn-green" style="width: 100%;" onclick="addManualLedger()">ADD</button>
         
-        <!-- Left Sidebar Navigation -->
-        <div class="nav-sidebar">
-            <button class="nav-btn" onclick="alertNav('Jantri Board')">🟩 JANTRI BOARD</button>
-            <button class="nav-btn" onclick="alertNav('Final Jantri')">🟩 FINAL JANTRI</button>
-            <button class="nav-btn" onclick="alertNav('From - To')">🟩 FROM - TO</button>
-            <button class="nav-btn" onclick="alertNav('Message Copy')">🟩 MESSAGE COPY</button>
-            <button class="nav-btn" onclick="alertNav('Calculated / Total')">🟩 CALCULATED / TOTAL</button>
-            <button class="nav-btn" onclick="alertNav('Find & Replace')">🟩 FIND & REPLACE</button>
-            <button class="nav-btn" onclick="alertNav('Jodi Paste')">🟩 JODI PASTE</button>
-            <button class="nav-btn" onclick="alertNav('Passcode')">🟩 PASSCODE</button>
-            <button class="nav-btn" onclick="alertNav('Help')">🟩 HELP</button>
-        </div>
-
-        <!-- Center Content -->
-        <div class="center-content">
-            
-            <!-- Message Paste Box -->
-            <div class="card-box">
-                <h3>Message Paste (WhatsApp / Any Text)</h3>
-                <textarea id="msg-input" placeholder="Yahan WhatsApp message paste karein (e.g. 23,45,67(10)..."></textarea>
-                <div class="btn-row">
-                    <button class="action-btn btn-green" onclick="pasteClipboard()">📋 PASTE</button>
-                    <button class="action-btn btn-blue" onclick="submitMessage()">🚀 SUBMIT</button>
-                    <button class="action-btn btn-red" onclick="clearMessage()">❌ CLOSE</button>
-                </div>
-            </div>
-
-            <!-- Calculation Result Box -->
-            <div class="card-box">
-                <h3>Calculation Result</h3>
-                <textarea id="calc-result" readonly placeholder="Calculation ka result yahan show hoga..."></textarea>
-                <div class="btn-row">
-                    <button class="action-btn btn-green" onclick="copyResult()">📋 COPY RESULT</button>
-                    <button class="action-btn btn-blue" onclick="addCalculatedToLedger()">➕ ADD TO LEDGER</button>
-                    <button class="action-btn btn-red" onclick="clearResult()">🔄 CLEAR</button>
-                </div>
-            </div>
-
-            <!-- Current Ledger Table -->
-            <div class="card-box" style="padding: 0; overflow: hidden;">
-                <div style="padding: 15px 15px 5px 15px;">
-                    <h3>Current Ledger</h3>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Number</th>
-                            <th>Points</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ledger-table-body">
-                        <!-- Dynamic rows inserted here -->
-                    </tbody>
-                </table>
-                <div class="table-footer" id="total-points-footer">Total Points: 0</div>
-            </div>
-
-            <!-- Final Jantri Summary -->
-            <div class="card-box">
-                <h3>Final Jantri Summary</h3>
-                <div style="font-size: 14px; margin-bottom: 10px; color: #475569;">
-                    Total Entries: <span id="summary-entries">0</span><br>
-                    Grand Total: <span id="summary-grand" style="font-weight: bold; color: #00871d;">0</span>
-                </div>
-                <button class="action-btn btn-green" onclick="copyFinalJantri()">📋 COPY FINAL JANTRI</button>
-            </div>
-
-        </div>
-
-        <!-- Right Sidebar -->
-        <div class="right-sidebar">
-            
-            <!-- Calculation Rules -->
-            <div class="rule-box">
-                <h3>Calculation Rules</h3>
-                <ol>
-                    <li>Bracket ke pehle wale sabhi numbers ko count kiya jayega.</li>
-                    <li>Bracket ke andar di gayi value se multiply kiya jayega.</li>
-                    <li>Agar bracket ke baad "wp" likha ho to bracket value double ho jayegi.</li>
-                    <li>Single ( ) ya double (( )) dono bracket valid hain.</li>
-                    <li>Saare groups ka total hi final total hoga.</li>
-                </ol>
-                <div class="example-pre">
-                    Example:<br>
-                    23,45,67(10 = 3 x 10 = 30<br>
-                    23,45,67(10wp = 3 x 20 = 60<br>
-                    Total = 180
-                </div>
-            </div>
-
-            <!-- Find & Replace -->
-            <div class="sub-card">
-                <h3>Find & Replace</h3>
-                <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Text, Dot, Slash, Comma etc. ko remove ya replace karne ke liye:</div>
-                <input type="text" id="find-val" class="input-text" placeholder="Find...">
-                <input type="text" id="replace-val" class="input-text" placeholder="Replace...">
-                <button class="action-btn btn-green" style="width: 100%;" onclick="applyFindReplace()">🔄 REPLACE</button>
-            </div>
-
-            <!-- Jodi Paste -->
-            <div class="sub-card">
-                <h3>Jodi Paste</h3>
-                <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Numbers ko jodo me paste karein:</div>
-                <textarea id="jodi-input" style="height: 60px;" placeholder="Example: 23 45 67 89"></textarea>
-                <button class="action-btn btn-green" style="width: 100%; margin-top: 8px;" onclick="formatJodi()">🔗 FORMAT JODI</button>
-            </div>
-
-            <!-- Passcode -->
-            <div class="sub-card">
-                <h3>Passcode</h3>
-                <div style="font-size: 12px; color: #334155; margin-bottom: 8px;">Default Passcode: <span id="passcode-display" style="font-weight: bold;">8941</span></div>
-                <button class="action-btn btn-green" style="width: 100%;" onclick="changePasscode()">🔒 CHANGE PASSCODE</button>
-            </div>
-
-        </div>
-
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Number</th>
+                    <th>Points</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ledger-table-body">
+                <!-- Dynamic rows -->
+            </tbody>
+        </table>
     </div>
 
     <div class="app-footer">
-        Jantri Ledger | Calculate • Save • Share
+        Built with HTML to APK Builder
     </div>
 
     <script>
-        // Initial Ledger Data matching screenshot style
-        let ledgerData = [
-            { id: 1, number: '23,45,67', points: 10 },
-            { id: 2, number: '12,34,56', points: 5 },
-            { id: 3, number: '78,90,12', points: 20 },
-            { id: 4, number: '34,56,78', points: 15 },
-            { id: 5, number: '90,12,34', points: 10 }
-        ];
+        let ledgerData = [];
+        let lastCalculatedPoints = 0;
+        let lastCalculatedNumber = "";
 
-        let currentPasscode = "8941";
-
-        function renderLedger() {
-            const tbody = document.getElementById('ledger-table-body');
-            tbody.innerHTML = '';
-            let totalPoints = 0;
-
-            ledgerData.forEach((item, index) => {
-                totalPoints += Number(item.points);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${item.number}</td>
-                    <td>${item.points}</td>
-                    <td>
-                        <button class="btn-table-edit" onclick="editEntry(${item.id})">EDIT</button>
-                        <button class="btn-table-del" onclick="deleteEntry(${item.id})">DEL</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('header-points').innerText = `POINTS: ${totalPoints}`;
-            document.getElementById('total-points-footer').innerText = `Total Points: ${totalPoints}`;
-            document.getElementById('summary-entries').innerText = ledgerData.length;
-            document.getElementById('summary-grand').innerText = totalPoints;
-        }
-
-        // Top Action Buttons
-        function toggleMoreLess() {
-            alert("More / Less options toggled!");
-        }
-
-        function deleteAllEntries() {
-            if(confirm("Kya aap saari entries delete karna chahte hain?")) {
-                ledgerData = [];
-                renderLedger();
-                document.getElementById('calc-result').value = "";
-            }
-        }
-
-        function sendToApp() {
-            alert("Data successfully prepared to send!");
-        }
-
-        // Navigation Sidebar Alerts
-        function alertNav(name) {
-            alert(`${name} screen/feature opened.`);
-        }
-
-        // Message Parser / Submit Logic based on rules
+        // Message Parser supporting rules: (20wp or (20)wp
         function submitMessage() {
-            const text = document.getElementById('msg-input').value.trim();
+            let text = document.getElementById('msg-input').value.trim();
             if(!text) {
                 alert("Kripya message paste karein!");
                 return;
             }
 
-            // Simple parser simulation matching Jantri rules
-            let resultText = "Parsed Calculation:\n";
-            let calculatedPoints = 0;
-            let numbersFound = text.match(/[\d,]+/g) || ["23,45,67"];
-            let numCount = numbersFound.length > 0 ? numbersFound[0].split(',').length : 3;
-            
-            // Check for bracket multiplier and 'wp'
-            let multiplier = 10;
-            if(text.includes('wp')) multiplier = 20;
-            let bracketMatch = text.match(/\((\d+)\)/);
-            if(bracketMatch) {
-                multiplier = parseInt(bracketMatch[1]);
-                if(text.includes('wp')) multiplier *= 2;
-            }
+            let lines = text.split('\n');
+            let outputLines = [];
+            let totalSum = 0;
 
-            calculatedPoints = numCount * multiplier;
-            resultText += `${numbersFound[0]} (${multiplier} = ${numCount} x ${multiplier} = ${calculatedPoints}\nTotal = ${calculatedPoints}`;
-            
-            document.getElementById('calc-result').value = resultText;
+            lines.forEach(line => {
+                line = line.trim();
+                if(!line) return;
+
+                // Match number part and bracket part
+                // Example format: 23 45 78(20wp or 23 45 78(20)wp
+                let bracketIndex = line.indexOf('(');
+                if(bracketIndex !== -1) {
+                    let numPart = line.substring(0, bracketIndex).trim();
+                    let restPart = line.substring(bracketIndex); // e.g., (20wp or (20)wp
+
+                    // Count numbers in numPart separated by space, comma, etc.
+                    let numbers = numPart.split(/[\s,]+/).filter(Boolean);
+                    let count = numbers.length;
+
+                    // Check if 'wp' exists
+                    let hasWp = restPart.includes('wp');
+                    
+                    // Extract multiplier inside bracket
+                    let matchMult = restPart.match(/\d+/);
+                    let baseMultiplier = matchMult ? parseInt(matchMult[0]) : 10;
+
+                    let adjustedMultiplier = hasWp ? baseMultiplier * 2 : baseMultiplier;
+                    let totalVal = count * adjustedMultiplier;
+                    totalSum += totalVal;
+
+                    lastCalculatedNumber = numPart;
+                    lastCalculatedPoints = totalVal;
+
+                    // Output format requirement: 23 45 78(20wp=3×40=120 or 23 45 78(20)wp=3×40=120
+                    outputLines.push(`${numPart}${restPart}=${count}×${adjustedMultiplier}=${totalVal}`);
+                } else {
+                    outputLines.push(line);
+                }
+            });
+
+            outputLines.push(`Total = ${totalSum}`);
+            document.getElementById('calc-result').value = outputLines.join('\n');
         }
 
         function pasteClipboard() {
             navigator.clipboard.readText().then(clipText => {
                 document.getElementById('msg-input').value = clipText;
             }).catch(err => {
-                document.getElementById('msg-input').value = "23,45,67(10)";
+                document.getElementById('msg-input').value = "23 45 78(20wp";
             });
         }
 
@@ -489,30 +301,62 @@
         }
 
         function copyResult() {
-            const res = document.getElementById('calc-result');
+            let res = document.getElementById('calc-result');
             res.select();
             navigator.clipboard.writeText(res.value);
-            alert("Result copied to clipboard!");
+            alert("Result copied!");
         }
 
         function addCalculatedToLedger() {
-            const newNum = "56,78,90";
-            const newPts = 25;
-            ledgerData.push({ id: Date.now(), number: newNum, points: newPts });
-            renderLedger();
-            alert("Calculated entry added to ledger successfully!");
+            if(lastCalculatedPoints > 0) {
+                ledgerData.push({ id: Date.now(), number: lastCalculatedNumber || '23 45 78', points: lastCalculatedPoints });
+                renderLedger();
+                alert("Calculated result added to ledger!");
+            } else {
+                alert("Pehle message submit karke calculate karein!");
+            }
         }
 
-        // Ledger Operations
+        function addManualLedger() {
+            let num = document.getElementById('ledger-num').value.trim();
+            let pts = document.getElementById('ledger-pts').value.trim();
+            if(num && pts) {
+                ledgerData.push({ id: Date.now(), number: num, points: Number(pts) });
+                document.getElementById('ledger-num').value = '';
+                document.getElementById('ledger-pts').value = '';
+                renderLedger();
+            } else {
+                alert("Kripya number aur points dono bharein!");
+            }
+        }
+
+        function renderLedger() {
+            let tbody = document.getElementById('ledger-table-body');
+            tbody.innerHTML = '';
+            ledgerData.forEach((item, index) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.number}</td>
+                    <td>${item.points}</td>
+                    <td>
+                        <button class="btn-table-edit" onclick="editEntry(${item.id})">EDIT</button>
+                        <button class="btn-table-del" onclick="deleteEntry(${item.id})">DEL</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function deleteEntry(id) {
-            ledgerData = ledgerData.filter(item => item.id !== id);
+            ledgerData = ledgerData.filter(i => i.id !== id);
             renderLedger();
         }
 
         function editEntry(id) {
-            const item = ledgerData.find(i => i.id === id);
+            let item = ledgerData.find(i => i.id === id);
             if(item) {
-                const newPts = prompt("Naye points darj karein:", item.points);
+                let newPts = prompt("Naye points darj karein:", item.points);
                 if(newPts !== null && !isNaN(newPts)) {
                     item.points = Number(newPts);
                     renderLedger();
@@ -520,49 +364,15 @@
             }
         }
 
-        function copyFinalJantri() {
-            let summaryText = `Final Jantri Summary\nTotal Entries: ${ledgerData.length}\nGrand Total: ${document.getElementById('summary-grand').innerText}`;
-            navigator.clipboard.writeText(summaryText);
-            alert("Final Jantri summary copied!");
-        }
-
-        // Find & Replace Feature
-        function applyFindReplace() {
-            const findText = document.getElementById('find-val').value;
-            const replaceText = document.getElementById('replace-val').value;
-            let msgBox = document.getElementById('msg-input');
-            if(findText) {
-                msgBox.value = msgBox.value.replaceAll(findText, replaceText);
-                alert("Find & Replace applied!");
-            } else {
-                alert("Kripya 'Find' mein text daalein.");
+        function toggleMoreLess() { alert("More / Less toggled!"); }
+        function deleteAllEntries() {
+            if(confirm("Saari entries delete karni hain?")) {
+                ledgerData = [];
+                renderLedger();
             }
         }
-
-        // Jodi Paste Feature
-        function formatJodi() {
-            let jodiBox = document.getElementById('jodi-input');
-            if(jodiBox.value.trim()) {
-                let formatted = jodiBox.value.trim().split(/\s+/).join(',');
-                document.getElementById('msg-input').value = formatted;
-                alert("Jodi formatted and sent to message box!");
-            } else {
-                alert("Kripya jodi numbers enter karein.");
-            }
-        }
-
-        // Passcode Feature
-        function changePasscode() {
-            let newPass = prompt("Naya Passcode enter karein:", currentPasscode);
-            if(newPass && newPass.trim() !== "") {
-                currentPasscode = newPass.trim();
-                document.getElementById('passcode-display').innerText = currentPasscode;
-                alert("Passcode successfully updated!");
-            }
-        }
-
-        // Initial render on load
-        renderLedger();
+        function sendToApp() { alert("Data ready to send!"); }
+        function alertNav(name) { alert(`${name} clicked!`); }
     </script>
 </body>
 </html>
