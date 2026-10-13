@@ -106,8 +106,8 @@
             background: #fff;
             border: 1px solid #ccc;
             padding: 8px;
-            min-height: 50px;
-            max-height: 120px;
+            min-height: 60px;
+            max-height: 140px;
             overflow-y: auto;
             font-size: 13px;
             border-radius: 4px;
@@ -170,13 +170,13 @@
         <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Direct Jodi paste formatting tool.')">↗ JODI PASTE</button>
         <button class="btn btn-green" onclick="openModal('Passcode', 'App security lock settings.')">🔒 PASSCODE</button>
         
-        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Message format: 23,45,67(10wp ya 12,34(5 likh kar submit karein.')">? HELP</button>
+        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Message format: 23,45,67(10wp ya 12,34(5) likh kar submit karein.')">? HELP</button>
     </div>
 
     <!-- Message Paste Section -->
     <div class="card">
         <div class="card-title">Message Paste (WhatsApp / Any Text)</div>
-        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10&#10;12,34(5)"></textarea>
+        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10)&#10;12,34(5)"></textarea>
         <div class="action-row">
             <button class="btn btn-green" onclick="pasteText()">PASTE</button>
             <button class="btn btn-blue" onclick="processMessage()">SUBMIT</button>
@@ -188,7 +188,7 @@
     <div class="card">
         <div class="card-title">
             Calculation Result & History
-            <span id="totalSumDisplay" style="font-size: 12px; color: #198754;">Total: 0 Pts</span>
+            <span id="totalSumDisplay" style="font-size: 12px; color: #198754; font-weight: bold;">Total: 0 Pts</span>
         </div>
         <div id="calculationResult" class="result-box">Calculation history aur result yahan dikhega...</div>
         <div class="action-row">
@@ -257,7 +257,7 @@
         document.getElementById('messageInput').value = "";
     }
 
-    // Core Calculation & History Engine (Parses WhatsApp Jantri Formats)
+    // Advanced Calculation & History Engine
     function processMessage() {
         let text = document.getElementById('messageInput').value.trim();
         if(!text) {
@@ -271,51 +271,45 @@
         let grandTotal = 0;
 
         lines.forEach(line => {
-            // Regex to find numbers and points pattern like numbers(...) 
+            if(!line.trim()) return;
+
+            // Check for bracket format like 23,45,67(10) or 23,45(10wp)
             let match = line.match(/(.*?)\((.*?)\)/);
             if(match) {
                 let numbersPart = match[1].trim();
                 let pointsVal = parseFloat(match[2].replace(/[^0-9.]/g, '')) || 0;
                 
-                // Extract individual numbers separated by comma, space etc.
                 let nums = numbersPart.split(/[\s,]+/);
                 nums.forEach(n => {
-                    if(n.trim() !== "") {
-                        let pts = pointsVal;
-                        globalParsedData.push({ number: n.trim(), points: pts });
-                        grandTotal += pts;
-                        resultString += `Jodi: ${n.trim()} -> Points: ${pts}\n`;
+                    let cleanNum = n.trim();
+                    if(cleanNum !== "") {
+                        globalParsedData.push({ number: cleanNum, points: pointsVal });
+                        grandTotal += pointsVal;
+                        resultString += `Jodi: ${cleanNum} -> Points: ${pointsVal}\n`;
                     }
                 });
             } else {
-                // If simple text without bracket, treat whole line or numbers
+                // Check if line contains comma or space separated numbers, assume default 10 points if no point specified
                 let parts = line.split(/[\s,]+/);
-                if(parts.length >= 2) {
-                    let pts = parseFloat(parts[parts.length - 1]) || 10;
-                    for(let i=0; i<parts.length-1; i++) {
-                        if(parts[i].trim() !== "") {
-                            globalParsedData.push({ number: parts[i].trim(), points: pts });
-                            grandTotal += pts;
-                            resultString += `Jodi: ${parts[i].trim()} -> Points: ${pts}\n`;
-                        }
+                parts.forEach(p => {
+                    let cleanNum = p.trim();
+                    if(cleanNum !== "" && !isNaN(cleanNum)) {
+                        let defaultPts = 10;
+                        globalParsedData.push({ number: cleanNum, points: defaultPts });
+                        grandTotal += defaultPts;
+                        resultString += `Jodi: ${cleanNum} -> Points: ${defaultPts}\n`;
                     }
-                }
+                });
             }
         });
 
         if(globalParsedData.length === 0) {
-            // Fallback: treat each line or comma separated as number with default 10 pts
-            let items = text.split(/[\s,]+/);
-            items.forEach(item => {
-                if(item.trim() !== "") {
-                    globalParsedData.push({ number: item.trim(), points: 10 });
-                    grandTotal += 10;
-                    resultString += `Jodi: ${item.trim()} -> Points: 10\n`;
-                }
-            });
+            document.getElementById('calculationResult').innerText = "Koi valid jodi/points nahi mila. Kripya sahi format me likhein.";
+            document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
+            return;
         }
 
-        document.getElementById('calculationResult').innerText = resultString;
+        document.getElementById('calculationResult').innerText = resultString.trim();
         document.getElementById('totalSumDisplay').innerText = `Total: ${grandTotal} Pts`;
     }
 
@@ -329,6 +323,10 @@
     // Copy Result History
     function copyResult() {
         let resText = document.getElementById('calculationResult').innerText;
+        if(globalParsedData.length === 0) {
+            alert("Copy karne ke liye koi history nahi hai!");
+            return;
+        }
         navigator.clipboard.writeText(resText);
         alert("Calculation history copy ho gayi hai!");
     }
