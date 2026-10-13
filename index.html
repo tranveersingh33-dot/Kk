@@ -1,308 +1,156 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jantri Ledger App</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-color: #0b1d3a;
-            color: #333;
-            padding: 10px;
-        }
-        .top-actions {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .btn-top {
-            flex: 1;
-            padding: 12px;
-            background-color: #0b1d3a;
-            color: white;
-            border: 1px solid #1e3a8a;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .btn-top:hover { background-color: #15294f; }
-        .grid-menu {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .nav-btn {
-            background-color: #00871d;
-            color: white;
-            padding: 12px 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            font-size: 13px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .nav-btn:hover { background-color: #007018; }
-        .card-box {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .card-box h3 {
-            font-size: 15px;
-            color: #1e3a8a;
-            margin-bottom: 8px;
-        }
-        textarea {
-            width: 100%;
-            height: 80px;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            resize: vertical;
-            font-size: 14px;
-        }
-        .btn-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .action-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-        }
-        .btn-green { background-color: #00871d; }
-        .btn-green:hover { background-color: #007018; }
-        .btn-blue { background-color: #0070f0; }
-        .btn-blue:hover { background-color: #005bc5; }
-        .btn-red { background-color: #e11d48; }
-        .btn-red:hover { background-color: #be123c; }
-        .input-text {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
-        th {
-            background-color: #f1f5f9;
-            color: #475569;
-        }
-        .btn-table-edit {
-            background-color: #00871d;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-        .btn-table-del {
-            background-color: #e11d48;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-        .app-footer {
-            text-align: center;
-            color: #94a3b8;
-            margin-top: 15px;
-            font-size: 11px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jantri Ledger</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf1f5;font-family:Arial,sans-serif;color:#10234c}
+header{background:#06183f;color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header h1{font-size:24px;margin:0}.top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+button{border:0;padding:12px 9px;border-radius:10px;background:#078b2c;color:#fff;font-weight:bold;font-size:14px;cursor:pointer}
+.top button{background:#06183f}.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 12px 12px}
+.menu button{border-radius:28px;min-height:52px}.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:0 12px 15px}
+main,.side{display:flex;flex-direction:column;gap:10px;min-width:0}.card{background:#fff;border:1px solid #d6e3ef;border-radius:15px;padding:14px;min-width:0}
+h2{font-size:20px;color:#06183f;margin:0 0 12px}h3{font-size:16px;margin:12px 0 7px}
+textarea,input{width:100%;padding:12px;border:1px solid #bdcbd8;border-radius:9px;font:inherit;margin:4px 0 8px;background:#fff;color:#10234c}
+textarea{min-height:125px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap}.row button{flex:1;min-width:90px}.blue{background:#087af0}.red{background:#ef3035}.dark{background:#06183f}.light{background:#e5edf6;color:#06183f}.wp-active{background:#ff9d00;color:#111}
+.result{background:#f2f6fb;border:1px solid #d6e3ef;border-radius:9px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:70px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid #e1e8ef;text-align:left;overflow-wrap:anywhere}td button{padding:7px;font-size:11px;margin:2px}.tablewrap{overflow:auto}
+.total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:8px;margin-top:10px}
+.example{background:#e7f7ed;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.8}.hidden{display:none!important}
+#boardGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:11px 2px;min-height:42px;font-size:12px}
+.special-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+#toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 18px;border-radius:22px;z-index:9;max-width:90%;text-align:center}
+footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:12px}label{display:block;font-weight:bold;margin-top:8px}
+@media(min-width:900px){.layout{grid-template-columns:190px minmax(0,1fr) 260px}.menu{display:flex;flex-direction:column;grid-column:1;grid-row:1;padding:0}.layout main{grid-column:2}.layout .side{grid-column:3}.menu button{min-height:44px}.layout{padding-top:0}}
+</style>
 </head>
 <body>
-
-    <div class="top-actions">
-        <button class="btn-top" onclick="alert('More / Less toggled!')">MORE / LESS</button>
-        <button class="btn-top" onclick="if(confirm('Delete all?')) { ledgerData=[]; renderLedger(); }">DELETE ALL</button>
-        <button class="btn-top" onclick="alert('Send to clicked!')">SEND TO</button>
-    </div>
-
-    <div class="grid-menu">
-        <button class="nav-btn" onclick="alert('Jantri Board')">JANTRI BOARD</button>
-        <button class="nav-btn" onclick="alert('Final Jantri')">FINAL JANTRI</button>
-        <button class="nav-btn" onclick="alert('From - To')">FROM - TO</button>
-        <button class="nav-btn" onclick="alert('Message Copy')">MESSAGE COPY</button>
-        <button class="nav-btn" onclick="alert('Calculated / Total')">CALCULATED / TOTAL</button>
-        <button class="nav-btn" onclick="alert('Find & Replace')">FIND & REPLACE</button>
-        <button class="nav-btn" onclick="alert('Jodi Paste')">JODI PASTE</button>
-        <button class="nav-btn" onclick="alert('Passcode')">PASSCODE</button>
-        <button class="nav-btn" style="grid-column: span 2;" onclick="alert('Help')">HELP</button>
-    </div>
-
-    <div class="card-box">
-        <h3>Message Paste (WhatsApp / Any Text)</h3>
-        <textarea id="msg-input" placeholder="Message paste karein...&#10;23 45 (20wp&#10;45 89(20"></textarea>
-        <div class="btn-row">
-            <button class="action-btn btn-green" onclick="pasteClipboard()">PASTE</button>
-            <button class="action-btn btn-blue" onclick="submitMessage()">SUBMIT</button>
-            <button class="action-btn btn-red" onclick="document.getElementById('msg-input').value=''">CLOSE</button>
-        </div>
-    </div>
-
-    <div class="card-box">
-        <h3>Calculation Result</h3>
-        <textarea id="calc-result" readonly placeholder="Result yahan aayega..."></textarea>
-        <div class="btn-row">
-            <button class="action-btn btn-green" onclick="navigator.clipboard.writeText(document.getElementById('calc-result').value); alert('Copied!');">COPY RESULT</button>
-            <button class="action-btn btn-blue" onclick="addCalculatedToLedger()">ADD TO LEDGER</button>
-            <button class="action-btn btn-red" onclick="document.getElementById('calc-result').value=''">CLEAR</button>
-        </div>
-    </div>
-
-    <div class="card-box">
-        <h3>Current Ledger</h3>
-        <input type="text" id="ledger-num" class="input-text" placeholder="Number / Jodi">
-        <input type="number" id="ledger-pts" class="input-text" placeholder="Points">
-        <button class="action-btn btn-green" style="width: 100%;" onclick="addManualLedger()">ADD</button>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Number</th>
-                    <th>Points</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="ledger-table-body"></tbody>
-        </table>
-    </div>
-
-    <div class="app-footer">Built with HTML to APK Builder</div>
-
-    <script>
-        let ledgerData = [];
-        let lastPoints = 0;
-        let lastNumber = "";
-
-        function submitMessage() {
-            let text = document.getElementById('msg-input').value.trim();
-            if(!text) { alert("Kripya message dalein!"); return; }
-
-            let lines = text.split('\n');
-            let outputLines = [];
-            let totalSum = 0;
-
-            lines.forEach(line => {
-                line = line.trim();
-                if(!line) return;
-
-                let bracketIndex = line.indexOf('(');
-                if(bracketIndex !== -1) {
-                    let numPart = line.substring(0, bracketIndex).trim();
-                    let restPart = line.substring(bracketIndex);
-
-                    let count = numPart.split(/[\s,]+/).filter(Boolean).length;
-                    
-                    let hasWpOrPlt = restPart.includes('wp') || restPart.includes('plt');
-                    
-                    let matchMult = restPart.match(/\d+/);
-                    let baseMult = matchMult ? parseInt(matchMult[0]) : 10;
-
-                    let finalMult = hasWpOrPlt ? baseMult * 2 : baseMult;
-                    let totalVal = count * finalMult;
-                    totalSum += totalVal;
-
-                    lastNumber = numPart;
-                    lastPoints = totalVal;
-
-                    // Format matching your example: 23 45 (20wp=2×40=80
-                    outputLines.push(`${numPart}${restPart}=${count}×${finalMult}=${totalVal}`);
-                } else {
-                    outputLines.push(line);
-                }
-            });
-
-            outputLines.push(`Total = ${totalSum}`);
-            document.getElementById('calc-result').value = outputLines.join('\n');
-        }
-
-        function pasteClipboard() {
-            navigator.clipboard.readText().then(clipText => {
-                document.getElementById('msg-input').value = clipText;
-            }).catch(() => {
-                document.getElementById('msg-input').value = "23 45 (20wp\n45 89(20";
-            });
-        }
-
-        function addCalculatedToLedger() {
-            if(lastPoints > 0) {
-                ledgerData.push({ id: Date.now(), number: lastNumber, points: lastPoints });
-                renderLedger();
-                alert("Added to ledger!");
-            } else {
-                alert("Pehle submit karein!");
-            }
-        }
-
-        function addManualLedger() {
-            let num = document.getElementById('ledger-num').value.trim();
-            let pts = document.getElementById('ledger-pts').value.trim();
-            if(num && pts) {
-                ledgerData.push({ id: Date.now(), number: num, points: Number(pts) });
-                document.getElementById('ledger-num').value = '';
-                document.getElementById('ledger-pts').value = '';
-                renderLedger();
-            } else {
-                alert("Sabhi fields bharein!");
-            }
-        }
-
-        function renderLedger() {
-            let tbody = document.getElementById('ledger-table-body');
-            tbody.innerHTML = '';
-            ledgerData.forEach((item, index) => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${item.number}</td>
-                    <td>${item.points}</td>
-                    <td>
-                        <button class="btn-table-edit" onclick="let p=prompt('Points:', ${item.points}); if(p!==null){item.points=Number(p); renderLedger();}">EDIT</button>
-                        <button class="btn-table-del" onclick="ledgerData=ledgerData.filter(i=>i.id!==${item.id}); renderLedger();">DEL</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    </script>
-</body>
-</html>
+<header><h1>Jantri Ledger</h1><b>POINTS: <span id="headTotal">0</span></b></header>
+<div class="top"><button onclick="toggleMenu()">MORE / LESS</button><button onclick="deleteAll()">DELETE ALL</button><button onclick="shareLedger()">SEND TO</button></div>
+<nav class="menu" id="menu">
+<button onclick="show('board')">▦ JANTRI BOARD</button><button onclick="show('final')">☷ FINAL JANTRI</button>
+<button onclick="show('range')">⇄ FROM - TO</button><button onclick="show('messageCopy')">▤ MESSAGE COPY</button>
+<button onclick="show('calc')">▦ CALCULATED / TOTAL</button><button onclick="show('find')">⌕ FIND & REPLACE</button>
+<button onclick="show('jodi')">↗ JODI PASTE</button><button onclick="show('pass')">🔒 PASSCODE</button><button onclick="show('help')">? HELP</button>
+</nav>
+<div class="layout">
+<main>
+<section class="card" id="calc"><h2>Message Paste (WhatsApp / Any Text)</h2>
+<textarea id="message" placeholder="WhatsApp message yahan paste karein...&#10;23,45,67(10wp&#10;12,34(5)"></textarea>
+<div class="row"><button onclick="pasteMessage()">PASTE</button><button class="blue" onclick="calculate()">SUBMIT / CALCULATE</button><button class="red" onclick="clearMessage()">CLOSE</button></div>
+<div class="row" style="margin-top:8px"><button id="wpToggle" class="dark" onclick="toggleWP()">WP MODE: OFF</button><span style="align-self:center;font-size:13px">WP mode ON = sabhi bracket values double</span></div>
+</section>
+<section class="card" id="calcResult"><h2>Calculation Result</h2><div id="calcOutput" class="result">Calculation result yahan aayega.</div>
+<div class="row"><button onclick="copy('calcOutput')">COPY RESULT</button><button onclick="addResults()">ADD TO LEDGER</button><button class="dark" onclick="clearCalc()">CLEAR</button></div></section>
+<section class="card" id="ledger"><h2>Current Ledger</h2><input id="entryNumber" placeholder="Number / Jodi"><input id="entryPoints" type="number" placeholder="Points">
+<button id="saveBtn" style="width:100%" onclick="saveEntry()">ADD</button>
+<div class="tablewrap"><table><thead><tr><th>No.</th><th>Number</th><th>Points</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="total">Total Points: <span id="ledgerTotal">0</span></div></section>
+<section class="card hidden" id="final"><h2>Final Jantri Summary</h2><p>Total Entries: <b id="entriesCount">0</b></p><p>Grand Total: <b id="grandTotal">0</b></p><div id="finalOutput" class="result"></div>
+<div class="row"><button onclick="buildFinal()">REFRESH FINAL</button><button onclick="copy('finalOutput')">COPY FINAL JANTRI</button><button class="blue" onclick="downloadCSV()">DOWNLOAD CSV</button></div></section>
+<section class="card hidden" id="board"><h2>Jantri Board</h2><p>Number select karein, phir points daal kar ADD SELECTED dabayein.</p>
+<div class="row"><input id="boardStart" value="00" aria-label="Board start"><input id="boardEnd" value="99" aria-label="Board end"></div>
+<div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div>
+<div id="boardGrid"></div><label>Points per number</label><input id="boardPoints" type="number" placeholder="Points"><button style="width:100%" onclick="addBoard()">ADD SELECTED</button>
+<h3>Special Number Chart</h3><div id="specialGrid" class="special-grid"></div></section>
+<section class="card hidden" id="range"><h2>From - To</h2><div class="row"><input id="from" value="00"><input id="to" value="99"></div><button onclick="makeRange()">GENERATE RANGE</button><textarea id="rangeOutput"></textarea><button onclick="copy('rangeOutput')">COPY RANGE</button></section>
+<section class="card hidden" id="messageCopy"><h2>Message Copy</h2><textarea id="original" placeholder="Message paste karein"></textarea>
+<div class="row"><input id="findText" placeholder="Find"><input id="replaceTextInput" placeholder="Replace"></div>
+<div class="row"><button onclick="replaceText()">REPLACE</button><button onclick="removeSymbols()">REMOVE SYMBOLS</button><button onclick="copy('cleanOutput')">COPY RESULT</button></div><textarea id="cleanOutput" placeholder="Result"></textarea></section>
+<section class="card hidden" id="find"><h2>Find & Replace</h2><p>Find & Replace ka tool Message Copy section mein hai.</p><button onclick="show('messageCopy')">OPEN MESSAGE COPY</button></section>
+<section class="card hidden" id="jodi"><h2>Jodi Paste</h2><textarea id="jodiInput" placeholder="23 45 67 89"></textarea><button onclick="formatJodi()">FORMAT JODI</button><textarea id="jodiOutput" placeholder="Jodi result"></textarea><input id="jodiPoints" type="number" placeholder="Points per jodi"><button style="width:100%" onclick="addJodis()">ADD JODI TO LEDGER</button></section>
+<section class="card hidden" id="pass"><h2>Passcode</h2><p>Default passcode: 8941</p><input id="oldPass" type="password" placeholder="Current passcode"><input id="newPass" type="password" placeholder="New passcode"><button onclick="changePass()">CHECK / CHANGE</button><p id="passMessage"></p></section>
+<section class="card hidden" id="help"><h2>Help</h2><p>Har bracket group calculate hota hai. Bracket se pehle ke numbers count hote hain. Bracket ke baad WP ho to value double. Ek line mein multiple brackets bhi supported hain.</p><div class="example">23,45,67(10 = 3 × 10 = 30
+23,45,67(10wp = 3 × 20 = 60
+23,45(10) 67(5) = 2 × 10 + 1 × 5 = 25
+12,34(5)wp = 2 × 10 = 20</div></section>
+</main>
+<aside class="side">
+<section class="card"><h2>Calculation Rules</h2><ol><li>Bracket se pehle ke numbers count honge.</li><li>Count × bracket value = points.</li><li>Bracket ke paas WP likha ho to value double.</li><li>WP MODE se sabhi groups double kar sakte hain.</li><li>Ek line mein multiple bracket groups supported.</li></ol><h3>Examples</h3><div class="example">23,45,67(10 = 3 × 10 = 30
+23,45,67(10wp = 3 × 20 = 60
+23,45,67(10)wp = 3 × 20 = 60
+12,34(5)wp = 2 × 10 = 20</div></section>
+<section class="card"><h2>Quick Find & Replace</h2><input id="sideFind" placeholder="Find"><input id="sideReplace" placeholder="Replace"><button style="width:100%" onclick="sideReplaceText()">REPLACE IN MESSAGE</button></section>
+<section class="card"><h2>Quick Jodi Paste</h2><textarea id="sideJodi" placeholder="23 45 67 89"></textarea><button style="width:100%" onclick="sideJodiFormat()">FORMAT JODI</button></section>
+</aside>
+</div><footer>Jantri Ledger | Calculate • Save • Share</footer><div id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[],wpMode=false;
+try{entries=JSON.parse(localStorage.getItem('jantriLedgerV5')||'[]')}catch(e){entries=[]}if(!Array.isArray(entries))entries=[];
+function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function save(){try{localStorage.setItem('jantriLedgerV5',JSON.stringify(entries))}catch(e){notify('Storage full: CSV download karein')}}
+function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
+function render(){$('headTotal').textContent=total();$('ledgerTotal').textContent=total();$('rows').innerHTML='';
+entries.forEach((e,i)=>{let tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE';$('ledger').scrollIntoView({behavior:'smooth'})};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render()}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal()}
+function saveEntry(){let n=$('entryNumber').value.trim(),p=$('entryPoints').value;if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');let e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);if(i>=0)entries[i]=e;else entries.push(e);editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';save();render();notify('Entry saved')}
+function deleteAll(){if(confirm('Saari ledger entries delete karein?')){entries=[];editId=null;save();render();notify('All entries deleted')}}
+function toggleMenu(){$('menu').classList.toggle('hidden')}
+function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start'})}
+function clearMessage(){$('message').value='';notify('Message cleared')}
+async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}
+function toggleWP(){wpMode=!wpMode;$('wpToggle').textContent='WP MODE: '+(wpMode?'ON':'OFF');$('wpToggle').classList.toggle('wp-active',wpMode);notify(wpMode?'WP mode ON: multipliers double':'WP mode OFF')}
+function calculate(){
+lastResults=[];let out=[],grand=0,groups=0;
+const lines=$('message').value.split(/\r?\n/);
+for(const line of lines){if(!line.trim())continue;
+ // Split at every bracketed multiplier; each group owns the number tokens since the previous group.
+ const re=/\(?\s*(\d+)\s*\)?\s*(wp)?/gi;
+ let cursor=0, pending='', lineTotal=0, found=false, m;
+ while((m=re.exec(line))!==null){
+   const between=line.slice(cursor,m.index);
+   // A multiplier is treated as a group only when immediately preceded by at least one number.
+   const nums=pending.match(/\d+/g)||[];
+   if(nums.length && /^\s*[\])}]*\s*$/u.test(between)){
+     let val=Number(m[1]),hasWp=!!m[2]||/\bwp\b/i.test(line.slice(re.lastIndex,re.lastIndex+5));
+     let double=wpMode||hasWp;let mult=val*(double?2:1),points=nums.length*mult;
+     lastResults.push({number:nums.join(','),points});groups++;grand+=points;lineTotal+=points;found=true;
+     out.push(nums.join(', ')+' | '+nums.length+' × '+mult+' = '+points+(double?' (WP double)':''));
+     pending='';cursor=re.lastIndex;
+     // Consume WP suffix if regex did not include it.
+     const tail=line.slice(cursor).match(/^\s*wp\b/i);if(tail){cursor+=tail[0].length;re.lastIndex=cursor}
+   } else {
+     // Keep text before this possible multiplier for the next group.
+     pending=line.slice(cursor,m.index+ m[0].length);cursor=re.lastIndex;
+   }
+ }
+ // Fallback parser handles common formats reliably, including multiple bracket groups.
+ if(!found){
+   const matches=[...line.matchAll(/([\s\S]*?)\(\s*(\d+)\s*\)?\s*(wp)?/gi)];
+   let lastEnd=0, consumed=[];
+   for(const mm of matches){
+     let segment=line.slice(lastEnd,mm.index)+mm[1];let ns=segment.match(/\d+/g)||[];
+     if(ns.length){let val=Number(mm[2]),dbl=wpMode||!!mm[3]||/\bwp\b/i.test(line.slice(mm.index+mm[0].length,mm.index+mm[0].length+5)),mult=val*(dbl?2:1),points=ns.length*mult;lastResults.push({number:ns.join(','),points});groups++;grand+=points;lineTotal+=points;out.push(ns.join(', ')+' | '+ns.length+' × '+mult+' = '+points+(dbl?' (WP double)':''));lastEnd=mm.index+mm[0].length;found=true}
+   }
+   if(!found)out.push('Skipped (bracket/multiplier nahi mila): '+line);
+ }
+ if(found)out.push('Line total = '+lineTotal);
+}
+if(!groups){$('calcOutput').textContent='Format example: 23,45,67(10wp';return}
+out.push('--------------------','GROUPS = '+groups,'GRAND TOTAL = '+grand);$('calcOutput').textContent=out.join('\n');notify('Total: '+grand)}
+function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(x=>entries.push({id:uid(),number:x.number,points:x.points}));save();render();notify('Results added')}
+function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
+async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
+function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
+function makeRange(){let a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
+function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
+function drawBoard(){let g=$('boardGrid');g.innerHTML='';board.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)})}
+function drawSpecial(){let g=$('specialGrid');g.innerHTML='';let vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));vals.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawSpecial()};g.appendChild(b)})}
+function selectAll(on){selected=on?new Set([...board,...Array.from({length:10},(_,i)=>String(i).repeat(3)),...Array.from({length:10},(_,i)=>'A'+String(i).repeat(3))]):new Set();drawBoard();drawSpecial()}
+function addBoard(){let p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Select numbers aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board entries added')}
+function replaceText(){let s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceTextInput').value)}
+function removeSymbols(){$('cleanOutput').value=$('original').value.replace(/[()[\]{}.,/\\:;=#!_"'`~|+?<>-]+/g,' ').replace(/[ \t]{2,}/g,' ').trim()}
+function sideReplaceText(){let f=$('sideFind').value;if(!f)return alert('Find text daalein');$('message').value=$('message').value.split(f).join($('sideReplace').value);notify('Message replaced')}
+function formatJodi(){jodis=$('jodiInput').value.match(/(?<!\d)\d{2}(?!\d)/g)||[];$('jodiOutput').value=jodis.join(' ');notify(jodis.length+' jodi found')}
+function sideJodiFormat(){$('jodiInput').value=$('sideJodi').value;show('jodi');formatJodi()}
+function addJodis(){if(!jodis.length)formatJodi();let p=$('jodiPoints').value;if(!jodis.length||p===''||!Number.isFinite(Number(p)))return alert('Jodi aur points daalein');jodis.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Jodi added')}
+function downloadCSV(){if(!entries.length)return notify('Ledger empty');let csv=[['Number','Points'],...entries.map(e=>[e.number,e.points])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='jantri-ledger.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function shareLedger(){let text='JANTRI LEDGER\n'+entries.map(e=>e.number+' = '+e.points).join('\n')+'\nGRAND TOTAL = '+total();if(navigator.share){try{await navigator.share({title:'Jantri Ledger',text})}catch(e){}}else{copyText(text)}}
+async function copyText(text){try{await navigator.clipboard.writeText(text);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
+function changePass(){let old=localStorage.getItem('jantriPass')||'8941';if($('oldPass').value!==old){$('passMessage').textContent='Incorrect passcode';return}let n=$('newPass').value;if(n&&n.length<4){$('passMessage').textContent='Minimum 4 characters';return}if(n)localStorage.setItem('jantriPass',n);$('passMessage').textContent=n?'Passcode changed':'Passcode accepted'}
+$('entryPoints').addEventListener('keydown',e=>{if(e.key==='Enter')saveEntry()});makeBoard();drawSpecial();render();
+</script>
+</body></html>
