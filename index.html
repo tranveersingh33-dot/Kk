@@ -1,422 +1,77 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jantri Calculator & Ledger App</title>
+    <title>Screen Lock Passcode</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
         body {
+            font-family: Arial, sans-serif;
             background-color: #f0f2f5;
-            padding: 10px;
-            color: #333;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 10px;
-        }
-        .top-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .btn {
-            border: none;
-            padding: 10px 5px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .btn:active { opacity: 0.8; }
-        .btn-dark-blue { background-color: #0d233a; }
-        .btn-green { background-color: #198754; }
-        .btn-blue { background-color: #0d6efd; }
-        .btn-red { background-color: #dc3545; }
-        
-        .full-span-3 { grid-column: span 3; }
-        .full-span-2 { grid-column: span 2; }
-        .full-span-1 { grid-column: span 1; }
-
-        .card {
-            background: #f8f9fa;
-            border: 1px solid #dcdcdc;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-        .card-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #0d233a;
-            margin-bottom: 8px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        textarea, input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        textarea {
-            resize: vertical;
-            height: 90px;
-        }
-        .action-row {
-            display: flex;
-            gap: 5px;
-        }
-        .action-row button {
-            flex: 1;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 6px;
-            text-align: center;
-        }
-        th {
-            background-color: #0d233a;
-            color: white;
-        }
-        .result-box {
-            background: #fff;
-            border: 1px solid #ccc;
-            padding: 8px;
-            min-height: 70px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 13px;
-            border-radius: 4px;
-            margin-bottom: 8px;
-            white-space: pre-line;
-        }
-
-        /* Modal Popup */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
+        .lock-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 300px;
         }
-        .modal-content h3 { margin-bottom: 10px; color: #0d233a; }
-        .modal-content p { margin-bottom: 15px; font-size: 14px; color: #555; }
-        .close-modal {
-            background-color: #dc3545;
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
             color: white;
-            padding: 8px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Top Action Buttons -->
-    <div class="top-buttons">
-        <button class="btn btn-dark-blue full-span-1" onclick="openModal('More / Less', 'Yahan aap jantri ke data me plus ya minus points kar sakte hain.')">MORE / LESS</button>
-        <button class="btn btn-dark-blue full-span-1" onclick="deleteAllData()">DELETE ALL</button>
-        <button class="btn btn-dark-blue full-span-1" onclick="openModal('Send To', 'Yahan se calculated report WhatsApp ya SMS par share ki ja sakti hai.')">SEND TO</button>
-        
-        <button class="btn btn-green full-span-1" onclick="openModal('Jantri Board', 'Jantri Board live tracking panel.')">📊 JANTRI BOARD</button>
-        <button class="btn btn-green full-span-2" onclick="openModal('Final Jantri', 'Final Jantri summary report.')">📊 FINAL JANTRI</button>
-        
-        <button class="btn btn-green" onclick="openModal('From - To', 'Number range filter karne ka tool.')">⇄ FROM - TO</button>
-        <button class="btn btn-green" onclick="copyEntireMessage()">≡ MESSAGE COPY</button>
-        
-        <button class="btn btn-green" onclick="openModal('Calculated / Total', 'Total calculation history niche result box me dikh rahi hai.')">🗂 CALCULATED / TOTAL</button>
-        <button class="btn btn-green" onclick="openModal('Find & Replace', 'Specific jodi ya number ko find karke replace karein.')">🔍 FIND & REPLACE</button>
-        
-        <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Direct Jodi paste formatting tool.')">↗ JODI PASTE</button>
-        <button class="btn btn-green" onclick="openModal('Passcode', 'App security lock settings.')">🔒 PASSCODE</button>
-        
-        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help', 'Format: 23,45,67(10wp) - Har jodi ke sath 10 points multiply honge.')">? HELP</button>
+    <div class="lock-container">
+        <h2>Enter Screen Lock Passcode</h2>
+        <input type="password" id="passcode" maxlength="4" placeholder="Enter 4-digit PIN (1988)">
+        <button onclick="checkPasscode()">Unlock</button>
     </div>
 
-    <!-- Message Paste Section -->
-    <div class="card">
-        <div class="card-title">Message Paste (WhatsApp / Any Text)</div>
-        <textarea id="messageInput" placeholder="Yahan message paste karein...&#10;Jaise: 23,45,67(10wp)&#10;12,34(5)"></textarea>
-        <div class="action-row">
-            <button class="btn btn-green" onclick="pasteText()">PASTE</button>
-            <button class="btn btn-blue" onclick="processMessage()">SUBMIT</button>
-            <button class="btn btn-red" onclick="closeMessage()">CLOSE</button>
-        </div>
-    </div>
-
-    <!-- Calculation Result & History Section -->
-    <div class="card">
-        <div class="card-title">
-            Calculation Result & History
-            <span id="totalSumDisplay" style="font-size: 12px; color: #198754; font-weight: bold;">Total: 0 Pts</span>
-        </div>
-        <div id="calculationResult" class="result-box">Calculation history aur result yahan dikhega...</div>
-        <div class="action-row">
-            <button class="btn btn-green" onclick="copyResult()">COPY RESULT</button>
-            <button class="btn btn-green" onclick="addCalculatedToLedger()">ADD TO LEDGER</button>
-            <button class="btn btn-dark-blue" onclick="clearCalc()">CLEAR</button>
-        </div>
-    </div>
-
-    <!-- Current Ledger Section -->
-    <div class="card">
-        <div class="card-title">Current Ledger</div>
-        <input type="text" id="ledgerNumber" placeholder="Number / Jodi (e.g. 23)">
-        <input type="number" id="ledgerPoints" placeholder="Points (e.g. 50)">
-        <button class="btn btn-green" style="width: 100%; margin-bottom: 8px;" onclick="addManualLedger()">ADD</button>
-        
-        <table id="ledgerTable">
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>Number</th>
-                    <th>Points</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dynamic rows -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal Popup Box -->
-<div id="customModal" class="modal">
-    <div class="modal-content">
-        <h3 id="modalTitle">Title</h3>
-        <p id="modalDesc">Description</p>
-        <button class="close-modal" onclick="closeModal()">OK</button>
-    </div>
-</div>
-
-<script>
-    let globalParsedData = [];
-
-    function openModal(title, desc) {
-        document.getElementById('modalTitle').innerText = title;
-        document.getElementById('modalDesc').innerText = desc;
-        document.getElementById('customModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('customModal'].style.display = 'none';
-    }
-
-    async function pasteText() {
-        try {
-            const text = await navigator.clipboard.readText();
-            document.getElementById('messageInput').value = text;
-        } catch (err) {
-            alert("Clipboard access ki anumati nahi mili.");
-        }
-    }
-
-    function closeMessage() {
-        document.getElementById('messageInput').value = "";
-    }
-
-    // Exact Multi-Item Multiplier Parser for Brackets
-    function processMessage() {
-        let text = document.getElementById('messageInput').value.trim();
-        if(!text) {
-            alert("Kripya pehle message box me text daalein!");
-            return;
-        }
-
-        globalParsedData = [];
-        let lines = text.split('\n');
-        let resultString = "";
-        let grandTotal = 0;
-
-        lines.forEach(line => {
-            let cleanLine = line.trim();
-            if(!cleanLine) return;
-
-            // Regex to capture numbers before bracket and points inside bracket (supports wp, plt, single side)
-            let regex = /([^\(\)]+?)\(([^,\)]+)(?:[\)]|$)/g;
-            let match;
-            let matchedAny = false;
-
-            while ((match = regex.exec(cleanLine)) !== null) {
-                matchedAny = true;
-                let numbersPart = match[1].trim();
-                let rawPoints = match[2].trim();
-                
-                // Extract points value (e.g. '10wp' -> 10)
-                let pointsVal = parseFloat(rawPoints.replace(/[^0-9.]/g, '')) || 0;
-
-                // Split all numbers/jodis inside the comma/space separated group
-                let nums = numbersPart.split(/[\s,]+/);
-                nums.forEach(n => {
-                    let cleanNum = n.trim();
-                    if(cleanNum !== "") {
-                        // Multiply points to each individual number inside the bracket group
-                        globalParsedData.push({ number: cleanNum, points: pointsVal });
-                        grandTotal += pointsVal;
-                        resultString += `Jodi: ${cleanNum} -> Points: ${pointsVal}\n`;
-                    }
-                });
+    <script>
+        function checkPasscode() {
+            var enteredPass = document.getElementById('passcode').value.trim();
+            if (enteredPass === "1988") {
+                alert("Access Granted!");
+                // Yahan aap agle page par redirect karne ka code likh sakte hain
+            } else {
+                alert("Incorrect Password! Try 1988");
+                document.getElementById('passcode').value = "";
             }
-
-            // If line has no brackets, treat as normal numbers with default 10 points
-            if(!matchedAny) {
-                let parts = cleanLine.split(/[\s,]+/);
-                parts.forEach(p => {
-                    let cleanNum = p.trim();
-                    if(cleanNum !== "" && !isNaN(cleanNum)) {
-                        let defaultPts = 10;
-                        globalParsedData.push({ number: cleanNum, points: defaultPts });
-                        grandTotal += defaultPts;
-                        resultString += `Jodi: ${cleanNum} -> Points: ${defaultPts}\n`;
-                    }
-                });
-            }
-        });
-
-        if(globalParsedData.length === 0) {
-            document.getElementById('calculationResult').innerText = "Koi valid jodi/points nahi mila. Kripya format check karein.";
-            document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
-            return;
         }
-
-        document.getElementById('calculationResult').innerText = resultString.trim();
-        document.getElementById('totalSumDisplay').innerText = `Total: ${grandTotal} Pts`;
-    }
-
-    function clearCalc() {
-        document.getElementById('calculationResult').innerText = "Calculation history aur result yahan dikhega...";
-        document.getElementById('totalSumDisplay').innerText = "Total: 0 Pts";
-        globalParsedData = [];
-    }
-
-    function copyResult() {
-        let resText = document.getElementById('calculationResult').innerText;
-        if(globalParsedData.length === 0) {
-            alert("Copy karne ke liye koi history nahi hai!");
-            return;
-        }
-        navigator.clipboard.writeText(resText);
-        alert("Calculation history copy ho gayi hai!");
-    }
-
-    function copyEntireMessage() {
-        let msg = document.getElementById('messageInput').value;
-        if(msg) {
-            navigator.clipboard.writeText(msg);
-            alert("Message copy ho gaya!");
-        } else {
-            alert("Copy karne ke liye kuch nahi hai!");
-        }
-    }
-
-    function deleteAllData() {
-        if(confirm("Kya aap saara data aur history delete karna chahte hain?")) {
-            document.getElementById('messageInput').value = "";
-            clearCalc();
-            ledgerData = [];
-            renderLedger();
-            alert("Sabhi data clear kar diya gaya hai.");
-        }
-    }
-
-    let ledgerData = [];
-
-    function addCalculatedToLedger() {
-        if(globalParsedData.length === 0) {
-            alert("Pehle message submit karke calculation result generate karein!");
-            return;
-        }
-        globalParsedData.forEach(item => {
-            ledgerData.push(item);
-        });
-        renderLedger();
-        alert("Calculated history Current Ledger me add kar di gayi hai!");
-    }
-
-    function addManualLedger() {
-        let num = document.getElementById('ledgerNumber').value.trim();
-        let pts = parseFloat(document.getElementById('ledgerPoints').value);
-
-        if(!num || isNaN(pts)) {
-            alert("Kripya sahi Number aur Points enter karein!");
-            return;
-        }
-
-        ledgerData.push({ number: num, points: pts });
-        renderLedger();
-
-        document.getElementById('ledgerNumber').value = "";
-        document.getElementById('ledgerPoints').value = "";
-    }
-
-    function renderLedger() {
-        let tbody = document.querySelector('#ledgerTable tbody');
-        tbody.innerHTML = "";
-
-        if(ledgerData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="color: #888;">Ledger khali hai</td></tr>`;
-            return;
-        }
-
-        ledgerData.forEach((item, index) => {
-            let row = `<tr>
-                <td>${index + 1}</td>
-                <td>${item.number}</td>
-                <td>${item.points}</td>
-                <td><button class="btn btn-red" style="padding: 2px 6px; font-size: 10px;" onclick="deleteLedger(${index})">Delete</button></td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
-    }
-
-    function deleteLedger(index) {
-        ledgerData.splice(index, 1);
-        renderLedger();
-    }
-
-    renderLedger();
-</script>
+    </script>
 
 </body>
 </html>
