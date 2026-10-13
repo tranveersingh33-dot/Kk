@@ -1,253 +1,38 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jantri Ledger</title>
-<style>
-:root{--blue:#1769e0;--navy:#14243a;--bg:#f2f5fa;--green:#16b900;--red:#c62828}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172033}
-#loginScreen{position:fixed;inset:0;z-index:10;background:#03052f;color:#fff;min-height:100dvh;padding:24px;display:flex;align-items:stretch;justify-content:center}
-.login{position:relative;width:100%;max-width:700px;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;text-align:center;display:flex;flex-direction:column;align-items:center}
-.login .brand{margin:auto 0 0;color:#16c900;font-family:'Arial Narrow',Arial,sans-serif;font-size:clamp(52px,13vw,100px);font-weight:300;letter-spacing:-4px;line-height:1}
-.login .dice{width:clamp(210px,55vw,360px);line-height:1;color:#16c900;margin-top:8vh}.login .dice svg{display:block;width:100%;height:auto;overflow:visible}
-.login .login-bottom{width:100%;margin-top:auto;margin-bottom:7vh}.login .brand{font-family:'Arial Narrow',Impact,sans-serif;font-stretch:condensed;transform:scaleX(.82);}
-.login input{height:72px;text-align:left;letter-spacing:1px;font-size:28px;border:0;border-radius:24px;padding:0 16px;color:#333}
-.login .actions{margin-top:22px}
-.login .actions button{height:72px;border-radius:24px;background:#16b900;font-size:23px}
-.login h2,.login p{display:none}
-#loginError{color:#ff7777;margin-top:10px}
-#app header{background:#03052f}
-
-header{background:var(--navy);color:#fff;padding:16px;text-align:center}
-header h1{margin:0;font-size:22px} header p{margin:6px 0 0;color:#d7e3f5;font-size:13px}
-main{max-width:900px;margin:0 auto;padding:14px}
-.panel{background:#fff;border-radius:12px;padding:15px;margin:0 0 14px;box-shadow:0 2px 9px #17203312}
-h2{font-size:18px;margin:0 0 12px}
-label{display:block;font-weight:700;font-size:14px;margin:10px 0 6px}
-textarea,input{width:100%;padding:12px;border:1px solid #cbd4e1;border-radius:8px;font:16px Arial;background:#fff;color:#172033}
-textarea{min-height:125px;resize:vertical}
-button{border:0;border-radius:8px;padding:11px 13px;background:var(--blue);color:white;font-size:14px;font-weight:700;cursor:pointer}
-button.secondary{background:#e7edf6;color:#172033}
-button.green{background:var(--green)} button.red{background:var(--red)}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.actions button{flex:1 1 110px}
-.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9fc;border:1px solid #e0e6ef;border-radius:8px;padding:12px;min-height:44px}
-.total{font-size:24px;font-weight:800;color:var(--green)}
-.small{font-size:12px;color:#64748b;line-height:1.5}
-.error{color:var(--red);min-height:18px;font-size:13px}
-#app{display:none}
-.login-wrap{min-height:70vh;display:flex;align-items:center;justify-content:center}
-.login{width:100%;max-width:380px;text-align:center}
-.login input{text-align:center;letter-spacing:4px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:600px){.row{grid-template-columns:1fr}main{padding:10px}.panel{padding:12px}}
-</style>
-</head>
-<body>
-<header><h1>Jantri Ledger</h1><p>Board • Message Cleaner • Group Calculator</p></header>
-
-<main>
-<section id="loginScreen" class="login-wrap">
-  <div class="login">
-    <div class="dice" aria-label="Green dice logo">
-      <svg viewBox="0 0 360 300" role="img" aria-label="Two green dice" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#16c900" stroke-width="5" stroke-linejoin="round">
-          <path fill="#16c900" d="M65 54 Q70 35 94 30 L185 12 Q201 10 214 20 L266 42 Q278 48 278 65 L278 155 Q278 173 262 181 L180 218 Q164 224 149 216 L75 184 Q61 178 61 160 L61 72 Q61 59 65 54Z"/>
-          <path fill="#16c900" d="M61 72 L149 100 L149 216 Q132 214 118 208 L75 184 Q61 178 61 160Z"/>
-          <path fill="#16c900" d="M149 100 L278 65 L278 155 Q278 173 262 181 L180 218 Q164 224 149 216Z"/>
-          <path fill="#16c900" d="M65 54 L154 79 L278 48 L214 20 Q201 10 185 12 L94 30 Q70 35 65 54Z"/>
-          <path fill="#16c900" d="M202 160 L260 140 Q276 136 291 145 L335 168 Q349 176 349 193 L349 259 Q349 276 333 283 L278 300 Q263 305 249 296 L207 273 Q195 267 195 251 L195 179 Q195 166 202 160Z" transform="translate(-12,-8) scale(.93)"/>
-        </g>
-        <g fill="#03052f">
-          <ellipse cx="110" cy="53" rx="9" ry="5" transform="rotate(-8 110 53)"/><ellipse cx="173" cy="45" rx="9" ry="5"/><ellipse cx="199" cy="68" rx="8" ry="5"/>
-          <ellipse cx="88" cy="96" rx="7" ry="11"/><ellipse cx="88" cy="128" rx="7" ry="11"/><ellipse cx="88" cy="158" rx="7" ry="11"/>
-          <ellipse cx="132" cy="111" rx="7" ry="11"/><ellipse cx="132" cy="143" rx="7" ry="11"/><ellipse cx="132" cy="174" rx="7" ry="11"/>
-          <ellipse cx="232" cy="93" rx="7" ry="11"/><ellipse cx="215" cy="127" rx="7" ry="11"/>
-          <ellipse cx="246" cy="207" rx="7" ry="10"/><ellipse cx="276" cy="190" rx="7" ry="10"/><ellipse cx="306" cy="207" rx="7" ry="10"/>
-          <ellipse cx="245" cy="246" rx="7" ry="10"/><ellipse cx="306" cy="246" rx="7" ry="10"/><ellipse cx="276" cy="226" rx="7" ry="10"/>
-        </g>
-      </svg>
-    </div>
-    <div class="brand">LEDGER</div>
-    <div class="login-bottom">
-      <input id="password" type="password" inputmode="numeric" placeholder="Passcode" autocomplete="current-password" aria-label="Passcode">
-      <div class="actions"><button onclick="login()">PROCEED</button></div>
-      <div id="loginError" class="error" aria-live="polite"></div>
-    </div>
-  </div>
-</section>
-
-<div id="app">
-  <section class="panel">
-    <h2>📋 Jantri Board</h2>
-    <label for="boardInput">मैसेज यहाँ पेस्ट करें</label>
-    <textarea id="boardInput" placeholder="उदाहरण: 23,45,67(10) 11(40) 66(55) 30(20)"></textarea>
-    <div class="actions">
-      <button onclick="pasteText()">Paste</button>
-      <button class="green" onclick="submitBoard()">Submit / Calculate</button>
-      <button class="secondary" onclick="clearBoard()">Close / Clear</button>
-    </div>
-    <p class="small">नोट: ब्रैकेट से पहले के नंबर उस ब्रैकेट की वैल्यू से गुणा होंगे। WP होने पर वैल्यू दोगुनी होगी।</p>
-  </section>
-
-  <section class="panel">
-    <h2>🧹 Message Copy / Find & Replace</h2>
-    <label for="cleanInput">टेक्स्ट साफ करने के लिए</label>
-    <textarea id="cleanInput" placeholder="यहाँ टेक्स्ट डालें या Board से लाएँ"></textarea>
-    <div class="row">
-      <div><label for="findText">Find (खोजें)</label><input id="findText" placeholder="खोजने वाला टेक्स्ट"></div>
-      <div><label for="replaceText">Replace (बदलें)</label><input id="replaceText" placeholder="नया टेक्स्ट (खाली भी छोड़ सकते हैं)"></div>
-    </div>
-    <div class="actions">
-      <button onclick="cleanText()">Clean Text</button>
-      <button class="secondary" onclick="doReplace()">Find & Replace</button>
-      <button class="green" onclick="copyClean()">Copy Message</button>
-      <button class="secondary" onclick="useCleanForCalc()">Calculate This</button>
-    </div>
-    <div id="cleanStatus" class="small" aria-live="polite"></div>
-  </section>
-
-  <section class="panel">
-    <h2>🧮 Calculated Groups</h2>
-    <div id="groupResults" class="result">अभी कोई हिसाब नहीं हुआ है।</div>
-    <label>Total</label>
-    <div id="grandTotal" class="total">0</div>
-    <div class="actions">
-      <button class="green" onclick="copyResults()">Copy Result</button>
-      <button class="secondary" onclick="clearResults()">Clear Result</button>
-    </div>
-  </section>
-</div>
-</main>
-
+<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jantri Number Value Chart</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eee;font-family:Arial;color:#091334}header{background:#050d3d;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}h1{font-size:25px;margin:0}.toolbar{display:flex;gap:5px;padding:10px 3%}.toolbar button{flex:1;background:#050d3d;color:white;border:0;border-radius:30px;padding:13px 4px;font-weight:bold}.layout{display:grid;grid-template-columns:230px 1fr;gap:8px;padding:0 4px}nav{display:flex;flex-direction:column;gap:8px}button{cursor:pointer;font-weight:bold;border:0;border-radius:8px;padding:10px}.green,nav button{background:#13b50b;color:white}nav button{border-radius:28px;padding:14px 5px;font-size:16px}.panel{background:white;border-radius:10px;padding:10px;margin-bottom:10px}h2{font-size:18px;margin:0 0 10px}input,textarea{width:100%;padding:10px;border:1px solid #c5ceda;border-radius:7px;margin:4px 0 8px;font:inherit}textarea{min-height:95px}.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1;min-width:0}.blue{background:#087af0;color:white}.red{background:#ef3035;color:white}.light{background:#e5edf7;color:#06123c}#chart{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}.cell{background:#fff;border:1px solid #ddd;border-radius:6px;min-width:0;min-height:65px;overflow:hidden}.num{font-weight:bold;font-size:clamp(10px,1.8vw,15px);padding:5px 3px;overflow-wrap:anywhere}.cell input{width:calc(100% - 4px);margin:0 2px 3px;padding:5px 1px;text-align:center;font-size:12px}.stats{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.stat{flex:1;min-width:100px;background:#e4f6e8;color:#087d24;padding:10px;border-radius:8px;font-weight:bold}.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f7fb;padding:10px;border-radius:7px}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:7px;border-bottom:1px solid #ddd;text-align:left}.hidden{display:none!important}footer{text-align:center;background:#050d3d;color:white;padding:12px;margin-top:18px}#toast{display:none;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px;border-radius:20px;z-index:9}@media(max-width:620px){header{padding:15px 13px}h1{font-size:21px}.layout{grid-template-columns:1fr}.layout nav{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}nav button{font-size:13px;padding:12px 4px}#chart{gap:2px}.cell{min-height:60px}.num{font-size:10px;padding:4px 2px}.cell input{font-size:10px;padding:4px 0}}
+</style></head><body>
+<header><h1>Jantri</h1><strong>POINTS: <span id="allTotal">0</span></strong></header><div class="toolbar"><button onclick="toggleNav()">LESS / MORE</button><button onclick="clearAll()">DELETE ALL</button><button onclick="shareData()">SEND TO ..</button></div>
+<div class="layout"><nav id="nav"><button onclick="go('ledgerPanel')">▦ LEDGER</button><button onclick="go('finalPanel')">☷ FINAL JANTRI</button><button onclick="go('chartPanel')">▤ NUMBER CHART</button><button onclick="go('messagePanel')">▣ MESSAGE CALCULATOR</button><button onclick="go('findPanel')">⌕ FIND & REPLACE</button><button onclick="go('jodiPanel')">↗ JODI PASTE</button><button onclick="go('passPanel')">🔒 PASSCODE</button></nav><main>
+<section class="panel" id="chartPanel"><h2>Number Chart — har number ki value bharein</h2><div class="row"><div><label>Start</label><input id="start" value="1" type="number"></div><div><label>End</label><input id="end" value="100" type="number"></div><div><label>Extra numbers</label><select id="extras"><option value="yes">111 / 222 / A000</option><option value="no">Only range</option></select></div></div><div class="row"><button class="green" onclick="makeChart()">CREATE CHART</button><button class="light" onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div><div class="stats"><div class="stat">Number Count: <span id="numberCount">0</span></div><div class="stat">With Value: <span id="filledCount">0</span></div><div class="stat">Chart Total: <span id="chartTotal">0</span></div></div><div id="chart"></div><div class="panel"><h2>Selected Number</h2><div class="row"><input id="selectedNumber" placeholder="Number" readonly><input id="selectedValue" type="number" placeholder="Value / Points"></div><div class="row"><button class="green" onclick="setSelectedValue()">SAVE VALUE</button><button class="blue" onclick="addSelectedToLedger()">ADD TO LEDGER</button></div><small>Har box mein value type kar sakte hain; total automatic update hoga.</small></div></section>
+<section class="panel" id="ledgerPanel"><h2>Ledger Entries</h2><div class="row"><input id="entryNumber" placeholder="Number"><input id="entryValue" type="number" placeholder="Points"><button class="green" onclick="addLedger()">ADD</button></div><div style="overflow:auto"><table><thead><tr><th>No.</th><th>Number</th><th>Value</th><th>Action</th></tr></thead><tbody id="ledgerRows"></tbody></table></div><div class="stats"><div class="stat">Entries: <span id="ledgerCount">0</span></div><div class="stat">Ledger Total: <span id="ledgerTotal">0</span></div></div></section>
+<section class="panel" id="finalPanel"><h2>Final Jantri Summary</h2><div class="stats"><div class="stat">Chart Total: <span id="finalChartTotal">0</span></div><div class="stat">Ledger Total: <span id="finalLedgerTotal">0</span></div><div class="stat">Grand Total: <span id="finalTotal">0</span></div></div><div id="finalResult" class="result">No values yet.</div><div class="row"><button class="green" onclick="refreshAll()">REFRESH TOTAL</button><button class="blue" onclick="copyFinal()">COPY FINAL</button><button class="light" onclick="downloadCSV()">DOWNLOAD CSV</button></div></section>
+<section class="panel" id="messagePanel"><h2>Message Paste / Bracket Calculator</h2><textarea id="message" placeholder="23,45,67(10&#10;23,45,67(10wp&#10;12,34(5)wp"></textarea><div class="row"><button class="green" onclick="pasteText()">PASTE</button><button class="blue" onclick="calculate()">CALCULATED / TOTAL</button><button id="wpButton" class="light" onclick="toggleWP()">WP: OFF</button><button class="red" onclick="clearMessage()">CLEAR</button></div><small id="wpHint">WP OFF: bracket value normal. WP ON: bracket value double; suffix wp bhi supported hai.</small><div id="result" class="result">Calculation result yahan show hoga.</div><button class="green" style="width:100%;margin-top:8px" onclick="addCalcToLedger()">ADD RESULTS TO LEDGER</button></section>
+<section class="panel hidden" id="findPanel"><h2>Message Copy / Find & Replace</h2><textarea id="findSource" placeholder="Message paste karein"></textarea><div class="row"><input id="findNeedle" placeholder="Find text / symbol"><input id="findReplacement" placeholder="Replace (blank = remove)"></div><div class="row"><button class="green" onclick="doFindReplace()">REPLACE</button><button class="blue" onclick="stripSymbols()">REMOVE SYMBOLS</button><button class="light" onclick="copyField('findOutput')">COPY RESULT</button></div><textarea id="findOutput" placeholder="Cleaned result"></textarea></section>
+<section class="panel hidden" id="jodiPanel"><h2>Jodi Paste</h2><textarea id="jodiSource" placeholder="Example: 23 45 67 89"></textarea><div class="row"><button class="green" onclick="formatJodiList()">FORMAT JODI</button><button class="light" onclick="copyField('jodiOutput')">COPY JODI</button></div><textarea id="jodiOutput" placeholder="Jodi result"></textarea><div class="row"><input id="jodiPointValue" type="number" placeholder="Points per jodi"><button class="blue" onclick="addJodiList()">ADD TO LEDGER</button></div></section>
+<section class="panel hidden" id="passPanel"><h2>Passcode</h2><p>Default passcode: 8941 (browser ke andar local setting)</p><input id="oldPasscode" type="password" placeholder="Current passcode"><input id="newPasscode" type="password" placeholder="New passcode"><button class="green" onclick="updatePasscode()">CHECK / CHANGE PASSCODE</button><p id="passStatus"></p></section>
+</main></div><footer>Jantri | Number Chart • Ledger • Total</footer><div id="toast"></div>
 <script>
-const $ = id => document.getElementById(id);
-
-function login(){
-  if($('password').value === '9999'){
-    $('loginScreen').style.display='none';
-    $('app').style.display='block';
-    $('loginError').textContent='';
-  } else {
-    $('loginError').textContent='गलत पासवर्ड। फिर कोशिश करें।';
-    $('password').select();
-  }
-}
-$('password').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
-
-async function pasteText(){
-  try{
-    if(!navigator.clipboard || !navigator.clipboard.readText()) throw new Error('clipboard');
-    const t=await navigator.clipboard.readText();
-    $('boardInput').value=t;
-    $('cleanInput').value=t;
-  }catch(e){
-    $('boardInput').focus();
-    $('cleanStatus').textContent='Clipboard access उपलब्ध नहीं है। टेक्स्ट बॉक्स को दबाकर Paste चुनें।';
-  }
-}
-function submitBoard(){
-  const text=$('boardInput').value.trim();
-  $('cleanInput').value=text;
-  calculate(text);
-}
-function clearBoard(){
-  $('boardInput').value='';
-  $('cleanInput').value='';
-  $('cleanStatus').textContent='';
-  clearResults();
-}
-function cleanText(){
-  const text=$('cleanInput').value;
-  // Keep digits, spaces and common separators used between number groups.
-  $('cleanInput').value=text
-    .replace(/[()[\]{}<>]/g,' ')
-    .replace(/[,:;./\\|#%@!$^&=+_*"'`~–—-]+/g,' ')
-    .replace(/\b(into|intu|wp|plt)\b/gi, m => m.toLowerCase())
-    .replace(/[ \t]+/g,' ')
-    .replace(/\n{3,}/g,'\n\n')
-    .trim();
-  $('cleanStatus').textContent='टेक्स्ट साफ कर दिया गया है।';
-}
-function doReplace(){
-  const find=$('findText').value;
-  if(!find){$('cleanStatus').textContent='पहले Find में टेक्स्ट लिखें।';return;}
-  const escaped=find.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  const re=new RegExp(escaped,'gi');
-  const before=$('cleanInput').value;
-  $('cleanInput').value=before.replace(re,$('replaceText').value);
-  $('cleanStatus').textContent='Find & Replace पूरा हुआ।';
-}
-async function copyClean(){
-  const text=$('cleanInput').value;
-  try{await navigator.clipboard.writeText(text);$('cleanStatus').textContent='Message copy हो गया।';}
-  catch(e){fallbackCopy(text);$('cleanStatus').textContent='कॉपी करने के लिए टेक्स्ट चुना गया है; Copy चुनें।';}
-}
-function fallbackCopy(text){
-  const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');}catch(e){} ta.remove();
-}
-function useCleanForCalc(){ $('boardInput').value=$('cleanInput').value; calculate($('cleanInput').value); }
-
-// Convert an unseparated digit run into two-digit number pairs, e.g. 2345 -> 23,45.
-function extractNumbers(segment){
-  const chunks=segment.match(/\d+/g)||[];
-  const result=[];
-  for(const chunk of chunks){
-    if(chunk.length>2){
-      let i=0;
-      while(i+1<chunk.length){result.push(Number(chunk.slice(i,i+2)));i+=2;}
-      if(i<chunk.length) result.push(Number(chunk.slice(i)));
-    } else result.push(Number(chunk));
-  }
-  return result;
-}
-function calculate(text){
-  const source=String(text||'');
-  // हर multiplier marker अलग group है: (10), (10, (10)wp, into 10, intu 10 आदि।
-  const markerRe=/\(\s*(\d+(?:\.\d+)?)\s*\)?\s*(?:with\s+)?(wp|plt)?|\b(?:into|intu)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*(?:with\s+)?(wp|plt)?/gi;
-  const markers=[...source.matchAll(markerRe)];
-  const groups=[];
-  let cursor=0,total=0;
-  for(const m of markers){
-    // केवल पिछले marker के बाद से इस marker से पहले तक के नंबर इस group में गिने जाएँ।
-    const segment=source.slice(cursor,m.index);
-    let value=Number(m[1]||m[3]);
-    const suffix=(m[2]||m[4]||'').toLowerCase();
-    if(suffix==='wp'||suffix==='plt') value*=2;
-    const nums=extractNumbers(segment);
-    if(nums.length){
-      const count=nums.length;
-      const amount=count*value;
-      groups.push({nums,value,count,amount});
-      total+=amount;
-    }
-    cursor=m.index+m[0].length;
-  }
-  if(!groups.length){
-    $('groupResults').textContent='कोई bracket या into/intu multiplier नहीं मिला। उदाहरण: 23,45(10) 67,89(20) या 23,45 into 10 67,89 intu 20';
-    $('grandTotal').textContent='0';
-    window.lastLedgerResult='';
-    return;
-  }
-  $('groupResults').textContent=groups.map((g,i)=>
-    `${i+1}. ${g.nums.join(', ')} → ${g.count} × ${g.value} = ${g.amount}`
-  ).join('\n')+'\n\nकुल समूह: '+groups.length;
-  $('grandTotal').textContent=Number.isInteger(total)?total.toLocaleString('en-IN'):total.toLocaleString('en-IN',{maximumFractionDigits:2});
-  window.lastLedgerResult=groups.map((g,i)=>`${i+1}. ${g.count} × ${g.value} = ${g.amount}`).join('\n')+'\nTotal = '+total;
-}
-function copyResults(){
-  const text=(window.lastLedgerResult||$('groupResults').textContent)+'\nTotal = '+$('grandTotal').textContent;
-  try{navigator.clipboard.writeText(text).then(()=>{}).catch(()=>fallbackCopy(text));}
-  catch(e){fallbackCopy(text);}
-}
-function clearResults(){
-  $('groupResults').textContent='अभी कोई हिसाब नहीं हुआ है।';
-  $('grandTotal').textContent='0';
-  window.lastLedgerResult='';
-}
-</script>
-</body>
-</html>
+const $=id=>document.getElementById(id);let values={},ledger=[],selected=null,calcEntries=[],wpMode=false;try{values=JSON.parse(localStorage.getItem('jantriChartValues')||'{}');ledger=JSON.parse(localStorage.getItem('jantriChartLedger')||'[]')}catch(e){values={};ledger=[]}if(!values||typeof values!=='object')values={};if(!Array.isArray(ledger))ledger=[];
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2000)}function persist(){localStorage.setItem('jantriChartValues',JSON.stringify(values));localStorage.setItem('jantriChartLedger',JSON.stringify(ledger))}function chartTotal(){return Object.values(values).reduce((s,v)=>s+(v!==''&&v!=null&&Number.isFinite(Number(v))?Number(v):0),0)}function ledgerTotal(){return ledger.reduce((s,e)=>s+Number(e.value||0),0)}
+function makeChart(){let a=Number($('start').value),b=Number($('end').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>499)return alert('Range maximum 500 numbers');let ns=Array.from({length:b-a+1},(_,i)=>String(a+i));if($('extras').value==='yes')ns.push('000','111','222','333','444','555','666','777','888','999','A000','A111','A222','A333','A444','A555','A666','A777','A888','A999');drawChart([...new Set(ns)]);refreshAll()}
+function drawChart(ns){$('chart').innerHTML='';ns.forEach(n=>{let box=document.createElement('div');box.className='cell';let label=document.createElement('div');label.className='num';label.textContent=n;label.onclick=()=>choose(n);let inp=document.createElement('input');inp.type='number';inp.placeholder='Value';inp.setAttribute('aria-label',n+' value');inp.value=values[n]??'';inp.onfocus=()=>choose(n);inp.oninput=()=>{values[n]=inp.value;persist();refreshAll(false)};box.append(label,inp);$('chart').append(box)});$('numberCount').textContent=ns.length}
+function choose(n){selected=n;$('selectedNumber').value=n;$('selectedValue').value=values[n]??'';document.querySelectorAll('.cell').forEach(c=>c.style.outline=c.querySelector('.num').textContent===n?'2px solid #13b50b':'')}
+function setSelectedValue(){if(selected===null)return alert('Number select karein');let v=$('selectedValue').value;values[selected]=v;persist();let box=[...document.querySelectorAll('.cell')].find(c=>c.querySelector('.num').textContent===selected);if(box)box.querySelector('input').value=v;refreshAll();toast('Value saved')}
+function selectAll(on){document.querySelectorAll('#chart .cell').forEach(c=>c.style.outline=on?'2px solid #13b50b':'');toast(on?'All boxes selected visually':'Selection cleared')}
+function refreshAll(){let ct=chartTotal(),lt=ledgerTotal();$('allTotal').textContent=ct+lt;$('chartTotal').textContent=ct;$('filledCount').textContent=Object.values(values).filter(v=>v!==''&&v!=null&&Number.isFinite(Number(v))).length;$('ledgerTotal').textContent=lt;$('ledgerCount').textContent=ledger.length;$('finalChartTotal').textContent=ct;$('finalLedgerTotal').textContent=lt;$('finalTotal').textContent=ct+lt;renderLedger();let lines=Object.entries(values).filter(([n,v])=>v!==''&&v!=null&&Number.isFinite(Number(v))).map(([n,v])=>n+' = '+v);$('finalResult').textContent=(lines.length?lines.join('\n')+'\n\n':'')+'Chart Total = '+ct+'\nLedger Total = '+lt+'\nGRAND TOTAL = '+(ct+lt)}
+function addLedger(){let n=$('entryNumber').value.trim(),v=$('entryValue').value;if(!n||v===''||!Number.isFinite(Number(v)))return alert('Number aur points daalein');ledger.push({id:Date.now()+Math.random(),number:n,value:Number(v)});persist();$('entryNumber').value='';$('entryValue').value='';refreshAll();toast('Entry added')}
+function renderLedger(){$('ledgerRows').innerHTML='';ledger.forEach((e,i)=>{let tr=document.createElement('tr');[i+1,e.number,e.value].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.append(td)});let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.className='green';ed.onclick=()=>{let n=prompt('Number',e.number);if(n===null)return;let v=prompt('Points',e.value);if(v===null||v.trim()===''||!Number.isFinite(Number(v)))return;ledger[i].number=n;ledger[i].value=Number(v);persist();refreshAll()};del.textContent='DEL';del.className='red';del.onclick=()=>{ledger.splice(i,1);persist();refreshAll()};td.append(ed,del);tr.append(td);$('ledgerRows').append(tr)})}
+function addSelectedToLedger(){if(selected===null)return alert('Number select karein');let v=$('selectedValue').value;if(v==='')return alert('Value daalein');ledger.push({id:Date.now()+Math.random(),number:selected,value:Number(v)});persist();refreshAll();toast('Added to ledger')}
+function clearAll(){if(!confirm('Chart values aur ledger delete karein?'))return;values={};ledger=[];persist();document.querySelectorAll('#chart input').forEach(i=>i.value='');refreshAll();toast('All cleared')}function toggleNav(){$('nav').classList.toggle('hidden')}function go(id){$(id).scrollIntoView({behavior:'smooth'})}
+function toggleWP(){wpMode=!wpMode;$('wpButton').textContent='WP: '+(wpMode?'ON':'OFF');$('wpButton').className=wpMode?'green':'light';toast(wpMode?'WP ON: bracket values double':'WP OFF: normal bracket values')}\nfunction calculate(){calcEntries=[];let out=[],tot=0;for(let line of $('message').value.split(/\r?\n/)){if(!line.trim())continue;let m=line.match(/^(.*?)\s*\({1,2}\s*(\d+)\s*\){0,2}\s*(wp)?\s*$/i);if(!m){out.push('Skipped: '+line);continue}let ns=m[1].match(/\d+/g)||[];if(!ns.length)continue;let mult=Number(m[2])*(m[3]?2:1),v=ns.length*mult;tot+=v;calcEntries.push({number:ns.join(','),value:v});out.push(ns.join(', ')+' | '+ns.length+' × '+mult+' = '+v)}if(!calcEntries.length)return $('result').textContent='Example: 23,45,67(10wp';out.push('GROUPS = '+calcEntries.length,'GRAND TOTAL = '+tot);$('result').textContent=out.join('\n')}
+function addCalcToLedger(){if(!calcEntries.length)return alert('Pehle calculate karein');calcEntries.forEach(e=>ledger.push({id:Date.now()+Math.random(),number:e.number,value:e.value}));persist();refreshAll();toast('Results added')}async function pasteText(){try{$('message').value=await navigator.clipboard.readText()}catch(e){toast('Text box par long press karke Paste karein')}}function clearMessage(){$('message').value='';$('result').textContent='';calcEntries=[]}
+async function copyFinal(){try{await navigator.clipboard.writeText($('finalResult').textContent);toast('Copied')}catch(e){let t=document.createElement('textarea');t.value=$('finalResult').textContent;document.body.append(t);t.select();document.execCommand('copy');t.remove();toast('Copied')}}function downloadCSV(){let rows=[['Chart Number','Value'],...Object.entries(values),[],['Ledger Number','Value'],...ledger.map(e=>[e.number,e.value])];let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='jantri-chart.csv';a.click();URL.revokeObjectURL(a.href)}async function shareData(){let text=$('finalResult').textContent;if(navigator.share){try{await navigator.share({title:'Jantri Ledger',text})}catch(e){}}else{copyFinal()}}
+function copyField(id){const el=$(id),txt=el.value||el.textContent||'';if(!txt)return toast('Copy karne ke liye text nahi');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(()=>toast('Copied')).catch(()=>fallbackCopy(txt));else fallbackCopy(txt)}
+function fallbackCopy(txt){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Copied')}
+function doFindReplace(){const src=$('findSource').value,f=$('findNeedle').value;if(!f)return alert('Find text daalein');$('findOutput').value=src.split(f).join($('findReplacement').value)}
+function stripSymbols(){$('findOutput').value=$('findSource').value.replace(/[()[\]{}.,/\\:;=#!_"'`~|+?<>-]+/g,' ').replace(/[ \t]{2,}/g,' ').replace(/ *\n */g,'\n').trim()}
+let formattedJodis=[];function formatJodiList(){formattedJodis=$('jodiSource').value.match(/(?<!\d)\d{2}(?!\d)/g)||[];$('jodiOutput').value=formattedJodis.join(' ');toast(formattedJodis.length+' jodi found')}
+function addJodiList(){if(!formattedJodis.length)formatJodiList();const v=$('jodiPointValue').value;if(!formattedJodis.length||v===''||!Number.isFinite(Number(v)))return alert('Jodi aur points daalein');formattedJodis.forEach(n=>ledger.push({id:Date.now()+Math.random(),number:n,value:Number(v)}));persist();refreshAll();toast('Jodi ledger mein add ho gayi')}
+function updatePasscode(){const old=localStorage.getItem('jantriLocalPasscode')||'8941';if($('oldPasscode').value!==old){$('passStatus').textContent='Passcode galat hai';return}const n=$('newPasscode').value.trim();if(n&&n.length<4){$('passStatus').textContent='Naya passcode kam se kam 4 characters ka ho';return}if(n)localStorage.setItem('jantriLocalPasscode',n);$('passStatus').textContent=n?'Passcode changed':'Passcode accepted';$('oldPasscode').value='';$('newPasscode').value=''}
+makeChart();
+</script></body></html>
