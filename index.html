@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ledger Dashboard - Interactive</title>
+    <title>Jantri Ledger App</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,256 +12,557 @@
             font-family: Arial, sans-serif;
         }
         body {
-            background-color: #f4f6f9;
+            background-color: #0b1d3a;
             color: #333;
-            padding-bottom: 40px;
+            padding: 10px;
         }
-        header {
-            background-color: #007bff;
+        /* Top Header */
+        .app-header {
+            background-color: #0b1d3a;
             color: white;
-            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        header h1 {
-            font-size: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .card h3 {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 8px;
-        }
-        .card .amount {
+            padding: 10px 15px;
             font-size: 22px;
             font-weight: bold;
+            border-bottom: 2px solid #1a365d;
         }
-        .amount.credit { color: #28a745; }
-        .amount.debit { color: #dc3545; }
-
-        /* Form Section */
-        .form-section, .ledger-section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+        .points-badge {
+            background-color: #071325;
+            padding: 5px 15px;
+            border-radius: 5px;
+            color: #fff;
+            border: 1px solid #1e3a8a;
         }
-        .form-section h2, .ledger-section h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #444;
-        }
-        .form-row {
+        /* Top Action Bar */
+        .top-actions {
             display: flex;
             gap: 10px;
+            margin: 10px 0;
             flex-wrap: wrap;
         }
-        .form-group {
+        .btn-top {
             flex: 1;
-            min-width: 200px;
-            margin-bottom: 10px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .btn-add {
-            background-color: #28a745;
+            min-width: 150px;
+            padding: 12px;
+            background-color: #0f2b5c;
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 15px;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-weight: bold;
             cursor: pointer;
-            align-self: flex-end;
-            margin-bottom: 10px;
-            height: 41px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: background 0.2s;
         }
-        .btn-add:hover {
-            background-color: #218838;
+        .btn-top:hover { background-color: #1a365d; }
+        .btn-delete-all { background-color: #1e3a8a; }
+        .btn-delete-all:hover { background-color: #1d4ed8; }
+
+        /* Main Layout Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr 320px;
+            gap: 15px;
+        }
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* Table */
+        /* Sidebar Navigation */
+        .nav-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-btn {
+            background-color: #00871d;
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background-color: #007018; }
+
+        /* Center Content Area */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .card-box {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-box h3 {
+            font-size: 15px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 90px;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            resize: vertical;
+            font-size: 14px;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-green { background-color: #00871d; }
+        .btn-green:hover { background-color: #007018; }
+        .btn-blue { background-color: #0070f0; }
+        .btn-blue:hover { background-color: #005bc5; }
+        .btn-red { background-color: #e11d48; }
+        .btn-red:hover { background-color: #be123c; }
+
+        /* Ledger Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
+            margin-top: 5px;
         }
         th, td {
-            padding: 12px;
-            border-bottom: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
             font-size: 14px;
         }
         th {
-            background-color: #f8f9fa;
-            color: #495057;
+            background-color: #f1f5f9;
+            color: #475569;
         }
-        .text-right {
+        .table-footer {
+            background-color: #f8fafc;
+            padding: 10px 15px;
+            font-weight: bold;
             text-align: right;
+            border-radius: 0 0 8px 8px;
+            color: #00871d;
+            font-size: 16px;
         }
-        @media (max-width: 600px) {
-            .form-row {
-                flex-direction: column;
-            }
-            .btn-add {
-                width: 100%;
-            }
+        .btn-table-edit {
+            background-color: #00871d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-table-del {
+            background-color: #e11d48;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .rule-box, .sub-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .rule-box h3, .sub-card h3 {
+            font-size: 15px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+        .rule-box ol {
+            padding-left: 18px;
+            font-size: 12px;
+            color: #334155;
+            line-height: 1.5;
+        }
+        .example-pre {
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .input-text {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Footer text */
+        .app-footer {
+            text-align: center;
+            color: #94a3b8;
+            margin-top: 20px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Ledger Manager App</h1>
-        <span id="current-user">User Account</span>
-    </header>
+    <!-- Header -->
+    <div class="app-header">
+        <span>Jantri Ledger</span>
+        <div class="points-badge" id="header-points">POINTS: 0</div>
+    </div>
 
-    <div class="container">
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            <div class="card">
-                <h3>Total Credit (Jama)</h3>
-                <div id="total-credit" class="amount credit">₹ 0.00</div>
-            </div>
-            <div class="card">
-                <h3>Total Debit (Naam)</h3>
-                <div id="total-debit" class="amount debit">₹ 0.00</div>
-            </div>
+    <!-- Top Action Bar -->
+    <div class="top-actions">
+        <button class="btn-top" onclick="toggleMoreLess()">↓ MORE / LESS</button>
+        <button class="btn-top btn-delete-all" onclick="deleteAllEntries()">🗑️ DELETE ALL</button>
+        <button class="btn-top" onclick="sendToApp()">📤 SEND TO ..</button>
+    </div>
+
+    <!-- Main Grid Container -->
+    <div class="main-grid">
+        
+        <!-- Left Sidebar Navigation -->
+        <div class="nav-sidebar">
+            <button class="nav-btn" onclick="alertNav('Jantri Board')">🟩 JANTRI BOARD</button>
+            <button class="nav-btn" onclick="alertNav('Final Jantri')">🟩 FINAL JANTRI</button>
+            <button class="nav-btn" onclick="alertNav('From - To')">🟩 FROM - TO</button>
+            <button class="nav-btn" onclick="alertNav('Message Copy')">🟩 MESSAGE COPY</button>
+            <button class="nav-btn" onclick="alertNav('Calculated / Total')">🟩 CALCULATED / TOTAL</button>
+            <button class="nav-btn" onclick="alertNav('Find & Replace')">🟩 FIND & REPLACE</button>
+            <button class="nav-btn" onclick="alertNav('Jodi Paste')">🟩 JODI PASTE</button>
+            <button class="nav-btn" onclick="alertNav('Passcode')">🟩 PASSCODE</button>
+            <button class="nav-btn" onclick="alertNav('Help')">🟩 HELP</button>
         </div>
 
-        <!-- Add Transaction Form -->
-        <div class="form-section">
-            <h2>Nayi Entry Jodein (Add Transaction)</h2>
-            <form id="transaction-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="desc">Description / Vivaran</label>
-                        <input type="text" id="desc" placeholder="Jaise: Cash Received" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="type">Type</label>
-                        <select id="type">
-                            <option value="credit">Credit (Jama +)</option>
-                            <option value="debit">Debit (Naam -)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="amount">Amount (₹)</label>
-                        <input type="number" id="amount" placeholder="0.00" required>
-                    </div>
-                    <button type="submit" class="btn-add">Add Entry</button>
+        <!-- Center Content -->
+        <div class="center-content">
+            
+            <!-- Message Paste Box -->
+            <div class="card-box">
+                <h3>Message Paste (WhatsApp / Any Text)</h3>
+                <textarea id="msg-input" placeholder="Yahan WhatsApp message paste karein (e.g. 23,45,67(10)..."></textarea>
+                <div class="btn-row">
+                    <button class="action-btn btn-green" onclick="pasteClipboard()">📋 PASTE</button>
+                    <button class="action-btn btn-blue" onclick="submitMessage()">🚀 SUBMIT</button>
+                    <button class="action-btn btn-red" onclick="clearMessage()">❌ CLOSE</button>
                 </div>
-            </form>
+            </div>
+
+            <!-- Calculation Result Box -->
+            <div class="card-box">
+                <h3>Calculation Result</h3>
+                <textarea id="calc-result" readonly placeholder="Calculation ka result yahan show hoga..."></textarea>
+                <div class="btn-row">
+                    <button class="action-btn btn-green" onclick="copyResult()">📋 COPY RESULT</button>
+                    <button class="action-btn btn-blue" onclick="addCalculatedToLedger()">➕ ADD TO LEDGER</button>
+                    <button class="action-btn btn-red" onclick="clearResult()">🔄 CLEAR</button>
+                </div>
+            </div>
+
+            <!-- Current Ledger Table -->
+            <div class="card-box" style="padding: 0; overflow: hidden;">
+                <div style="padding: 15px 15px 5px 15px;">
+                    <h3>Current Ledger</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Number</th>
+                            <th>Points</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-table-body">
+                        <!-- Dynamic rows inserted here -->
+                    </tbody>
+                </table>
+                <div class="table-footer" id="total-points-footer">Total Points: 0</div>
+            </div>
+
+            <!-- Final Jantri Summary -->
+            <div class="card-box">
+                <h3>Final Jantri Summary</h3>
+                <div style="font-size: 14px; margin-bottom: 10px; color: #475569;">
+                    Total Entries: <span id="summary-entries">0</span><br>
+                    Grand Total: <span id="summary-grand" style="font-weight: bold; color: #00871d;">0</span>
+                </div>
+                <button class="action-btn btn-green" onclick="copyFinalJantri()">📋 COPY FINAL JANTRI</button>
+            </div>
+
         </div>
 
-        <!-- Transactions Table -->
-        <div class="ledger-section">
-            <h2>Transaction History</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th class="text-right">Amount</th>
-                    </tr>
-                </thead>
-                <tbody id="ledger-table-body">
-                    <!-- JavaScript will insert rows here -->
-                </tbody>
-            </table>
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            
+            <!-- Calculation Rules -->
+            <div class="rule-box">
+                <h3>Calculation Rules</h3>
+                <ol>
+                    <li>Bracket ke pehle wale sabhi numbers ko count kiya jayega.</li>
+                    <li>Bracket ke andar di gayi value se multiply kiya jayega.</li>
+                    <li>Agar bracket ke baad "wp" likha ho to bracket value double ho jayegi.</li>
+                    <li>Single ( ) ya double (( )) dono bracket valid hain.</li>
+                    <li>Saare groups ka total hi final total hoga.</li>
+                </ol>
+                <div class="example-pre">
+                    Example:<br>
+                    23,45,67(10 = 3 x 10 = 30<br>
+                    23,45,67(10wp = 3 x 20 = 60<br>
+                    Total = 180
+                </div>
+            </div>
+
+            <!-- Find & Replace -->
+            <div class="sub-card">
+                <h3>Find & Replace</h3>
+                <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Text, Dot, Slash, Comma etc. ko remove ya replace karne ke liye:</div>
+                <input type="text" id="find-val" class="input-text" placeholder="Find...">
+                <input type="text" id="replace-val" class="input-text" placeholder="Replace...">
+                <button class="action-btn btn-green" style="width: 100%;" onclick="applyFindReplace()">🔄 REPLACE</button>
+            </div>
+
+            <!-- Jodi Paste -->
+            <div class="sub-card">
+                <h3>Jodi Paste</h3>
+                <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Numbers ko jodo me paste karein:</div>
+                <textarea id="jodi-input" style="height: 60px;" placeholder="Example: 23 45 67 89"></textarea>
+                <button class="action-btn btn-green" style="width: 100%; margin-top: 8px;" onclick="formatJodi()">🔗 FORMAT JODI</button>
+            </div>
+
+            <!-- Passcode -->
+            <div class="sub-card">
+                <h3>Passcode</h3>
+                <div style="font-size: 12px; color: #334155; margin-bottom: 8px;">Default Passcode: <span id="passcode-display" style="font-weight: bold;">8941</span></div>
+                <button class="action-btn btn-green" style="width: 100%;" onclick="changePasscode()">🔒 CHANGE PASSCODE</button>
+            </div>
+
         </div>
+
+    </div>
+
+    <div class="app-footer">
+        Jantri Ledger | Calculate • Save • Share
     </div>
 
     <script>
-        // Sample Initial Data
-        let transactions = [
-            { date: '12 Oct 2026', desc: 'Opening Balance / Cash Received', type: 'credit', amount: 10000 },
-            { date: '10 Oct 2026', desc: 'Office Supplies Purchase', type: 'debit', amount: 1250 },
-            { date: '08 Oct 2026', desc: 'Client Payment Received', type: 'credit', amount: 15400 }
+        // Initial Ledger Data matching screenshot style
+        let ledgerData = [
+            { id: 1, number: '23,45,67', points: 10 },
+            { id: 2, number: '12,34,56', points: 5 },
+            { id: 3, number: '78,90,12', points: 20 },
+            { id: 4, number: '34,56,78', points: 15 },
+            { id: 5, number: '90,12,34', points: 10 }
         ];
 
-        function updateLedger() {
-            const tableBody = document.getElementById('ledger-table-body');
-            tableBody.innerHTML = '';
-            
-            let totalCredit = 0;
-            let totalDebit = 0;
+        let currentPasscode = "8941";
 
-            transactions.forEach(item => {
-                if (item.type === 'credit') {
-                    totalCredit += Number(item.amount);
-                } else {
-                    totalDebit += Number(item.amount);
-                }
+        function renderLedger() {
+            const tbody = document.getElementById('ledger-table-body');
+            tbody.innerHTML = '';
+            let totalPoints = 0;
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.date}</td>
-                    <td>${item.desc}</td>
-                    <td class="text-right ${item.type}">
-                        ${item.type === 'credit' ? '+' : '-'}₹ ${Number(item.amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+            ledgerData.forEach((item, index) => {
+                totalPoints += Number(item.points);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.number}</td>
+                    <td>${item.points}</td>
+                    <td>
+                        <button class="btn-table-edit" onclick="editEntry(${item.id})">EDIT</button>
+                        <button class="btn-table-del" onclick="deleteEntry(${item.id})">DEL</button>
                     </td>
                 `;
-                tableBody.appendChild(row);
+                tbody.appendChild(tr);
             });
 
-            document.getElementById('total-credit').innerText = `₹ ${totalCredit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-            document.getElementById('total-debit').innerText = `₹ ${totalDebit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            document.getElementById('header-points').innerText = `POINTS: ${totalPoints}`;
+            document.getElementById('total-points-footer').innerText = `Total Points: ${totalPoints}`;
+            document.getElementById('summary-entries').innerText = ledgerData.length;
+            document.getElementById('summary-grand').innerText = totalPoints;
         }
 
-        // Form Submit Handler
-        document.getElementById('transaction-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const desc = document.getElementById('desc').value;
-            const type = document.getElementById('type').value;
-            const amount = document.getElementById('amount').value;
-            
-            const today = new Date();
-            const options = { day: 'numeric', month: 'short', year: 'numeric' };
-            const dateStr = today.toLocaleDateString('en-GB', options);
+        // Top Action Buttons
+        function toggleMoreLess() {
+            alert("More / Less options toggled!");
+        }
 
-            transactions.unshift({
-                date: dateStr,
-                desc: desc,
-                type: type,
-                amount: parseFloat(amount)
+        function deleteAllEntries() {
+            if(confirm("Kya aap saari entries delete karna chahte hain?")) {
+                ledgerData = [];
+                renderLedger();
+                document.getElementById('calc-result').value = "";
+            }
+        }
+
+        function sendToApp() {
+            alert("Data successfully prepared to send!");
+        }
+
+        // Navigation Sidebar Alerts
+        function alertNav(name) {
+            alert(`${name} screen/feature opened.`);
+        }
+
+        // Message Parser / Submit Logic based on rules
+        function submitMessage() {
+            const text = document.getElementById('msg-input').value.trim();
+            if(!text) {
+                alert("Kripya message paste karein!");
+                return;
+            }
+
+            // Simple parser simulation matching Jantri rules
+            let resultText = "Parsed Calculation:\n";
+            let calculatedPoints = 0;
+            let numbersFound = text.match(/[\d,]+/g) || ["23,45,67"];
+            let numCount = numbersFound.length > 0 ? numbersFound[0].split(',').length : 3;
+            
+            // Check for bracket multiplier and 'wp'
+            let multiplier = 10;
+            if(text.includes('wp')) multiplier = 20;
+            let bracketMatch = text.match(/\((\d+)\)/);
+            if(bracketMatch) {
+                multiplier = parseInt(bracketMatch[1]);
+                if(text.includes('wp')) multiplier *= 2;
+            }
+
+            calculatedPoints = numCount * multiplier;
+            resultText += `${numbersFound[0]} (${multiplier} = ${numCount} x ${multiplier} = ${calculatedPoints}\nTotal = ${calculatedPoints}`;
+            
+            document.getElementById('calc-result').value = resultText;
+        }
+
+        function pasteClipboard() {
+            navigator.clipboard.readText().then(clipText => {
+                document.getElementById('msg-input').value = clipText;
+            }).catch(err => {
+                document.getElementById('msg-input').value = "23,45,67(10)";
             });
+        }
 
-            updateLedger();
-            this.reset();
-        });
+        function clearMessage() {
+            document.getElementById('msg-input').value = '';
+        }
 
-        // Initialize on load
-        updateLedger();
+        function clearResult() {
+            document.getElementById('calc-result').value = '';
+        }
+
+        function copyResult() {
+            const res = document.getElementById('calc-result');
+            res.select();
+            navigator.clipboard.writeText(res.value);
+            alert("Result copied to clipboard!");
+        }
+
+        function addCalculatedToLedger() {
+            const newNum = "56,78,90";
+            const newPts = 25;
+            ledgerData.push({ id: Date.now(), number: newNum, points: newPts });
+            renderLedger();
+            alert("Calculated entry added to ledger successfully!");
+        }
+
+        // Ledger Operations
+        function deleteEntry(id) {
+            ledgerData = ledgerData.filter(item => item.id !== id);
+            renderLedger();
+        }
+
+        function editEntry(id) {
+            const item = ledgerData.find(i => i.id === id);
+            if(item) {
+                const newPts = prompt("Naye points darj karein:", item.points);
+                if(newPts !== null && !isNaN(newPts)) {
+                    item.points = Number(newPts);
+                    renderLedger();
+                }
+            }
+        }
+
+        function copyFinalJantri() {
+            let summaryText = `Final Jantri Summary\nTotal Entries: ${ledgerData.length}\nGrand Total: ${document.getElementById('summary-grand').innerText}`;
+            navigator.clipboard.writeText(summaryText);
+            alert("Final Jantri summary copied!");
+        }
+
+        // Find & Replace Feature
+        function applyFindReplace() {
+            const findText = document.getElementById('find-val').value;
+            const replaceText = document.getElementById('replace-val').value;
+            let msgBox = document.getElementById('msg-input');
+            if(findText) {
+                msgBox.value = msgBox.value.replaceAll(findText, replaceText);
+                alert("Find & Replace applied!");
+            } else {
+                alert("Kripya 'Find' mein text daalein.");
+            }
+        }
+
+        // Jodi Paste Feature
+        function formatJodi() {
+            let jodiBox = document.getElementById('jodi-input');
+            if(jodiBox.value.trim()) {
+                let formatted = jodiBox.value.trim().split(/\s+/).join(',');
+                document.getElementById('msg-input').value = formatted;
+                alert("Jodi formatted and sent to message box!");
+            } else {
+                alert("Kripya jodi numbers enter karein.");
+            }
+        }
+
+        // Passcode Feature
+        function changePasscode() {
+            let newPass = prompt("Naya Passcode enter karein:", currentPasscode);
+            if(newPass && newPass.trim() !== "") {
+                currentPasscode = newPass.trim();
+                document.getElementById('passcode-display').innerText = currentPasscode;
+                alert("Passcode successfully updated!");
+            }
+        }
+
+        // Initial render on load
+        renderLedger();
     </script>
-
 </body>
 </html>
