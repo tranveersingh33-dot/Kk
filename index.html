@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jantri Dashboard</title>
+    <title>Jantri Dashboard - Working</title>
     <style>
         * {
             box-sizing: border-box;
@@ -33,33 +33,25 @@
         .btn {
             border: none;
             padding: 10px 5px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: white;
             border-radius: 5px;
             cursor: pointer;
             text-align: center;
         }
-        .btn-dark-blue { background-color: #0d233a; grid-column: span 1; }
-        .btn-dark-blue-full { background-color: #0d233a; grid-column: span 3; }
+        .btn:active {
+            opacity: 0.8;
+        }
+        .btn-dark-blue { background-color: #0d233a; }
         .btn-green { background-color: #198754; }
         .btn-blue { background-color: #0d6efd; }
         .btn-red { background-color: #dc3545; }
         
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
-        .full-width {
-            grid-column: span 2;
-        }
-        
+        .full-span-3 { grid-column: span 3; }
+        .full-span-2 { grid-column: span 2; }
+        .full-span-1 { grid-column: span 1; }
+
         .card {
             background: #f8f9fa;
             border: 1px solid #dcdcdc;
@@ -109,6 +101,46 @@
             background-color: #0d233a;
             color: white;
         }
+
+        /* Modal Popup Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .modal-content h3 {
+            margin-bottom: 10px;
+            color: #0d233a;
+        }
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+        .close-modal {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -116,23 +148,23 @@
 <div class="container">
     <!-- Top Action Buttons -->
     <div class="top-buttons">
-        <button class="btn btn-dark-blue" onclick="handleBtn('More / Less')">MORE / LESS</button>
-        <button class="btn btn-dark-blue" onclick="handleBtn('Delete All')">DELETE ALL</button>
-        <button class="btn btn-dark-blue" onclick="handleBtn('Send To')">SEND TO</button>
+        <button class="btn btn-dark-blue full-span-1" onclick="openModal('More / Less', 'Yahan More / Less ki details show hongi.')">MORE / LESS</button>
+        <button class="btn btn-dark-blue full-span-1" onclick="deleteAllData()">DELETE ALL</button>
+        <button class="btn btn-dark-blue full-span-1" onclick="openModal('Send To', 'Yahan se data share ya send kiya ja sakega.')">SEND TO</button>
         
-        <button class="btn btn-green full-width" style="grid-column: span 1;" onclick="handleBtn('Jantri Board')">📊 JANTRI BOARD</button>
-        <button class="btn btn-green full-width" style="grid-column: span 2;" onclick="handleBtn('Final Jantri')">📊 FINAL JANTRI</button>
+        <button class="btn btn-green full-span-1" onclick="openModal('Jantri Board', 'Jantri Board ka panel yahan khulega.')">📊 JANTRI BOARD</button>
+        <button class="btn btn-green full-span-2" onclick="openModal('Final Jantri', 'Final Jantri ki report yahan dikhegi.')">📊 FINAL JANTRI</button>
         
-        <button class="btn btn-green" onclick="handleBtn('From - To')">⇄ FROM - TO</button>
-        <button class="btn btn-green" onclick="handleBtn('Message Copy')">≡ MESSAGE COPY</button>
+        <button class="btn btn-green" onclick="openModal('From - To', 'From aur To range select karne ka option.')">⇄ FROM - TO</button>
+        <button class="btn btn-green" onclick="copyEntireMessage()">≡ MESSAGE COPY</button>
         
-        <button class="btn btn-green" onclick="handleBtn('Calculated / Total')">🗂 CALCULATED / TOTAL</button>
-        <button class="btn btn-green" onclick="handleBtn('Find & Replace')">🔍 FIND & REPLACE</button>
+        <button class="btn btn-green" onclick="openModal('Calculated / Total', 'Calculated aur Total summary yahan hai.')">🗂 CALCULATED / TOTAL</button>
+        <button class="btn btn-green" onclick="openModal('Find & Replace', 'Numbers ya text ko find aur replace karne ka tool.')">🔍 FIND & REPLACE</button>
         
-        <button class="btn btn-green" onclick="handleBtn('Jodi Paste')">↗ JODI PASTE</button>
-        <button class="btn btn-green" onclick="handleBtn('Passcode')">🔒 PASSCODE</button>
+        <button class="btn btn-green" onclick="openModal('Jodi Paste', 'Jodi direct paste karne ka feature.')">↗ JODI PASTE</button>
+        <button class="btn btn-green" onclick="openModal('Passcode', 'App ka passcode ya lock set karein.')">🔒 PASSCODE</button>
         
-        <button class="btn btn-green btn-dark-blue-full" onclick="handleBtn('Help')">? HELP</button>
+        <button class="btn btn-green btn-dark-blue full-span-3" onclick="openModal('Help & Support', 'Kisi bhi madad ke liye yahan guidelines hain.')">? HELP</button>
     </div>
 
     <!-- Message Paste Section -->
@@ -153,7 +185,7 @@
         <div class="action-row">
             <button class="btn btn-green" onclick="copyResult()">COPY RESULT</button>
             <button class="btn btn-green" onclick="addToLedgerFromCalc()">ADD TO LEDGER</button>
-            <button class="btn btn-dark-blue" style="background-color: #091c2e;" onclick="clearCalc()">CLEAR</button>
+            <button class="btn btn-dark-blue" onclick="clearCalc()">CLEAR</button>
         </div>
     </div>
 
@@ -162,7 +194,7 @@
         <div class="card-title">Current Ledger</div>
         <input type="text" id="ledgerNumber" placeholder="Number / Jodi">
         <input type="number" id="ledgerPoints" placeholder="Points">
-        <button class="btn btn-green" style="width: 100%;" onclick="addLedger()">ADD</button>
+        <button class="btn btn-green" style="width: 100%; margin-bottom: 8px;" onclick="addLedger()">ADD</button>
         
         <table id="ledgerTable">
             <thead>
@@ -174,90 +206,137 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Dynamic rows will add here -->
+                <!-- Dynamic rows -->
             </tbody>
         </table>
     </div>
 </div>
 
+<!-- General Popup Modal -->
+<div id="customModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Title</h3>
+        <p id="modalDesc">Description</p>
+        <button class="close-modal" onclick="closeModal()">OK / CLOSE</button>
+    </div>
+</div>
+
 <script>
-    // Top buttons click handler
-    function handleBtn(name) {
-        alert(name + " button par click kiya gaya hai!");
+    // Modal Functions
+    function openModal(title, desc) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalDesc').innerText = desc;
+        document.getElementById('customModal').style.display = 'flex';
     }
 
-    // Paste function using Clipboard API
+    function closeModal() {
+        document.getElementById('customModal').style.display = 'none';
+    }
+
+    // Delete All Data Function
+    function deleteAllData() {
+        if(confirm("Kya aap sabhi data delete karna chahte hain?")) {
+            document.getElementById('messageInput').value = "";
+            document.getElementById('calculationResult').value = "Calculation result yahan aayega.";
+            ledgerData = [];
+            renderLedger();
+            alert("Sabhi data clear kar diya gaya hai!");
+        }
+    }
+
+    // Paste Function
     async function pasteText() {
         try {
             const text = await navigator.clipboard.readText();
             document.getElementById('messageInput').value = text;
         } catch (err) {
-            alert("Paste karne ki permission nahi mili yaclipboard khali hai.");
+            alert("Clipboard permission nahi mili ya clipboard khali hai. Aap manual type ya paste kar sakte hain.");
         }
     }
 
-    // Submit message logic
+    // Submit Message Function
     function submitMessage() {
-        let msg = document.getElementById('messageInput').value;
-        if(msg.trim() === "") {
-            alert("Kripya pehle kuch message likhein ya paste karein!");
+        let msg = document.getElementById('messageInput').value.trim();
+        if(msg === "") {
+            alert("Kripya pehle message box me kuch text likhein ya paste karein!");
             return;
         }
-        // Example calculation processing simulation
-        document.getElementById('calculationResult').value = "Processed: " + msg.substring(0, 20) + "... (Total calculated)";
+        // Process message simulation
+        let lines = msg.split('\n').length;
+        document.getElementById('calculationResult').value = `Processed ${lines} lines successfully. Total Calculated.`;
     }
 
-    // Close/Clear message box
+    // Close/Clear Message Box
     function closeMessage() {
         document.getElementById('messageInput').value = "";
     }
 
-    // Copy result logic
+    // Copy Result Function
     function copyResult() {
         let resText = document.getElementById('calculationResult').value;
         navigator.clipboard.writeText(resText);
-        alert("Result copy ho gaya hai!");
+        alert("Result clipboard par copy ho gaya hai!");
     }
 
-    // Clear calculation
+    // Clear Calculation Box
     function clearCalc() {
         document.getElementById('calculationResult').value = "";
     }
 
-    // Add to ledger from calculation result
-    function addToLedgerFromCalc() {
-        let resText = document.getElementById('calculationResult').value;
-        document.getElementById('ledgerNumber').value = "Sample";
-        document.getElementById('ledgerPoints').value = "100";
-        alert("Result ledger me bhej diya gaya hai.");
+    // Copy Entire Message
+    function copyEntireMessage() {
+        let msg = document.getElementById('messageInput').value;
+        if(msg) {
+            navigator.clipboard.writeText(msg);
+            alert("Message copy ho gaya hai!");
+        } else {
+            alert("Copy karne ke liye koi message nahi hai!");
+        }
     }
 
-    // Ledger items array
+    // Ledger Data Array
     let ledgerData = [];
 
-    // Add manual entry to ledger table
+    // Add Result to Ledger automatically
+    function addToLedgerFromCalc() {
+        let resText = document.getElementById('calculationResult').value;
+        if(resText.includes("yahan aayega") || resText === "") {
+            alert("Pehle valid calculation result generate karein!");
+            return;
+        }
+        ledgerData.push({ number: "Calc-Res", points: "50" });
+        renderLedger();
+        alert("Result Ledger me add kar diya gaya hai!");
+    }
+
+    // Add Manual Entry to Ledger
     function addLedger() {
-        let num = document.getElementById('ledgerNumber').value;
-        let pts = document.getElementById('ledgerPoints').value;
+        let num = document.getElementById('ledgerNumber').value.trim();
+        let pts = document.getElementById('ledgerPoints').value.trim();
 
         if(num === "" || pts === "") {
-            alert("Kripya Number aur Points dono bharein!");
+            alert("Kripya Number/Jodi aur Points dono enter karein!");
             return;
         }
 
         ledgerData.push({ number: num, points: pts });
         renderLedger();
 
-        // Inputs clear karein
+        // Clear input fields
         document.getElementById('ledgerNumber').value = "";
         document.getElementById('ledgerPoints').value = "";
     }
 
-    // Render ledger table
+    // Render Ledger Table
     function renderLedger() {
         let tbody = document.querySelector('#ledgerTable tbody');
         tbody.innerHTML = "";
         
+        if(ledgerData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="color: #888;">No ledger records found</td></tr>`;
+            return;
+        }
+
         ledgerData.forEach((item, index) => {
             let row = `<tr>
                 <td>${index + 1}</td>
@@ -269,11 +348,14 @@
         });
     }
 
-    // Delete ledger row
+    // Delete Single Ledger Item
     function deleteLedger(index) {
         ledgerData.splice(index, 1);
         renderLedger();
     }
+
+    // Initialize empty table on load
+    renderLedger();
 </script>
 
 </body>
