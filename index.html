@@ -154,7 +154,22 @@ function calculate(){
   $('calcOutput').textContent = output.join('\n');
   notify('Total: ' + grandTotal);
 }
-function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(x=>entries.push({id:uid(),number:x.number,points:x.points}));save();render();notify('Results added')}
+function addResults(){
+ if(!lastResults.length)return notify('Pehle calculate karein');
+ let addedNumbers=0;
+ lastResults.forEach(group=>{
+   const nums=String(group.number).split(',').map(n=>n.trim()).filter(Boolean);
+   if(!nums.length)return;
+   // Group total is divided across the numbers so each number's value appears
+   // separately on the Jantri Board, while the ledger grand total stays unchanged.
+   const perNumber=Number(group.points)/nums.length;
+   nums.forEach(n=>{
+     entries.push({id:uid(),number:n,points:perNumber});
+     addedNumbers++;
+   });
+ });
+ save();render();notify(addedNumbers+' numbers added; board values updated');
+}
 function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
 async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
 function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
