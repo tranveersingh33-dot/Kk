@@ -20,7 +20,12 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:8px;margin-top:10px}
 .example{background:#e7f7ed;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.8}.hidden{display:none!important}
 #boardGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:11px 2px;min-height:42px;font-size:12px}
+#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:8px 2px;min-height:42px;font-size:12px}
+.value-chart{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.value-cell{background:#fff;border:1px solid #ccd5df;border-radius:6px;padding:7px 2px;text-align:center;min-width:0;cursor:pointer}
+.value-cell strong{display:block;font-size:12px;color:#06183f}
+.value-cell span{display:block;font-size:11px;color:#078b2c;margin-top:4px;overflow-wrap:anywhere}
+.value-cell.chosen{background:#078b2c;border-color:#078b2c}.value-cell.chosen strong,.value-cell.chosen span{color:#fff}
 .special-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 #toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 18px;border-radius:22px;z-index:9;max-width:90%;text-align:center}
 footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:12px}label{display:block;font-weight:bold;margin-top:8px}
@@ -55,6 +60,10 @@ footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:1
 <div class="row"><input id="boardStart" value="00" aria-label="Board start"><input id="boardEnd" value="99" aria-label="Board end"></div>
 <div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div>
 <div id="boardGrid"></div><label>Points per number</label><input id="boardPoints" type="number" placeholder="Points"><button style="width:100%" onclick="addBoard()">ADD SELECTED</button>
+<h3>Jantri Number Values</h3>
+<p>Har number ki points value neeche dikhegi. Number select karke points edit kar sakte hain.</p>
+<div class="row"><input id="chartValue" type="number" placeholder="Selected number ki value"><button onclick="applyChartValue()">SET SELECTED VALUE</button></div>
+<div id="valueChart" class="value-chart"></div>
 <h3>Special Number Chart</h3><div id="specialGrid" class="special-grid"></div></section>
 <section class="card hidden" id="range"><h2>From - To</h2><div class="row"><input id="from" value="00"><input id="to" value="99"></div><button onclick="makeRange()">GENERATE RANGE</button><textarea id="rangeOutput"></textarea><button onclick="copy('rangeOutput')">COPY RANGE</button></section>
 <section class="card hidden" id="messageCopy"><h2>Message Copy</h2><textarea id="original" placeholder="Message paste karein"></textarea>
@@ -79,7 +88,9 @@ footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:1
 </div><footer>Jantri Ledger | Calculate • Save • Share</footer><div id="toast"></div>
 <script>
 const $=id=>document.getElementById(id);let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[],wpMode=false;
+let chartValues={};
 try{entries=JSON.parse(localStorage.getItem('jantriLedgerV5')||'[]')}catch(e){entries=[]}if(!Array.isArray(entries))entries=[];
+try{chartValues=JSON.parse(localStorage.getItem('jantriChartValuesV1')||'{}')}catch(e){chartValues={}}
 function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function save(){try{localStorage.setItem('jantriLedgerV5',JSON.stringify(entries))}catch(e){notify('Storage full: CSV download karein')}}
@@ -94,51 +105,87 @@ function clearMessage(){$('message').value='';notify('Message cleared')}
 async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}
 function toggleWP(){wpMode=!wpMode;$('wpToggle').textContent='WP MODE: '+(wpMode?'ON':'OFF');$('wpToggle').classList.toggle('wp-active',wpMode);notify(wpMode?'WP mode ON: multipliers double':'WP mode OFF')}
 function calculate(){
-lastResults=[];let out=[],grand=0,groups=0;
-const lines=$('message').value.split(/\r?\n/);
-for(const line of lines){if(!line.trim())continue;
- // Split at every bracketed multiplier; each group owns the number tokens since the previous group.
- const re=/\(?\s*(\d+)\s*\)?\s*(wp)?/gi;
- let cursor=0, pending='', lineTotal=0, found=false, m;
- while((m=re.exec(line))!==null){
-   const between=line.slice(cursor,m.index);
-   // A multiplier is treated as a group only when immediately preceded by at least one number.
-   const nums=pending.match(/\d+/g)||[];
-   if(nums.length && /^\s*[\])}]*\s*$/u.test(between)){
-     let val=Number(m[1]),hasWp=!!m[2]||/\bwp\b/i.test(line.slice(re.lastIndex,re.lastIndex+5));
-     let double=wpMode||hasWp;let mult=val*(double?2:1),points=nums.length*mult;
-     lastResults.push({number:nums.join(','),points});groups++;grand+=points;lineTotal+=points;found=true;
-     out.push(nums.join(', ')+' | '+nums.length+' × '+mult+' = '+points+(double?' (WP double)':''));
-     pending='';cursor=re.lastIndex;
-     // Consume WP suffix if regex did not include it.
-     const tail=line.slice(cursor).match(/^\s*wp\b/i);if(tail){cursor+=tail[0].length;re.lastIndex=cursor}
-   } else {
-     // Keep text before this possible multiplier for the next group.
-     pending=line.slice(cursor,m.index+ m[0].length);cursor=re.lastIndex;
-   }
- }
- // Fallback parser handles common formats reliably, including multiple bracket groups.
- if(!found){
-   const matches=[...line.matchAll(/([\s\S]*?)\(\s*(\d+)\s*\)?\s*(wp)?/gi)];
-   let lastEnd=0, consumed=[];
-   for(const mm of matches){
-     let segment=line.slice(lastEnd,mm.index)+mm[1];let ns=segment.match(/\d+/g)||[];
-     if(ns.length){let val=Number(mm[2]),dbl=wpMode||!!mm[3]||/\bwp\b/i.test(line.slice(mm.index+mm[0].length,mm.index+mm[0].length+5)),mult=val*(dbl?2:1),points=ns.length*mult;lastResults.push({number:ns.join(','),points});groups++;grand+=points;lineTotal+=points;out.push(ns.join(', ')+' | '+ns.length+' × '+mult+' = '+points+(dbl?' (WP double)':''));lastEnd=mm.index+mm[0].length;found=true}
-   }
-   if(!found)out.push('Skipped (bracket/multiplier nahi mila): '+line);
- }
- if(found)out.push('Line total = '+lineTotal);
+  lastResults = [];
+  const output = [];
+  let grandTotal = 0, groupCount = 0;
+  const bracketPattern = /\(\s*(\d+)\s*\)?\s*(wp)?/gi;
+
+  for (const line of $('message').value.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    let cursor = 0, lineTotal = 0, match, foundOnLine = false;
+    bracketPattern.lastIndex = 0;
+
+    while ((match = bracketPattern.exec(line)) !== null) {
+      const numberText = line.slice(cursor, match.index);
+      const numbers = numberText.match(/\d+/g) || [];
+      const suffixAfter = line.slice(bracketPattern.lastIndex).match(/^\s*wp\b/i);
+
+      if (numbers.length) {
+        const bracketValue = Number(match[1]);
+        const hasWP = Boolean(match[2]) || Boolean(suffixAfter);
+        const multiplier = bracketValue * ((wpMode || hasWP) ? 2 : 1);
+        const points = numbers.length * multiplier;
+        lastResults.push({number: numbers.join(','), points});
+        groupCount++;
+        grandTotal += points;
+        lineTotal += points;
+        foundOnLine = true;
+        output.push(numbers.join(', ') + ' | ' + numbers.length + ' × ' + multiplier +
+          ' = ' + points + ((wpMode || hasWP) ? ' (WP double)' : ''));
+      }
+
+      cursor = bracketPattern.lastIndex;
+      if (suffixAfter) {
+        cursor += suffixAfter[0].length;
+        bracketPattern.lastIndex = cursor;
+      }
+    }
+
+    if (foundOnLine) output.push('Line total = ' + lineTotal);
+    else output.push('Skipped (bracket se pehle numbers nahi mile): ' + line);
+  }
+
+  if (!groupCount) {
+    $('calcOutput').textContent = 'Example: 23,45,67(10wp\\n12,34(5)\\nHar bracket group ke numbers count hokar multiplier se multiply honge.';
+    return;
+  }
+  output.push('--------------------', 'GROUPS = ' + groupCount, 'GRAND TOTAL = ' + grandTotal);
+  $('calcOutput').textContent = output.join('\n');
+  notify('Total: ' + grandTotal);
 }
-if(!groups){$('calcOutput').textContent='Format example: 23,45,67(10wp';return}
-out.push('--------------------','GROUPS = '+groups,'GRAND TOTAL = '+grand);$('calcOutput').textContent=out.join('\n');notify('Total: '+grand)}
 function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(x=>entries.push({id:uid(),number:x.number,points:x.points}));save();render();notify('Results added')}
 function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
 async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
 function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
 function makeRange(){let a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
 function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
-function drawBoard(){let g=$('boardGrid');g.innerHTML='';board.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)})}
-function drawSpecial(){let g=$('specialGrid');g.innerHTML='';let vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));vals.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawSpecial()};g.appendChild(b)})}
+function drawBoard(){
+ let g=$('boardGrid');g.innerHTML='';
+ board.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)});
+ drawValueChart();
+}
+function drawValueChart(){
+ const g=$('valueChart'); if(!g)return; g.innerHTML='';
+ const nums=[...board];
+ nums.forEach(n=>{
+   const b=document.createElement('button');
+   b.className='value-cell'+(selected.has(n)?' chosen':'');
+   const label=document.createElement('strong');label.textContent=n;
+   const val=document.createElement('span');val.textContent=(chartValues[n]!==undefined?chartValues[n]:'Value: —');
+   b.append(label,val);
+   b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};
+   g.appendChild(b);
+ });
+}
+function applyChartValue(){
+ const v=$('chartValue').value;
+ if(v===''||!Number.isFinite(Number(v)))return alert('Points value daalein');
+ if(!selected.size)return alert('Pehle chart mein number select karein');
+ selected.forEach(n=>chartValues[n]=Number(v));
+ try{localStorage.setItem('jantriChartValuesV1',JSON.stringify(chartValues))}catch(e){}
+ drawBoard();drawSpecial();notify('Selected numbers ki value set ho gayi');
+}
+function drawSpecial(){let g=$('specialGrid');g.innerHTML='';let vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));vals.forEach(n=>{let b=document.createElement('button');b.textContent=n+(chartValues[n]!==undefined?' : '+chartValues[n]:'');b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawSpecial()};g.appendChild(b)})}
 function selectAll(on){selected=on?new Set([...board,...Array.from({length:10},(_,i)=>String(i).repeat(3)),...Array.from({length:10},(_,i)=>'A'+String(i).repeat(3))]):new Set();drawBoard();drawSpecial()}
 function addBoard(){let p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Select numbers aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board entries added')}
 function replaceText(){let s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceTextInput').value)}
