@@ -1,60 +1,237 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jantri Ledger</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#edf1f5;font-family:Arial,sans-serif;color:#10234c}header{background:#06183f;color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}header h1{font-size:23px;margin:0}.top{display:flex;gap:7px;padding:10px}button{border:0;border-radius:8px;padding:10px;background:#078b2c;color:#fff;font-weight:bold;cursor:pointer}.top button{background:#06183f;flex:1}.layout{display:grid;grid-template-columns:160px minmax(0,1fr) 230px;gap:10px;padding:0 10px 15px}nav,main,.side{display:flex;flex-direction:column;gap:9px;min-width:0}nav button{border-radius:22px;background:#06183f}.card{background:#fff;border:1px solid #d6e3ef;border-radius:12px;padding:12px;min-width:0}h2{font-size:18px;color:#06183f;margin:0 0 10px}textarea,input{width:100%;padding:10px;border:1px solid #b9c9d9;border-radius:7px;font:inherit;margin:4px 0 8px}textarea{min-height:95px;resize:vertical}.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1;min-width:0}.blue{background:#087af0}.red{background:#ef3035}.dark{background:#06183f}.light{background:#e5edf6;color:#06183f}.result{background:#f2f6fb;border:1px solid #d6e3ef;border-radius:7px;padding:10px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:55px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:7px 4px;border-bottom:1px solid #e1e8ef;text-align:left}.total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:7px}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.numcell{background:white;color:#06183f;border:1px solid #cbd5e1;border-radius:6px;min-height:48px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.numcell b{font-size:13px}.numcell span{font-size:11px;color:#078b2c;overflow-wrap:anywhere}.numcell.sel{background:#078b2c;color:#fff}.numcell.sel span{color:#fff}#toast{display:none;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px;border-radius:20px;z-index:9;max-width:90%}footer{text-align:center;background:#06183f;color:#fff;padding:12px;font-size:12px}@media(max-width:850px){.layout{grid-template-columns:1fr}.layout nav{display:grid;grid-template-columns:repeat(2,1fr)}.side{display:flex}header h1{font-size:21px}}
-</style></head><body>
+*{box-sizing:border-box}body{margin:0;background:#edf1f5;font-family:Arial,sans-serif;color:#10234c}
+header{background:#06183f;color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header h1{font-size:24px;margin:0}.top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+button{border:0;padding:12px 9px;border-radius:10px;background:#078b2c;color:#fff;font-weight:bold;font-size:14px;cursor:pointer}
+.top button{background:#06183f}.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 12px 12px}
+.menu button{border-radius:28px;min-height:52px}.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:0 12px 15px}
+main,.side{display:flex;flex-direction:column;gap:10px;min-width:0}.card{background:#fff;border:1px solid #d6e3ef;border-radius:15px;padding:14px;min-width:0}
+h2{font-size:20px;color:#06183f;margin:0 0 12px}h3{font-size:16px;margin:12px 0 7px}
+textarea,input{width:100%;padding:12px;border:1px solid #bdcbd8;border-radius:9px;font:inherit;margin:4px 0 8px;background:#fff;color:#10234c}
+textarea{min-height:125px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap}.row button{flex:1;min-width:90px}.blue{background:#087af0}.red{background:#ef3035}.dark{background:#06183f}.light{background:#e5edf6;color:#06183f}.wp-active{background:#ff9d00;color:#111}
+.result{background:#f2f6fb;border:1px solid #d6e3ef;border-radius:9px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:70px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid #e1e8ef;text-align:left;overflow-wrap:anywhere}td button{padding:7px;font-size:11px;margin:2px}.tablewrap{overflow:auto}
+.total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:8px;margin-top:10px}
+.example{background:#e7f7ed;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.8}.hidden{display:none!important}
+#boardGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:6px 2px;min-height:54px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px}
+.board-number{font-weight:bold;font-size:12px;line-height:1.1}.board-value{font-weight:bold;color:#078b2c;font-size:11px;line-height:1.1;overflow-wrap:anywhere}.board-cell-selected{background:#078b2c!important;color:white!important}.board-cell-selected .board-value{color:white!important}
+.value-chart{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.value-cell{background:#fff;border:1px solid #ccd5df;border-radius:6px;padding:7px 2px;text-align:center;min-width:0;cursor:pointer}
+.value-cell strong{display:block;font-size:12px;color:#06183f}
+.value-cell span{display:block;font-size:11px;color:#078b2c;margin-top:4px;overflow-wrap:anywhere}
+.value-cell.chosen{background:#078b2c;border-color:#078b2c}.value-cell.chosen strong,.value-cell.chosen span{color:#fff}
+.special-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+#toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:white;padding:12px 18px;border-radius:22px;z-index:9;max-width:90%;text-align:center}
+footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:12px}label{display:block;font-weight:bold;margin-top:8px}
+@media(min-width:900px){.layout{grid-template-columns:190px minmax(0,1fr) 260px}.menu{display:flex;flex-direction:column;grid-column:1;grid-row:1;padding:0}.layout main{grid-column:2}.layout .side{grid-column:3}.menu button{min-height:44px}.layout{padding-top:0}}
+</style>
+</head>
+<body>
 <header><h1>Jantri Ledger</h1><b>POINTS: <span id="headTotal">0</span></b></header>
 <div class="top"><button onclick="toggleMenu()">MORE / LESS</button><button onclick="deleteAll()">DELETE ALL</button><button onclick="shareLedger()">SEND TO</button></div>
-<div class="layout">
-<nav id="menu">
-<button onclick="show('board')">▦ JANTRI BOARD</button><button onclick="show('final')">☷ FINAL JANTRI</button><button onclick="show('range')">⇄ FROM - TO</button><button onclick="show('messageCopy')">▤ MESSAGE COPY</button><button onclick="show('calc')">▦ CALCULATED / TOTAL</button><button onclick="show('jodi')">↗ JODI PASTE</button><button onclick="show('pass')">🔒 PASSCODE</button><button onclick="show('help')">? HELP</button>
+<nav class="menu" id="menu">
+<button onclick="show('board')">▦ JANTRI BOARD</button><button onclick="show('final')">☷ FINAL JANTRI</button>
+<button onclick="show('range')">⇄ FROM - TO</button><button onclick="show('messageCopy')">▤ MESSAGE COPY</button>
+<button onclick="show('calc')">▦ CALCULATED / TOTAL</button><button onclick="show('find')">⌕ FIND & REPLACE</button>
+<button onclick="show('jodi')">↗ JODI PASTE</button><button onclick="show('pass')">🔒 PASSCODE</button><button onclick="show('help')">? HELP</button>
 </nav>
+<div class="layout">
 <main>
-<section class="card" id="calc"><h2>Message Paste / Calculator</h2><textarea id="message" placeholder="23,45,67(10)&#10;23,45,67(10wp)&#10;12,34(5)wp"></textarea><div class="row"><button onclick="pasteMessage()">PASTE</button><button class="blue" onclick="calculate()">SUBMIT / CALCULATE</button><button class="red" onclick="clearMessage()">CLOSE</button></div><p><label><input id="wpMode" type="checkbox" style="width:auto;margin:0 5px 0 0"> WP MODE: sabhi group values double</label></p></section>
-<section class="card"><h2>Calculation Result</h2><div id="calcOutput" class="result">Calculation result yahan aayega.</div><div class="row"><button onclick="copyText('calcOutput')">COPY RESULT</button><button onclick="addResults()">ADD TO LEDGER + UPDATE BOARD</button><button class="dark" onclick="clearCalc()">CLEAR</button></div></section>
-<section class="card" id="ledger"><h2>Current Ledger</h2><div class="row"><input id="entryNumber" placeholder="Number / Jodi"><input id="entryPoints" type="number" placeholder="Points"><button id="saveBtn" onclick="saveEntry()">ADD</button></div><div class="tablewrap"><table><thead><tr><th>No.</th><th>Number</th><th>Points</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div><div class="total">Total Points: <span id="ledgerTotal">0</span></div></section>
-<section class="card hidden" id="board"><h2>Jantri Board — Number / Value</h2><p>Ledger mein add, edit ya delete karne par board values automatic update hoti hain.</p><div class="row"><input id="boardStart" value="1" aria-label="Start number"><input id="boardEnd" value="100" aria-label="End number"></div><div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div><div id="boardGrid" class="grid"></div><label>Selected numbers ke liye points set karein</label><input id="boardPoints" type="number" placeholder="Points per number"><button onclick="addBoard()">ADD SELECTED TO LEDGER</button></section>
-<section class="card hidden" id="final"><h2>Final Jantri Summary</h2><p>Total Entries: <b id="entriesCount">0</b></p><p>Grand Total: <b id="grandTotal">0</b></p><div id="finalOutput" class="result"></div><div class="row"><button onclick="buildFinal()">REFRESH FINAL</button><button onclick="copyText('finalOutput')">COPY FINAL</button><button class="blue" onclick="downloadCSV()">DOWNLOAD CSV</button></div></section>
-<section class="card hidden" id="range"><h2>From - To</h2><div class="row"><input id="from" value="00"><input id="to" value="99"></div><button onclick="makeRange()">GENERATE RANGE</button><textarea id="rangeOutput"></textarea><button onclick="copyText('rangeOutput')">COPY RANGE</button></section>
-<section class="card hidden" id="messageCopy"><h2>Message Copy / Find & Replace</h2><textarea id="original" placeholder="Paste message"></textarea><div class="row"><input id="findText" placeholder="Find"><input id="replaceText" placeholder="Replace"></div><div class="row"><button onclick="replaceMessage()">REPLACE</button><button onclick="removeSymbols()">REMOVE SYMBOLS</button><button onclick="copyText('cleanOutput')">COPY RESULT</button></div><textarea id="cleanOutput" placeholder="Clean result"></textarea></section>
-<section class="card hidden" id="jodi"><h2>Jodi Paste</h2><textarea id="jodiInput" placeholder="23 45 67 89"></textarea><button onclick="formatJodi()">FORMAT JODI</button><textarea id="jodiOutput" placeholder="Jodi result"></textarea><input id="jodiPoints" type="number" placeholder="Points per jodi"><button onclick="addJodis()">ADD JODI TO LEDGER</button></section>
-<section class="card hidden" id="pass"><h2>Passcode</h2><input id="oldPass" type="password" placeholder="Current passcode"><input id="newPass" type="password" placeholder="New passcode"><button onclick="changePass()">CHECK / CHANGE</button><p id="passMessage"></p></section>
-<section class="card hidden" id="help"><h2>Help</h2><p>Example: <code>23,45,67(10)</code> = 3 numbers × 10 = 30.</p><p><code>23,45,67(10wp)</code> = 3 × 20 = 60. Calculation result ko ledger aur board mein add karne ke liye ADD TO LEDGER dabayein.</p></section>
+<section class="card" id="calc"><h2>Message Paste (WhatsApp / Any Text)</h2>
+<textarea id="message" placeholder="WhatsApp message yahan paste karein...&#10;23,45,67(10wp&#10;12,34(5)"></textarea>
+<div class="row"><button onclick="pasteMessage()">PASTE</button><button class="blue" onclick="calculate()">SUBMIT / CALCULATE</button><button class="red" onclick="clearMessage()">CLOSE</button></div>
+<div class="row" style="margin-top:8px"><button id="wpToggle" class="dark" onclick="toggleWP()">WP MODE: OFF</button><span style="align-self:center;font-size:13px">WP mode ON = sabhi bracket values double</span></div>
+</section>
+<section class="card" id="calcResult"><h2>Calculation Result</h2><div id="calcOutput" class="result">Calculation result yahan aayega.</div>
+<div class="row"><button onclick="copy('calcOutput')">COPY RESULT</button><button onclick="addResults()">ADD TO LEDGER</button><button class="dark" onclick="clearCalc()">CLEAR</button></div></section>
+<section class="card" id="ledger"><h2>Current Ledger</h2><input id="entryNumber" placeholder="Number / Jodi"><input id="entryPoints" type="number" placeholder="Points">
+<button id="saveBtn" style="width:100%" onclick="saveEntry()">ADD</button>
+<div class="tablewrap"><table><thead><tr><th>No.</th><th>Number</th><th>Points</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="total">Total Points: <span id="ledgerTotal">0</span></div></section>
+<section class="card hidden" id="final"><h2>Final Jantri Summary</h2><p>Total Entries: <b id="entriesCount">0</b></p><p>Grand Total: <b id="grandTotal">0</b></p><div id="finalOutput" class="result"></div>
+<div class="row"><button onclick="buildFinal()">REFRESH FINAL</button><button onclick="copy('finalOutput')">COPY FINAL JANTRI</button><button class="blue" onclick="downloadCSV()">DOWNLOAD CSV</button></div></section>
+<section class="card hidden" id="board"><h2>Jantri Board</h2><p>Number select karein, phir points daal kar ADD SELECTED dabayein.</p>
+<div class="row"><input id="boardStart" value="1" aria-label="Board start"><input id="boardEnd" value="100" aria-label="Board end"></div>
+<div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div>
+<div id="boardGrid"></div><label>Points per number</label><input id="boardPoints" type="number" placeholder="Points"><button style="width:100%" onclick="addBoard()">ADD SELECTED</button>
+<h3>Jantri Number Values</h3>
+<p>Har number ki points value neeche dikhegi. Number select karke points edit kar sakte hain.</p>
+<div class="row"><input id="chartValue" type="number" placeholder="Selected number ki value"><button onclick="applyChartValue()">SET SELECTED VALUE</button></div>
+<div id="valueChart" class="value-chart"></div>
+<h3>Special Number Chart</h3><div id="specialGrid" class="special-grid"></div></section>
+<section class="card hidden" id="range"><h2>From - To</h2><div class="row"><input id="from" value="00"><input id="to" value="99"></div><button onclick="makeRange()">GENERATE RANGE</button><textarea id="rangeOutput"></textarea><button onclick="copy('rangeOutput')">COPY RANGE</button></section>
+<section class="card hidden" id="messageCopy"><h2>Message Copy</h2><textarea id="original" placeholder="Message paste karein"></textarea>
+<div class="row"><input id="findText" placeholder="Find"><input id="replaceTextInput" placeholder="Replace"></div>
+<div class="row"><button onclick="replaceText()">REPLACE</button><button onclick="removeSymbols()">REMOVE SYMBOLS</button><button onclick="copy('cleanOutput')">COPY RESULT</button></div><textarea id="cleanOutput" placeholder="Result"></textarea></section>
+<section class="card hidden" id="find"><h2>Find & Replace</h2><p>Find & Replace ka tool Message Copy section mein hai.</p><button onclick="show('messageCopy')">OPEN MESSAGE COPY</button></section>
+<section class="card hidden" id="jodi"><h2>Jodi Paste</h2><textarea id="jodiInput" placeholder="23 45 67 89"></textarea><button onclick="formatJodi()">FORMAT JODI</button><textarea id="jodiOutput" placeholder="Jodi result"></textarea><input id="jodiPoints" type="number" placeholder="Points per jodi"><button style="width:100%" onclick="addJodis()">ADD JODI TO LEDGER</button></section>
+<section class="card hidden" id="pass"><h2>Passcode</h2><p>Default passcode: 8941</p><input id="oldPass" type="password" placeholder="Current passcode"><input id="newPass" type="password" placeholder="New passcode"><button onclick="changePass()">CHECK / CHANGE</button><p id="passMessage"></p></section>
+<section class="card hidden" id="help"><h2>Help</h2><p>Har bracket group calculate hota hai. Bracket se pehle ke numbers count hote hain. Bracket ke baad WP ho to value double. Ek line mein multiple brackets bhi supported hain.</p><div class="example">23,45,67(10 = 3 × 10 = 30
+23,45,67(10wp = 3 × 20 = 60
+23,45(10) 67(5) = 2 × 10 + 1 × 5 = 25
+12,34(5)wp = 2 × 10 = 20</div></section>
 </main>
-<aside class="side"><section class="card"><h2>Calculation Rules</h2><p>Har bracket group se pehle ke numbers count hote hain. Count × bracket value = points. WP se us group ki bracket value double hoti hai. Multiple groups ek line mein bhi supported hain.</p><div class="result">23,45,67(10) = 30<br>23,45,67(10wp) = 60<br>12,34(5)wp = 20<br>23,45(10) 67(5) = 25</div></section></aside>
+<aside class="side">
+<section class="card"><h2>Calculation Rules</h2><ol><li>Bracket se pehle ke numbers count honge.</li><li>Count × bracket value = points.</li><li>Bracket ke paas WP likha ho to value double.</li><li>WP MODE se sabhi groups double kar sakte hain.</li><li>Ek line mein multiple bracket groups supported.</li></ol><h3>Examples</h3><div class="example">23,45,67(10 = 3 × 10 = 30
+23,45,67(10wp = 3 × 20 = 60
+23,45,67(10)wp = 3 × 20 = 60
+12,34(5)wp = 2 × 10 = 20</div></section>
+<section class="card"><h2>Quick Find & Replace</h2><input id="sideFind" placeholder="Find"><input id="sideReplace" placeholder="Replace"><button style="width:100%" onclick="sideReplaceText()">REPLACE IN MESSAGE</button></section>
+<section class="card"><h2>Quick Jodi Paste</h2><textarea id="sideJodi" placeholder="23 45 67 89"></textarea><button style="width:100%" onclick="sideJodiFormat()">FORMAT JODI</button></section>
+</aside>
 </div><footer>Jantri Ledger | Calculate • Save • Share</footer><div id="toast"></div>
 <script>
-const $=id=>document.getElementById(id);let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[];
-try{entries=JSON.parse(localStorage.getItem('jantriLedgerAutoV1')||'[]')}catch(e){entries=[]}if(!Array.isArray(entries))entries=[];
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}function save(){localStorage.setItem('jantriLedgerAutoV1',JSON.stringify(entries))}function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
-function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start')}functionDummy()}function functionDummy(){}
+const $=id=>document.getElementById(id);let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[],wpMode=false;
+let chartValues={};
+try{entries=JSON.parse(localStorage.getItem('jantriLedgerV5')||'[]')}catch(e){entries=[]}if(!Array.isArray(entries))entries=[];
+try{chartValues=JSON.parse(localStorage.getItem('jantriChartValuesV1')||'{}')}catch(e){chartValues={}}
+function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function save(){try{localStorage.setItem('jantriLedgerV5',JSON.stringify(entries))}catch(e){notify('Storage full: CSV download karein')}}
+function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
+function render(){$('headTotal').textContent=total();$('ledgerTotal').textContent=total();$('rows').innerHTML='';
+entries.forEach((e,i)=>{let tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE';$('ledger').scrollIntoView({behavior:'smooth'})};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render()}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal();drawBoard();drawSpecial()}
+function saveEntry(){let n=$('entryNumber').value.trim(),p=$('entryPoints').value;if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');let e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);if(i>=0)entries[i]=e;else entries.push(e);editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';save();render();notify('Entry saved')}
+function deleteAll(){if(confirm('Saari ledger entries delete karein?')){entries=[];editId=null;save();render();notify('All entries deleted')}}
 function toggleMenu(){$('menu').classList.toggle('hidden')}
-function render(){ $('headTotal').textContent=total();$('ledgerTotal').textContent=total();$('rows').innerHTML='';entries.forEach((e,i)=>{const tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});const td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE'};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render();notify('Deleted')}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal();drawBoard()}
-function saveEntry(){const n=$('entryNumber').value.trim(),p=$('entryPoints').value;if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');const e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);if(i>=0)entries[i]=e;else entries.push(e);editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';save();render();notify('Saved; board updated')}
-function deleteAll(){if(confirm('Saari entries delete karein?')){entries=[];save();render();notify('All entries deleted')}}
-async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}function clearMessage(){$('message').value=''}
-function calculate(){lastResults=[];let out=[],grand=0,groups=0;const wpAll=$('wpMode').checked;const pat=/\(\s*(\d+)\s*\)?\s*(wp)?/gi;
-for(const line of $('message').value.split(/\r?\n/)){if(!line.trim())continue;let cursor=0,m,lineTotal=0,found=false;pat.lastIndex=0;while((m=pat.exec(line))!==null){const prefix=line.slice(cursor,m.index),nums=prefix.match(/\d+/g)||[];let after=line.slice(pat.lastIndex).match(/^\s*wp\b/i);if(nums.length){const wp=!!m[2]||!!after||wpAll;const multiplier=Number(m[1])*(wp?2:1);const points=nums.length*multiplier;lastResults.push({number:nums.join(','),points,nums,multiplier,wp});grand+=points;lineTotal+=points;groups++;found=true;out.push(nums.join(', ')+' | '+nums.length+' × '+multiplier+' = '+points+(wp?' (WP double)':''))}cursor=pat.lastIndex;if(after){cursor+=after[0].length;pat.lastIndex=cursor}}if(found)out.push('Line total = '+lineTotal);else out.push('Skipped: '+line)}
-if(!groups){$('calcOutput').textContent='Format: 23,45,67(10wp';return}out.push('----------------','GROUPS = '+groups,'GRAND TOTAL = '+grand);$('calcOutput').textContent=out.join('\n');notify('Calculation total: '+grand)}
-function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(g=>{const nums=g.nums||String(g.number).split(',').map(n=>n.trim()).filter(Boolean);if(!nums.length)return;const per=Number(g.points)/nums.length;nums.forEach(n=>entries.push({id:uid(),number:n,points:per}))});save();render();notify('Current Ledger aur Jantri Board updated')}
+function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start'})}
+function clearMessage(){$('message').value='';notify('Message cleared')}
+async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}
+function toggleWP(){wpMode=!wpMode;$('wpToggle').textContent='WP MODE: '+(wpMode?'ON':'OFF');$('wpToggle').classList.toggle('wp-active',wpMode);notify(wpMode?'WP mode ON: multipliers double':'WP mode OFF')}
+function calculate(){
+  lastResults = [];
+  const output = [];
+  let grandTotal = 0, groupCount = 0;
+  const bracketPattern = /\(\s*(\d+)\s*\)?\s*(wp)?/gi;
+
+  for (const line of $('message').value.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    let cursor = 0, lineTotal = 0, match, foundOnLine = false;
+    bracketPattern.lastIndex = 0;
+
+    while ((match = bracketPattern.exec(line)) !== null) {
+      const numberText = line.slice(cursor, match.index);
+      const numbers = numberText.match(/\d+/g) || [];
+      const suffixAfter = line.slice(bracketPattern.lastIndex).match(/^\s*wp\b/i);
+
+      if (numbers.length) {
+        const bracketValue = Number(match[1]);
+        const hasWP = Boolean(match[2]) || Boolean(suffixAfter);
+        const multiplier = bracketValue * ((wpMode || hasWP) ? 2 : 1);
+        const points = numbers.length * multiplier;
+        lastResults.push({number: numbers.join(','), points});
+        groupCount++;
+        grandTotal += points;
+        lineTotal += points;
+        foundOnLine = true;
+        output.push(numbers.join(', ') + ' | ' + numbers.length + ' × ' + multiplier +
+          ' = ' + points + ((wpMode || hasWP) ? ' (WP double)' : ''));
+      }
+
+      cursor = bracketPattern.lastIndex;
+      if (suffixAfter) {
+        cursor += suffixAfter[0].length;
+        bracketPattern.lastIndex = cursor;
+      }
+    }
+
+    if (foundOnLine) output.push('Line total = ' + lineTotal);
+    else output.push('Skipped (bracket se pehle numbers nahi mile): ' + line);
+  }
+
+  if (!groupCount) {
+    $('calcOutput').textContent = 'Example: 23,45,67(10wp\\n12,34(5)\\nHar bracket group ke numbers count hokar multiplier se multiply honge.';
+    return;
+  }
+  output.push('--------------------', 'GROUPS = ' + groupCount, 'GRAND TOTAL = ' + grandTotal);
+  $('calcOutput').textContent = output.join('\n');
+  notify('Total: ' + grandTotal);
+}
+function addResults(){
+ if(!lastResults.length)return notify('Pehle calculate karein');
+ let addedNumbers=0;
+ lastResults.forEach(group=>{
+   const nums=String(group.number).split(',').map(n=>n.trim()).filter(Boolean);
+   if(!nums.length)return;
+   // Group total is divided across the numbers so each number's value appears
+   // separately on the Jantri Board, while the ledger grand total stays unchanged.
+   const perNumber=Number(group.points)/nums.length;
+   nums.forEach(n=>{
+     entries.push({id:uid(),number:n,points:perNumber});
+     addedNumbers++;
+   });
+ });
+ save();render();notify(addedNumbers+' numbers added; board values updated');
+}
 function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
-async function copyText(id){const el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt)}catch(e){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}notify('Copied')}
-function buildFinal(){const map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));const out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
-function getNumberTotals(){const totals={};entries.forEach(e=>{const n=String(e.number).trim();totals[n]=(totals[n]||0)+Number(e.points||0)});return totals}
-function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein (maximum 1000 numbers)');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
-function drawBoard(){const g=$('boardGrid');if(!g)return;g.innerHTML='';const totals=getNumberTotals();board.forEach(n=>{const b=document.createElement('button');b.className='numcell'+(selected.has(n)?' sel':'');const num=document.createElement('b');num.textContent=n;const val=document.createElement('span');val.textContent=totals[n]!==undefined?totals[n]:'0';b.append(num,val);b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)})}
-function selectAll(on){selected=on?new Set(board):new Set();drawBoard()}
-function addBoard(){const p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Number select karein aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board points added')}
-function makeRange(){const a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');const w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
-function replaceMessage(){const s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceText').value)}
+async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
+function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
+function makeRange(){let a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
+function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
+function getNumberTotals(){
+ const totals={};
+ entries.forEach(e=>{
+   const key=String(e.number).trim();
+   totals[key]=(totals[key]||0)+Number(e.points||0);
+ });
+ return totals;
+}
+function numberValue(n){
+ const totals=getNumberTotals();
+ if(totals[n]!==undefined)return totals[n];
+ if(chartValues[n]!==undefined)return chartValues[n];
+ return 0;
+}
+function makeNumberCell(n, targetGrid){
+ const b=document.createElement('button');
+ b.className='board-cell'+(selected.has(n)?' board-cell-selected':'');
+ const num=document.createElement('span');num.className='board-number';num.textContent=n;
+ const val=document.createElement('span');val.className='board-value';val.textContent=numberValue(n);
+ b.append(num,val);
+ b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard();drawSpecial()};
+ targetGrid.appendChild(b);
+}
+function drawBoard(){
+ const g=$('boardGrid');if(!g)return;g.innerHTML='';
+ board.forEach(n=>makeNumberCell(n,g));
+ drawValueChart();
+}
+function drawValueChart(){
+ const g=$('valueChart');if(!g)return;g.innerHTML='';
+ board.forEach(n=>makeNumberCell(n,g));
+}
+function applyChartValue(){
+ const v=$('chartValue').value;
+ if(v===''||!Number.isFinite(Number(v)))return alert('Points value daalein');
+ if(!selected.size)return alert('Pehle chart mein number select karein');
+ selected.forEach(n=>chartValues[n]=Number(v));
+ try{localStorage.setItem('jantriChartValuesV1',JSON.stringify(chartValues))}catch(e){}
+ drawBoard();drawSpecial();notify('Selected numbers ki value set ho gayi');
+}
+function drawSpecial(){
+ const g=$('specialGrid');if(!g)return;g.innerHTML='';
+ const vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));
+ vals.forEach(n=>makeNumberCell(n,g));
+}
+function selectAll(on){selected=on?new Set([...board,...Array.from({length:10},(_,i)=>String(i).repeat(3)),...Array.from({length:10},(_,i)=>'A'+String(i).repeat(3))]):new Set();drawBoard();drawSpecial()}
+function addBoard(){let p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Select numbers aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board entries added')}
+function replaceText(){let s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceTextInput').value)}
 function removeSymbols(){$('cleanOutput').value=$('original').value.replace(/[()[\]{}.,/\\:;=#!_"'`~|+?<>-]+/g,' ').replace(/[ \t]{2,}/g,' ').trim()}
+function sideReplaceText(){let f=$('sideFind').value;if(!f)return alert('Find text daalein');$('message').value=$('message').value.split(f).join($('sideReplace').value);notify('Message replaced')}
 function formatJodi(){jodis=$('jodiInput').value.match(/(?<!\d)\d{2}(?!\d)/g)||[];$('jodiOutput').value=jodis.join(' ');notify(jodis.length+' jodi found')}
-function addJodis(){if(!jodis.length)formatJodi();const p=$('jodiPoints').value;if(!jodis.length||p===''||!Number.isFinite(Number(p)))return alert('Jodi aur points daalein');jodis.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Jodi added')}
-function changePass(){const old=localStorage.getItem('jantriPass')||'8941';if($('oldPass').value!==old){$('passMessage').textContent='Incorrect passcode';return}const n=$('newPass').value;if(n&&n.length<4){$('passMessage').textContent='Minimum 4 characters';return}if(n)localStorage.setItem('jantriPass',n);$('passMessage').textContent=n?'Passcode changed':'Passcode accepted'}
-function downloadCSV(){if(!entries.length)return notify('Ledger empty');const csv=[['Number','Points'],...entries.map(e=>[e.number,e.points])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='jantri-ledger.csv';a.click();URL.revokeObjectURL(a.href)}
-async function shareLedger(){const text='JANTRI LEDGER\n'+entries.map(e=>e.number+' = '+e.points).join('\n')+'\nGRAND TOTAL = '+total();if(navigator.share){try{await navigator.share({title:'Jantri Ledger',text})}catch(e){}}else{await copyText('finalOutput')}}
-$('entryPoints').addEventListener('keydown',e=>{if(e.key==='Enter')saveEntry()});makeBoard();render();
-</script></body></html>
+function sideJodiFormat(){$('jodiInput').value=$('sideJodi').value;show('jodi');formatJodi()}
+function addJodis(){if(!jodis.length)formatJodi();let p=$('jodiPoints').value;if(!jodis.length||p===''||!Number.isFinite(Number(p)))return alert('Jodi aur points daalein');jodis.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Jodi added')}
+function downloadCSV(){if(!entries.length)return notify('Ledger empty');let csv=[['Number','Points'],...entries.map(e=>[e.number,e.points])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='jantri-ledger.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function shareLedger(){let text='JANTRI LEDGER\n'+entries.map(e=>e.number+' = '+e.points).join('\n')+'\nGRAND TOTAL = '+total();if(navigator.share){try{await navigator.share({title:'Jantri Ledger',text})}catch(e){}}else{copyText(text)}}
+async function copyText(text){try{await navigator.clipboard.writeText(text);notify('Copied')}catch(e){let t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();notify('Copied')}}
+function changePass(){let old=localStorage.getItem('jantriPass')||'8941';if($('oldPass').value!==old){$('passMessage').textContent='Incorrect passcode';return}let n=$('newPass').value;if(n&&n.length<4){$('passMessage').textContent='Minimum 4 characters';return}if(n)localStorage.setItem('jantriPass',n);$('passMessage').textContent=n?'Passcode changed':'Passcode accepted'}
+$('entryPoints').addEventListener('keydown',e=>{if(e.key==='Enter')saveEntry()});makeBoard();drawSpecial();render();
+</script>
+</body></html>
