@@ -20,7 +20,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .total{background:#e3f5e9;color:#078b2c;padding:12px;text-align:right;font-weight:bold;border-radius:8px;margin-top:10px}
 .example{background:#e7f7ed;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.8}.hidden{display:none!important}
 #boardGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:8px 2px;min-height:42px;font-size:12px}
+#boardGrid button,.special-grid button{background:#fff;color:#06183f;border:1px solid #ccd5df;border-radius:6px;padding:6px 2px;min-height:54px;font-size:12px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px}
+.board-number{font-weight:bold;font-size:12px;line-height:1.1}.board-value{font-weight:bold;color:#078b2c;font-size:11px;line-height:1.1;overflow-wrap:anywhere}.board-cell-selected{background:#078b2c!important;color:white!important}.board-cell-selected .board-value{color:white!important}
 .value-chart{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 .value-cell{background:#fff;border:1px solid #ccd5df;border-radius:6px;padding:7px 2px;text-align:center;min-width:0;cursor:pointer}
 .value-cell strong{display:block;font-size:12px;color:#06183f}
@@ -57,7 +58,7 @@ footer{text-align:center;background:#06183f;color:white;padding:14px;font-size:1
 <section class="card hidden" id="final"><h2>Final Jantri Summary</h2><p>Total Entries: <b id="entriesCount">0</b></p><p>Grand Total: <b id="grandTotal">0</b></p><div id="finalOutput" class="result"></div>
 <div class="row"><button onclick="buildFinal()">REFRESH FINAL</button><button onclick="copy('finalOutput')">COPY FINAL JANTRI</button><button class="blue" onclick="downloadCSV()">DOWNLOAD CSV</button></div></section>
 <section class="card hidden" id="board"><h2>Jantri Board</h2><p>Number select karein, phir points daal kar ADD SELECTED dabayein.</p>
-<div class="row"><input id="boardStart" value="00" aria-label="Board start"><input id="boardEnd" value="99" aria-label="Board end"></div>
+<div class="row"><input id="boardStart" value="1" aria-label="Board start"><input id="boardEnd" value="100" aria-label="Board end"></div>
 <div class="row"><button onclick="makeBoard()">CREATE BOARD</button><button onclick="selectAll(true)">SELECT ALL</button><button class="light" onclick="selectAll(false)">UNSELECT</button></div>
 <div id="boardGrid"></div><label>Points per number</label><input id="boardPoints" type="number" placeholder="Points"><button style="width:100%" onclick="addBoard()">ADD SELECTED</button>
 <h3>Jantri Number Values</h3>
@@ -96,7 +97,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function save(){try{localStorage.setItem('jantriLedgerV5',JSON.stringify(entries))}catch(e){notify('Storage full: CSV download karein')}}
 function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
 function render(){$('headTotal').textContent=total();$('ledgerTotal').textContent=total();$('rows').innerHTML='';
-entries.forEach((e,i)=>{let tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE';$('ledger').scrollIntoView({behavior:'smooth'})};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render()}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal()}
+entries.forEach((e,i)=>{let tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE';$('ledger').scrollIntoView({behavior:'smooth'})};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render()}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal();drawBoard();drawSpecial()}
 function saveEntry(){let n=$('entryNumber').value.trim(),p=$('entryPoints').value;if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');let e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);if(i>=0)entries[i]=e;else entries.push(e);editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';save();render();notify('Entry saved')}
 function deleteAll(){if(confirm('Saari ledger entries delete karein?')){entries=[];editId=null;save();render();notify('All entries deleted')}}
 function toggleMenu(){$('menu').classList.toggle('hidden')}
@@ -159,23 +160,37 @@ async function copy(id){let el=$(id),txt=el.value!==undefined?el.value:el.innerT
 function buildFinal(){let map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));let out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
 function makeRange(){let a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
 function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
+function getNumberTotals(){
+ const totals={};
+ entries.forEach(e=>{
+   const key=String(e.number).trim();
+   totals[key]=(totals[key]||0)+Number(e.points||0);
+ });
+ return totals;
+}
+function numberValue(n){
+ const totals=getNumberTotals();
+ if(totals[n]!==undefined)return totals[n];
+ if(chartValues[n]!==undefined)return chartValues[n];
+ return 0;
+}
+function makeNumberCell(n, targetGrid){
+ const b=document.createElement('button');
+ b.className='board-cell'+(selected.has(n)?' board-cell-selected':'');
+ const num=document.createElement('span');num.className='board-number';num.textContent=n;
+ const val=document.createElement('span');val.className='board-value';val.textContent=numberValue(n);
+ b.append(num,val);
+ b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard();drawSpecial()};
+ targetGrid.appendChild(b);
+}
 function drawBoard(){
- let g=$('boardGrid');g.innerHTML='';
- board.forEach(n=>{let b=document.createElement('button');b.textContent=n;b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)});
+ const g=$('boardGrid');if(!g)return;g.innerHTML='';
+ board.forEach(n=>makeNumberCell(n,g));
  drawValueChart();
 }
 function drawValueChart(){
- const g=$('valueChart'); if(!g)return; g.innerHTML='';
- const nums=[...board];
- nums.forEach(n=>{
-   const b=document.createElement('button');
-   b.className='value-cell'+(selected.has(n)?' chosen':'');
-   const label=document.createElement('strong');label.textContent=n;
-   const val=document.createElement('span');val.textContent=(chartValues[n]!==undefined?chartValues[n]:'Value: —');
-   b.append(label,val);
-   b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};
-   g.appendChild(b);
- });
+ const g=$('valueChart');if(!g)return;g.innerHTML='';
+ board.forEach(n=>makeNumberCell(n,g));
 }
 function applyChartValue(){
  const v=$('chartValue').value;
@@ -185,7 +200,11 @@ function applyChartValue(){
  try{localStorage.setItem('jantriChartValuesV1',JSON.stringify(chartValues))}catch(e){}
  drawBoard();drawSpecial();notify('Selected numbers ki value set ho gayi');
 }
-function drawSpecial(){let g=$('specialGrid');g.innerHTML='';let vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));vals.forEach(n=>{let b=document.createElement('button');b.textContent=n+(chartValues[n]!==undefined?' : '+chartValues[n]:'');b.style.background=selected.has(n)?'#078b2c':'white';b.style.color=selected.has(n)?'white':'#06183f';b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawSpecial()};g.appendChild(b)})}
+function drawSpecial(){
+ const g=$('specialGrid');if(!g)return;g.innerHTML='';
+ const vals=[];for(let i=0;i<10;i++)vals.push(String(i).repeat(3));for(let i=0;i<10;i++)vals.push('A'+String(i).repeat(3));
+ vals.forEach(n=>makeNumberCell(n,g));
+}
 function selectAll(on){selected=on?new Set([...board,...Array.from({length:10},(_,i)=>String(i).repeat(3)),...Array.from({length:10},(_,i)=>'A'+String(i).repeat(3))]):new Set();drawBoard();drawSpecial()}
 function addBoard(){let p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Select numbers aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board entries added')}
 function replaceText(){let s=$('original').value,f=$('findText').value;if(!f)return alert('Find text daalein');$('cleanOutput').value=s.split(f).join($('replaceTextInput').value)}
