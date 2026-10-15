@@ -30,73 +30,22 @@
 const $=id=>document.getElementById(id);let entries=[],lastResults=[],editId=null,board=[],selected=new Set(),jodis=[];
 try{entries=JSON.parse(localStorage.getItem('jantriLedgerAutoV1')||'[]')}catch(e){entries=[]}if(!Array.isArray(entries))entries=[];
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}function save(){localStorage.setItem('jantriLedgerAutoV1',JSON.stringify(entries))}function total(){return entries.reduce((s,e)=>s+Number(e.points||0),0)}
-function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start')}functionDummy()}function functionDummy(){}
+function show(id){document.querySelectorAll('main .card').forEach(c=>c.classList.add('hidden'));$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start'})}
 function toggleMenu(){$('menu').classList.toggle('hidden')}
 function render(){ $('headTotal').textContent=total();$('ledgerTotal').textContent=total();$('rows').innerHTML='';entries.forEach((e,i)=>{const tr=document.createElement('tr');[i+1,e.number,e.points].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});const td=document.createElement('td'),ed=document.createElement('button'),del=document.createElement('button');ed.textContent='EDIT';ed.onclick=()=>{editId=e.id;$('entryNumber').value=e.number;$('entryPoints').value=e.points;$('saveBtn').textContent='UPDATE'};del.textContent='DEL';del.className='red';del.onclick=()=>{if(confirm('Delete entry?')){entries.splice(i,1);save();render();notify('Deleted')}};td.append(ed,del);tr.appendChild(td);$('rows').appendChild(tr)});$('entriesCount').textContent=entries.length;$('grandTotal').textContent=total();buildFinal();drawBoard()}
 function saveEntry(){const n=$('entryNumber').value.trim(),p=$('entryPoints').value;if(!n||p===''||!Number.isFinite(Number(p)))return alert('Number aur points daalein');const e={id:editId||uid(),number:n,points:Number(p)},i=entries.findIndex(x=>x.id===editId);if(i>=0)entries[i]=e;else entries.push(e);editId=null;$('entryNumber').value='';$('entryPoints').value='';$('saveBtn').textContent='ADD';save();render();notify('Saved; board updated')}
 function deleteAll(){if(confirm('Saari entries delete karein?')){entries=[];save();render();notify('All entries deleted')}}
 async function pasteMessage(){try{$('message').value=await navigator.clipboard.readText();notify('Pasted')}catch(e){notify('Message box par long-press karke Paste karein')}}function clearMessage(){$('message').value=''}
-function calculate(){
-  lastResults=[];let out=[],grand=0,groups=0;const wpAll=$('wpMode').checked;
-  // Supports (10), (10wp), (10)wp, and multiple groups on one line.
-  // Each bracket group uses numbers since the previous group; punctuation/text is ignored.
-  const pat=/\(\s*(\d+)\s*\)?\s*(wp)?/gi;
-  for(const line of $('message').value.split(/\r?\n/)){
-    if(!line.trim())continue;
-    let cursor=0,m,lineTotal=0,found=false;
-    pat.lastIndex=0;
-    while((m=pat.exec(line))!==null){
-      const prefix=line.slice(cursor,m.index);
-      const nums=prefix.match(/\d+/g)||[];
-      const after=line.slice(pat.lastIndex).match(/^\s*wp\b/i);
-      if(nums.length){
-        const wp=!!m[2]||!!after||wpAll;
-        const multiplier=Number(m[1])*(wp?2:1);
-        const points=nums.length*multiplier;
-        lastResults.push({number:nums.join(','),points,nums,multiplier,wp});
-        grand+=points;lineTotal+=points;groups++;found=true;
-        out.push(nums.join(', ')+' | '+nums.length+' × '+multiplier+' = '+points+(wp?' (WP double)':''));
-      }
-      cursor=pat.lastIndex;
-      if(after){cursor+=after[0].length;pat.lastIndex=cursor;}
-    }
-    // Support "numbers into/intu 15" as a multiplier group.
-    const tail=line.slice(cursor);
-    const intoMatch=tail.match(/([\s\S]*?)\b(?:into|intu)\s*(\d+)\s*(wp)?\b/i);
-    if(intoMatch){
-      const nums=intoMatch[1].match(/\d+/g)||[];
-      if(nums.length){
-        const afterInto=tail.slice(intoMatch.index+intoMatch[0].length).match(/^\s*wp\b/i);
-        const wp=!!intoMatch[3]||!!afterInto||wpAll;
-        const multiplier=Number(intoMatch[2])*(wp?2:1),points=nums.length*multiplier;
-        lastResults.push({number:nums.join(','),points,nums,multiplier,wp});
-        grand+=points;lineTotal+=points;groups++;found=true;
-        out.push(nums.join(', ')+' | '+nums.length+' × '+multiplier+' = '+points+(wp?' (WP double)':''));
-      }
-    }
-    if(found)out.push('Line total = '+lineTotal);else out.push('Skipped: '+line);
-  }
-  if(!groups){$('calcOutput').textContent='Format example: 23,45,67(10) or 23,45,67 into 10';return}
-  out.push('----------------','GROUPS = '+groups,'GRAND TOTAL = '+grand);
-  $('calcOutput').textContent=out.join('\n');syncCalculatedResults();notify('Calculation total: '+grand+' — Board auto updated');
-}
-function syncCalculatedResults(){
-  entries=entries.filter(e=>!e.autoCalc);
-  lastResults.forEach(g=>{
-    const nums=g.nums||String(g.number).split(',').map(n=>n.trim()).filter(Boolean);
-    if(!nums.length)return;
-    const per=Number(g.points)/nums.length;
-    nums.forEach(n=>entries.push({id:uid(),number:n,points:per,autoCalc:true}));
-  });
-  save();render();
-}
-function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');syncCalculatedResults();notify('Jantri Board auto updated')}
+function calculate(){lastResults=[];let out=[],grand=0,groups=0;const wpAll=$('wpMode').checked;const pat=/\(\s*(\d+)\s*\)?\s*(wp)?/gi;
+for(const line of $('message').value.split(/\r?\n/)){if(!line.trim())continue;let cursor=0,m,lineTotal=0,found=false;pat.lastIndex=0;while((m=pat.exec(line))!==null){const prefix=line.slice(cursor,m.index),nums=prefix.match(/\d+/g)||[];let after=line.slice(pat.lastIndex).match(/^\s*wp\b/i);if(nums.length){const wp=!!m[2]||!!after||wpAll;const multiplier=Number(m[1])*(wp?2:1);const points=nums.length*multiplier;lastResults.push({number:nums.join(','),points,nums,multiplier,wp});grand+=points;lineTotal+=points;groups++;found=true;out.push(nums.join(', ')+' | '+nums.length+' × '+multiplier+' = '+points+(wp?' (WP double)':''))}cursor=pat.lastIndex;if(after){cursor+=after[0].length;pat.lastIndex=cursor}}if(found)out.push('Line total = '+lineTotal);else out.push('Skipped: '+line)}
+if(!groups){$('calcOutput').textContent='Format: 23,45,67(10wp';return}out.push('----------------','GROUPS = '+groups,'GRAND TOTAL = '+grand);$('calcOutput').textContent=out.join('\n');notify('Calculation total: '+grand)}
+function addResults(){if(!lastResults.length)return notify('Pehle calculate karein');lastResults.forEach(g=>{const nums=g.nums||String(g.number).split(',').map(n=>n.trim()).filter(Boolean);if(!nums.length)return;const per=Number(g.points)/nums.length;nums.forEach(n=>entries.push({id:uid(),number:n,points:per}))});save();render();notify('Current Ledger aur Jantri Board updated')}
 function clearCalc(){$('message').value='';$('calcOutput').textContent='';lastResults=[]}
 async function copyText(id){const el=$(id),txt=el.value!==undefined?el.value:el.innerText;if(!txt)return notify('Nothing to copy');try{await navigator.clipboard.writeText(txt)}catch(e){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}notify('Copied')}
 function buildFinal(){const map=new Map();entries.forEach(e=>map.set(e.number,(map.get(e.number)||0)+Number(e.points||0)));const out=['Total Entries: '+entries.length,'Grand Total: '+total(),'','Number | Points'];[...map].forEach(([n,p])=>out.push(n+' | '+p));$('finalOutput').textContent=entries.length?out.join('\n'):'No entries yet.'}
-function boardKey(value){const n=String(value).trim();return /^\\d+$/.test(n)?String(Number(n)):n}\nfunction getNumberTotals(){const totals={};entries.forEach(e=>{const n=boardKey(e.number);totals[n]=(totals[n]||0)+Number(e.points||0)});return totals}
+function getNumberTotals(){const totals={};entries.forEach(e=>{const n=String(e.number).trim();totals[n]=(totals[n]||0)+Number(e.points||0)});return totals}
 function makeBoard(){let a=Number($('boardStart').value),b=Number($('boardEnd').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein (maximum 1000 numbers)');let w=Math.max($('boardStart').value.length,$('boardEnd').value.length,2);board=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0'));selected.clear();drawBoard()}
-function drawBoard(){const g=$('boardGrid');if(!g)return;g.innerHTML='';const totals=getNumberTotals();board.forEach(n=>{const b=document.createElement('button');b.className='numcell'+(selected.has(n)?' sel':'');const num=document.createElement('b');num.textContent=n;const val=document.createElement('span');val.textContent=totals[boardKey(n)]!==undefined?totals[boardKey(n)]:'0';b.append(num,val);b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)})}
+function drawBoard(){const g=$('boardGrid');if(!g)return;g.innerHTML='';const totals=getNumberTotals();board.forEach(n=>{const b=document.createElement('button');b.className='numcell'+(selected.has(n)?' sel':'');const num=document.createElement('b');num.textContent=n;const val=document.createElement('span');val.textContent=totals[n]!==undefined?totals[n]:'0';b.append(num,val);b.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);drawBoard()};g.appendChild(b)})}
 function selectAll(on){selected=on?new Set(board):new Set();drawBoard()}
 function addBoard(){const p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Number select karein aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board points added')}
 function makeRange(){const a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');const w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
