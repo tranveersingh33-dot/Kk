@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -49,7 +49,7 @@ function drawBoard(){const g=$('boardGrid');if(!g)return;g.innerHTML='';const to
 function selectAll(on){selected=on?new Set(board):new Set();drawBoard()}
 function addBoard(){const p=$('boardPoints').value;if(!selected.size||p===''||!Number.isFinite(Number(p)))return alert('Number select karein aur points daalein');selected.forEach(n=>entries.push({id:uid(),number:n,points:Number(p)}));save();render();notify('Board points added')}
 function makeRange(){const a=Number($('from').value),b=Number($('to').value);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<a||b>9999||b-a>999)return alert('Valid range daalein');const w=Math.max($('from').value.length,$('to').value.length,2);$('rangeOutput').value=Array.from({length:b-a+1},(_,i)=>String(a+i).padStart(w,'0')).join(' ')}
-function replaceMessage(){const s=$('original').value,f=$('findText').value;if(!f){alert('Find box mein woh text/symbol likhein jise badalna hai.');$('findText').focus();return}const r=$('replaceText').value;let result=s.split(f).join(r);$('cleanOutput').value=result;notify('Find & Replace complete: '+(s.split(f).length-1)+' match(es) replaced')}
+function replaceMessage(){const f=$('findText').value;if(f===''){alert('Find box mein woh text/symbol likhein jise badalna hai.');$('findText').focus();return}const original=$('original').value;const previous=$('cleanOutput').value;/* Har click par pichhle result par kaam karein, taaki multiple replacements chain mein ho sakein. */const s=previous!==''?previous:original;const r=$('replaceText').value;const escaped=f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');let count=0;const re=new RegExp(escaped,'g');const result=s.replace(re,()=>{count++;return r});$('cleanOutput').value=result;notify(count?'Find & Replace complete: '+count+' match(es) replaced':'Is result mein +f+ nahi mila. Find text badal kar dobara try karein.')}
 function removeSymbols(){$('cleanOutput').value=$('original').value.replace(/[()[\]{}.,/\\:;=#!_"'`~|+?<>-]+/g,' ').replace(/[ \t]{2,}/g,' ').replace(/\s*\n\s*/g,'\n').trim();notify('Symbols removed')}
 function useCleanText(){const cleaned=$('cleanOutput').value;if(!cleaned.trim())return alert('Pehle Find & Replace ya Remove Symbols karein.');$('message').value=cleaned;show('calc');notify('Clean text calculator mein aa gaya')}
 function clearFindReplace(){$('original').value='';$('findText').value='';$('replaceText').value='';$('cleanOutput').value='';notify('Find & Replace cleared')}
