@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
@@ -49,7 +49,7 @@ into 15 : 73 78 23 28 68"></textarea>
 <div class="actions">
 <button class="green" onclick="pasteText()">PASTE</button><button class="blue" onclick="calculate()">SUBMIT / CALCULATE</button><button class="red" onclick="closeInput()">CLOSE</button>
 </div>
-<label class="check"><input type="checkbox" id="wpMode"> WP MODE: sabhi group values double</label>
+<label class="check"><input type="checkbox" id="wpMode"> WP likha ho to us bracket ki value double</label>
 </section>
 
 <section class="panel" id="resultPanel">
@@ -109,14 +109,14 @@ function go(id){$(id).scrollIntoView({behavior:'smooth',block:'start'})}
 function toggleMore(){$('morePanel').classList.toggle('hidden')}
 function keyNum(n){return String(n).padStart(3,'0')}
 function nums(s){return (s.match(/\d{1,3}/g)||[])}
-function parseLine(line,wpMode){
+function parseLine(line,wpMode){ // WP शब्द होने पर संबंधित group value अपने-आप दोगुनी होती है।
  let groups=[], occupied=[];
  // Each bracket group: numbers before bracket, e.g. 23,45,67(10wp)
  const br=/((?:\d{1,3}(?:[\s,.;:/\\|#=_-]+\d{1,3})*))\s*\(\s*(\d+(?:\.\d+)?)\s*\)?\s*(wp)?/gi;
  let m;
  while((m=br.exec(line))!==null){
   let ns=nums(m[1]); if(!ns.length)continue;
-  let v=Number(m[2]);if(wpMode&&m[3])v*=2;
+  let v=Number(m[2]);if(m[3])v*=2;
   groups.push({numbers:ns,value:v});occupied.push([m.index,br.lastIndex]);
  }
  // INTO/INTU supports numbers-before-value and value-before-numbers, including multiple occurrences.
@@ -143,7 +143,7 @@ function parseLine(line,wpMode){
    // Avoid parsing a bracket's same numbers a second time.
    if(occupied.some(([a,b])=>start<b&&finish>a))continue;
    let wp=/\bwp\b/i.test(line.slice(Math.max(0,start),Math.min(line.length,finish+8)));
-   if(wpMode&&wp)v*=2;
+   if(wp)v*=2;
    groups.push({numbers:ns,value:v});occupied.push([start,finish]);
   }
  }
