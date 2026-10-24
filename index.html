@@ -99,27 +99,27 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px 4px;
 </section>
 </main>
 <script>
-let currentPage='homePage',historyPages=[],previewGroups=[],ledger=[],selected=new Set(),passcode='';
+let currentPage='homePage',historyPages=[],previewGroups=[],parseErrors=[],ledger=[],selected=new Set(),passcode='';
 const $=id=>document.getElementById(id);
 function navigate(id){if(currentPage!==id)historyPages.push(currentPage);$('homePage').classList.add('hidden');document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$(id).classList.remove('hidden');currentPage=id;window.scrollTo(0,0)}
 function goBack(){let prev=historyPages.pop()||'homePage';$('homePage').classList.toggle('hidden',prev!=='homePage');document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));if(prev!=='homePage')$(prev).classList.remove('hidden');currentPage=prev;window.scrollTo(0,0)}
-function keyNum(n){return String(n).padStart(3,'0')}function nums(s){return s.match(/\d{1,3}/g)||[]}
+function keyNum(n){return String(n).padStart(3,'0')}function nums(s){return s.match(/\d+/g)||[]}
 function parseLine(line,wpMode){
  let groups=[],occupied=[],m;
- const br=/((?:\d{1,3}(?:[\s,.;:/\\|#=_-]+\d{1,3})*))\s*\(\s*(\d+(?:\.\d+)?)\s*\)?\s*(wp)?/gi;
- while((m=br.exec(line))!==null){let ns=nums(m[1]);if(!ns.length)continue;let v=Number(m[2]);if(wpMode&&m[3])v*=2;groups.push({numbers:ns,value:v});occupied.push([m.index,br.lastIndex])}
+ const br=/((?:\d+(?:[\s,.;:/\\|#=_-]+\d+)*))\s*\(\s*(\d+(?:\.\d+)?)\s*\)?\s*(wp)?/gi;
+ while((m=br.exec(line))!==null){let ns=nums(m[1]);if(!ns.length)continue;occupied.push([m.index,br.lastIndex]);if(ns.length===1 && ns[0].length!==2){parseErrors.push('Error: '+m[0].trim()+' — '+ns[0]+' एक ही नंबर है; 2 अंकों वाला नंबर या अलग-अलग नंबर लिखें।');continue}let v=Number(m[2]);if(wpMode&&m[3])v*=2;groups.push({numbers:ns,value:v})}
  const ir=/\b(?:into|intu)\b/gi;
  while((m=ir.exec(line))!==null){
   let pos=m.index,end=ir.lastIndex,left=line.slice(0,pos),right=line.slice(end),ns=[],v=null,start=pos,finish=end;
-  let lm=left.match(/((?:\d{1,3})(?:[\s,.;:/\\|#=_-]+\d{1,3})*)\s*[:=,;-]*\s*$/),rm=right.match(/^\s*[:=,;-]*\s*(\d+(?:\.\d+)?)/);
+  let lm=left.match(/((?:\d+)(?:[\s,.;:/\\|#=_-]+\d+)*)\s*[:=,;-]*\s*$/),rm=right.match(/^\s*[:=,;-]*\s*(\d+(?:\.\d+)?)/);
   if(lm&&rm){ns=nums(lm[1]);v=Number(rm[1]);start=pos-lm[0].length;finish=end+rm[0].length}
-  else if(rm){v=Number(rm[1]);let tail=right.slice(rm[0].length),nm=tail.match(/^\s*[:=,;.-]*\s*((?:\d{1,3})(?:[\s,.;:/\\|#=_-]+\d{1,3})*)/);if(nm){ns=nums(nm[1]);finish=end+rm[0].length+nm[0].length}}
-  else{let vm=left.match(/(\d+(?:\.\d+)?)\s*[:=,;-]*\s*$/);if(vm){v=Number(vm[1]);let bef=left.slice(0,vm.index),nm=bef.match(/((?:\d{1,3})(?:[\s,.;:/\\|#=_-]+\d{1,3})*)\s*$/);if(nm){ns=nums(nm[1]);start=nm.index}}}
-  if(ns.length&&v!==null&&v>0&&!occupied.some(([a,b])=>start<b&&finish>a)){let wp=/\bwp\b/i.test(line.slice(Math.max(0,start),Math.min(line.length,finish+8)));if(wpMode&&wp)v*=2;groups.push({numbers:ns,value:v});occupied.push([start,finish])}
+  else if(rm){v=Number(rm[1]);let tail=right.slice(rm[0].length),nm=tail.match(/^\s*[:=,;.-]*\s*((?:\d+)(?:[\s,.;:/\\|#=_-]+\d+)*)/);if(nm){ns=nums(nm[1]);finish=end+rm[0].length+nm[0].length}}
+  else{let vm=left.match(/(\d+(?:\.\d+)?)\s*[:=,;-]*\s*$/);if(vm){v=Number(vm[1]);let bef=left.slice(0,vm.index),nm=bef.match(/((?:\d+)(?:[\s,.;:/\\|#=_-]+\d+)*)\s*$/);if(nm){ns=nums(nm[1]);start=nm.index}}}
+  if(ns.length&&v!==null&&v>0&&!occupied.some(([a,b])=>start<b&&finish>a)){occupied.push([start,finish]);if(ns.length===1 && ns[0].length!==2){parseErrors.push('Error: '+line.slice(Math.max(0,start),Math.min(line.length,finish)).trim()+' — '+ns[0]+' एक ही नंबर है; 2 अंकों वाला नंबर या अलग-अलग नंबर लिखें।');continue}let wp=/\bwp\b/i.test(line.slice(Math.max(0,start),Math.min(line.length,finish+8)));if(wpMode&&wp)v*=2;groups.push({numbers:ns,value:v})}
  }
  return groups
 }
-function calculate(){previewGroups=[];$('message').value.split(/\n/).forEach(l=>previewGroups.push(...parseLine(l,$('wpMode').checked)));let total=0,lines=[];previewGroups.forEach(g=>{let t=g.numbers.length*g.value;total+=t;lines.push(g.numbers.join(', ')+' | '+g.numbers.length+' × '+g.value+' = '+t+'\nLine total = '+t)});lines.push('--------------------','GROUPS = '+previewGroups.length,'GRAND TOTAL = '+total);$('calcResult').textContent=lines.join('\n');renderBoard()}
+function calculate(){previewGroups=[];parseErrors=[];$('message').value.split(/\n/).forEach(l=>previewGroups.push(...parseLine(l,$('wpMode').checked)));let total=0,lines=[];previewGroups.forEach(g=>{let t=g.numbers.length*g.value;total+=t;lines.push(g.numbers.join(', ')+' | '+g.numbers.length+' × '+g.value+' = '+t+'\nLine total = '+t)});if(parseErrors.length)lines.push('\nERRORS:',...parseErrors);lines.push('--------------------','GROUPS = '+previewGroups.length,'GRAND TOTAL = '+total);$('calcResult').textContent=lines.join('\n');renderBoard()}
 function addToLedger(){if(!previewGroups.length)calculate();if(!previewGroups.length){alert('पहले नंबर और वैल्यू डालें।');return}previewGroups.forEach(g=>g.numbers.forEach(n=>ledger.push({number:keyNum(n),value:g.value})));previewGroups=[];renderLedger();renderBoard();navigate('boardPage')}
 function totals(preview=true){let o={};ledger.forEach(x=>o[x.number]=(o[x.number]||0)+x.value);if(preview)previewGroups.forEach(g=>g.numbers.forEach(n=>{let k=keyNum(n);o[k]=(o[k]||0)+g.value}));return o}
 function renderBoard(){let a=Number($('boardFrom').value)||1,b=Number($('boardTo').value)||100;if(a<0||b<a||b>999||b-a>500){a=1;b=100}let vals=totals(true);$('board').innerHTML='';for(let i=a;i<=b;i++){let n=keyNum(i),el=document.createElement('button');el.className='tile'+(selected.has(n)?' selected':'');el.innerHTML='<strong>'+n+'</strong><span>'+(vals[n]||0)+'</span>';el.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);renderBoard()};$('board').appendChild(el)}$('points').textContent='POINTS: '+ledger.reduce((s,x)=>s+x.value,0)}
