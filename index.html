@@ -2,113 +2,159 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KK App</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KK Number Count & Calculator</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#172033}
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#06183f,#174a83)}
-.login-card{width:min(100%,380px);background:#fff;border-radius:18px;padding:28px;box-shadow:0 18px 45px #0004}
-.logo{width:62px;height:62px;border-radius:16px;background:#06183f;color:#fff;display:grid;place-items:center;font-size:25px;font-weight:bold;margin:0 auto 14px}
-h1{text-align:center;margin:0 0 6px;color:#06183f} .muted{text-align:center;color:#667085;margin:0 0 24px;font-size:14px}
-label{display:block;font-weight:600;margin:14px 0 7px}
-input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:9px;font-size:16px;outline:none}
-input:focus{border-color:#1769aa;box-shadow:0 0 0 3px #1769aa22}
-button{border:0;border-radius:9px;padding:13px 16px;background:#078b2c;color:white;font-weight:bold;font-size:16px;cursor:pointer}
-.login-card button{width:100%;margin-top:20px}
-#error{color:#c62828;text-align:center;min-height:20px;margin:12px 0 0;font-size:14px}
-#app{display:none;min-height:100vh}.top{background:#06183f;color:white;padding:17px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.top h2{margin:0;font-size:21px}.logout{background:#d64545;padding:9px 13px;font-size:14px}
-nav{display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:#fff;box-shadow:0 2px 8px #0001}
-nav button{background:#1769aa;font-size:14px;padding:10px 13px}
-main{padding:18px;max-width:1000px;margin:auto}.panel{background:white;border-radius:13px;padding:20px;box-shadow:0 3px 12px #14213d12;margin-bottom:15px}
-.panel h3{margin:0 0 12px;color:#06183f}.hidden{display:none}
-.stat{font-size:28px;font-weight:bold;color:#078b2c}
-table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid #e5eaf0;text-align:left}
-.small{font-size:13px;color:#667085}
+#login{min-height:100vh;display:grid;place-items:center;padding:18px;background:linear-gradient(135deg,#06183f,#174a83)}
+.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 8px 28px #0002}
+.login-card{width:min(100%,370px)}.logo{margin:0 auto 12px;width:58px;height:58px;border-radius:15px;background:#06183f;color:white;display:grid;place-items:center;font-size:24px;font-weight:bold}
+h1,h2,h3{margin-top:0}h1{text-align:center;color:#06183f;font-size:23px}.muted{text-align:center;color:#667085;font-size:14px}
+label{display:block;font-weight:600;margin:13px 0 6px}input,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}
+textarea{min-height:125px;resize:vertical}button{border:0;border-radius:9px;padding:11px 14px;background:#1769aa;color:white;font-weight:bold;cursor:pointer}
+button.green{background:#078b2c}button.gray{background:#667085}button.red{background:#c43d3d}
+.login-card button{width:100%;margin-top:17px}#loginError{color:#c62828;text-align:center;min-height:18px}
+#app{display:none}.top{background:#06183f;color:#fff;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.top h2{margin:0;font-size:20px}.top button{padding:9px 12px}
+nav{background:white;padding:12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 2px 8px #0001}
+nav button{font-size:13px;padding:10px 12px}
+main{max-width:950px;margin:auto;padding:15px}.panel{background:#fff;border-radius:13px;padding:17px;margin-bottom:14px;box-shadow:0 3px 12px #14213d0d}
+.panel h3{color:#06183f;margin-bottom:12px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.row button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.stat{background:#f1f5f9;padding:13px;border-radius:10px}.stat strong{display:block;font-size:24px;color:#078b2c;margin-top:4px}
+.hidden{display:none}.note{font-size:13px;color:#667085;line-height:1.5}
+#items{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{padding:7px 10px;background:#e8f1fb;border-radius:8px;font-weight:bold}
+#historyList{padding-left:20px}#historyList li{padding:6px 0;border-bottom:1px solid #edf0f4}
+@media(max-width:420px){.row button{min-width:42%}.top h2{font-size:17px}}
 </style>
 </head>
 <body>
-<section class="login-wrap" id="login">
-  <div class="login-card">
+<section id="login">
+  <div class="card login-card">
     <div class="logo">KK</div>
     <h1>KK APP LOGIN</h1>
-    <p class="muted">आगे बढ़ने के लिए लॉगिन करें</p>
+    <p class="muted">लॉगिन करके ऐप खोलें</p>
     <form id="loginForm">
-      <label for="username">Login</label>
-      <input id="username" autocomplete="username" placeholder="यूज़रनेम" required>
-      <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="current-password" placeholder="पासवर्ड" required>
-      <button type="submit">LOGIN</button>
-      <p id="error" role="alert"></p>
+      <label for="user">Login</label><input id="user" placeholder="यूज़रनेम" autocomplete="username" required>
+      <label for="pass">Password</label><input id="pass" type="password" placeholder="पासवर्ड" autocomplete="current-password" required>
+      <button class="green" type="submit">LOGIN</button>
+      <p id="loginError"></p>
     </form>
   </div>
 </section>
 
 <section id="app">
-  <header class="top">
-    <h2>KK APP</h2>
-    <button class="logout" id="logoutBtn">LOGOUT</button>
-  </header>
-  <nav>
-    <button data-page="home">HOME</button>
-    <button data-page="chart">CHART</button>
-    <button data-page="history">HISTORY</button>
-  </nav>
-  <main>
-    <section class="panel page" id="home">
-      <h3>Welcome</h3>
-      <p>आप सफलतापूर्वक लॉगिन हो गए हैं।</p>
-      <p class="small">यह एक सामान्य डेमो डैशबोर्ड है।</p>
-    </section>
-    <section class="panel page hidden" id="chart">
-      <h3>Chart</h3>
-      <p>यहाँ आप सामान्य डेटा या रिपोर्ट का चार्ट जोड़ सकते हैं।</p>
-      <div class="stat">0</div>
-      <p class="small">अभी कोई डेटा उपलब्ध नहीं है।</p>
-    </section>
-    <section class="panel page hidden" id="history">
-      <h3>History</h3>
-      <table><thead><tr><th>क्रम</th><th>विवरण</th><th>स्थिति</th></tr></thead>
-      <tbody><tr><td>1</td><td>ऐप लॉगिन</td><td>तैयार</td></tr></tbody></table>
-    </section>
-  </main>
+<header class="top"><h2>KK NUMBER COUNT</h2><button class="red" id="logout">LOGOUT</button></header>
+<nav>
+  <button data-page="home">HOME</button>
+  <button data-page="countPage">NUMBER COUNT</button>
+  <button data-page="calcPage">CALCULATOR</button>
+  <button data-page="historyPage">HISTORY</button>
+</nav>
+<main>
+<section class="panel page" id="home">
+  <h3>Welcome to KK App</h3>
+  <p>यह ऐप सामान्य नंबरों की गिनती और साधारण गणित के लिए है।</p>
+  <p class="note">यहाँ नंबरों की सूची में कुल आइटम गिने जा सकते हैं। इसमें दाँव, सट्टा, पलट या रकम लगाने की गणना शामिल नहीं है।</p>
+</section>
+
+<section class="panel page hidden" id="countPage">
+  <h3>Number Count Board</h3>
+  <label for="numberInput">नंबर या आइटम लिखें / पेस्ट करें</label>
+  <textarea id="numberInput" placeholder="उदाहरण: 23 45 78&#10;या: 23, 45, 78"></textarea>
+  <div class="row">
+    <button id="pasteBtn">PASTE</button><button class="green" id="countBtn">COUNT</button>
+    <button class="gray" id="copyBtn">COPY</button><button class="red" id="clearBtn">CLEAR</button>
+  </div>
+  <div class="stats">
+    <div class="stat">कुल आइटम<strong id="itemCount">0</strong></div>
+    <div class="stat">अलग-अलग आइटम<strong id="uniqueCount">0</strong></div>
+  </div>
+  <div id="items"></div>
+  <p class="note">गिनती स्पेस, कॉमा, नई लाइन या डॉट से अलग किए गए आइटम के आधार पर होती है।</p>
+</section>
+
+<section class="panel page hidden" id="calcPage">
+  <h3>साधारण Calculator</h3>
+  <label for="expression">गणित का सवाल</label>
+  <input id="expression" inputmode="decimal" placeholder="उदाहरण: (25 + 15) × 2">
+  <div class="row">
+    <button data-insert="7">7</button><button data-insert="8">8</button><button data-insert="9">9</button><button data-insert="+">+</button>
+  </div>
+  <div class="row">
+    <button data-insert="4">4</button><button data-insert="5">5</button><button data-insert="6">6</button><button data-insert="-">−</button>
+  </div>
+  <div class="row">
+    <button data-insert="1">1</button><button data-insert="2">2</button><button data-insert="3">3</button><button data-insert="*">×</button>
+  </div>
+  <div class="row">
+    <button data-insert="0">0</button><button data-insert=".">.</button><button data-insert="/">÷</button><button data-insert="(">(</button>
+  </div>
+  <div class="row">
+    <button data-insert=")">)</button><button class="green" id="calculateBtn">CALCULATE</button><button class="red" id="calcClear">CLEAR</button>
+  </div>
+  <div class="stat" style="margin-top:12px">उत्तर<strong id="answer">—</strong></div>
+  <p class="note">केवल सामान्य जोड़, घटाव, गुणा, भाग और कोष्ठक।</p>
+</section>
+
+<section class="panel page hidden" id="historyPage">
+  <h3>Calculation History</h3>
+  <ol id="historyList"><li>अभी कोई हिस्ट्री नहीं है।</li></ol>
+  <button class="red" id="clearHistory">CLEAR HISTORY</button>
+</section>
+</main>
 </section>
 
 <script>
-const USERNAME = "KK";
-const PASSWORD = "8947";
-
-const login = document.getElementById("login");
-const app = document.getElementById("app");
-const error = document.getElementById("error");
-
-document.getElementById("loginForm").addEventListener("submit", function(e){
-  e.preventDefault();
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value;
-  if(user === USERNAME && pass === PASSWORD){
-    error.textContent = "";
-    login.style.display = "none";
-    app.style.display = "block";
-    showPage("home");
-  } else {
-    error.textContent = "यूज़रनेम या पासवर्ड गलत है।";
-  }
+const LOGIN_NAME="KK", LOGIN_PASSWORD="8947";
+const $=id=>document.getElementById(id);
+$("loginForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if($("user").value.trim()===LOGIN_NAME && $("pass").value===LOGIN_PASSWORD){
+  $("login").style.display="none";$("app").style.display="block";$("loginError").textContent="";
+ }else{$("loginError").textContent="Login या Password गलत है।";}
 });
+$("logout").onclick=()=>{$("app").style.display="none";$("login").style.display="grid";$("pass").value="";};
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));$(id).classList.remove("hidden");}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 
-function showPage(page){
-  document.querySelectorAll(".page").forEach(el => el.classList.add("hidden"));
-  const target = document.getElementById(page);
-  if(target) target.classList.remove("hidden");
+function getItems(){return $("numberInput").value.trim().split(/[\\s,.;]+/).filter(Boolean);}
+function doCount(){
+ const a=getItems();$("itemCount").textContent=a.length;
+ $("uniqueCount").textContent=new Set(a).size;
+ $("items").innerHTML="";
+ a.forEach(v=>{const s=document.createElement("span");s.className="chip";s.textContent=v;$("items").appendChild(s);});
 }
-document.querySelectorAll("nav button").forEach(btn => {
-  btn.addEventListener("click", () => showPage(btn.dataset.page));
+$("countBtn").onclick=doCount;
+$("clearBtn").onclick=()=>{$("numberInput").value="";$("items").innerHTML="";$("itemCount").textContent="0";$("uniqueCount").textContent="0";};
+$("pasteBtn").onclick=async()=>{
+ try{$("numberInput").value=await navigator.clipboard.readText();doCount();}
+ catch(e){$("numberInput").focus();alert("Paste करने के लिए टेक्स्ट बॉक्स में दबाकर रखें और Paste चुनें।");}
+};
+$("copyBtn").onclick=async()=>{
+ const a=getItems();const text="Total items: "+a.length+"\\nUnique items: "+new Set(a).size+"\\nItems: "+a.join(", ");
+ try{await navigator.clipboard.writeText(text);alert("Count result copied.");}
+ catch(e){alert("इस ब्राउज़र में कॉपी उपलब्ध नहीं है।");}
+};
+
+document.querySelectorAll("[data-insert]").forEach(b=>b.onclick=()=>{
+ const el=$("expression");el.value+=b.dataset.insert;el.focus();
 });
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  app.style.display = "none";
-  login.style.display = "grid";
-  document.getElementById("password").value = "";
-});
+const history=[];
+function addHistory(s){history.unshift(s);$("historyList").innerHTML="";history.forEach(v=>{const li=document.createElement("li");li.textContent=v;$("historyList").appendChild(li);});}
+$("calculateBtn").onclick=()=>{
+ const expr=$("expression").value.trim();
+ if(!expr){$("answer").textContent="—";return;}
+ if(!/^[0-9+*/().\\s-]+$/.test(expr)){ $("answer").textContent="Invalid";return;}
+ try{
+  const result=Function('"use strict";return ('+expr+')')();
+  if(typeof result!=="number"||!Number.isFinite(result))throw Error();
+  const rounded=Number(result.toFixed(8));$("answer").textContent=rounded;
+  addHistory(expr+" = "+rounded);
+ }catch(e){$("answer").textContent="Invalid";}
+};
+$("calcClear").onclick=()=>{$("expression").value="";$("answer").textContent="—";};
+$("clearHistory").onclick=()=>{$("historyList").innerHTML="<li>अभी कोई हिस्ट्री नहीं है।</li>";history.length=0;};
 </script>
 </body>
 </html>
