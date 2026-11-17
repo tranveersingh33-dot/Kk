@@ -2,77 +2,88 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Number Board</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compact Number Board & Calculator</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#d9edff;font-family:Arial,sans-serif;color:#172334}
-.top{background:#087c87;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:21px;font-weight:700}
-.top button{background:#f16b60;color:#fff;border:0;border-radius:7px;padding:10px 22px;font-size:16px}
-.wrap{max-width:720px;margin:12px auto;padding:0 10px}.notice{color:#183caa;font-weight:700;text-align:center;margin:10px 0}
-.panel{border:2px solid #5796a7;border-radius:12px;background:#c7e2fb;padding:12px;margin-bottom:14px}
-.selectrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 4px 14px}
-select,input,textarea{font:inherit}select{padding:12px;border:2px solid #579b6a;border-radius:7px;background:#fff;min-width:0}
-.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
-.tile{text-align:center;min-width:0}.tile b{display:block;font-size:14px;margin-bottom:3px}.tile input{width:100%;min-width:0;height:25px;border:2px solid #c65b6b;border-radius:9px;background:#f7fbff;text-align:center;padding:1px;font-size:12px}
-.tile.active input{border-color:#07833b;background:#e6ffe9}
-.section-title{font-weight:700;color:#163f75;margin:12px 0 7px}
-.hbrow{display:grid;grid-template-columns:42px repeat(10,minmax(0,1fr));gap:4px;align-items:center;margin:5px 0}
-.hbrow .tag{font-weight:bold;color:#087b36}.hbrow input{width:100%;min-width:0;height:26px;border:2px solid #b45b68;border-radius:8px;text-align:center;background:#f8fbff}
-.entrygrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
-label{font-size:13px;font-weight:bold;color:#24537c;display:block;margin-bottom:4px}
-.field{width:100%;padding:9px;border:2px solid #172334;background:#fff}
-textarea{width:100%;min-height:120px;padding:10px;border:2px solid #24384a;border-radius:7px;resize:vertical;background:#f9fcff}
-.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-button.action{background:#07833b;color:white;border:0;border-radius:7px;padding:11px 18px;font-weight:bold;box-shadow:0 2px 4px #888}
-button.clear{background:#d93e50}button.blue{background:#1976b9}button.yellow{background:#ffbd08;color:#222;width:100%;padding:15px;font-weight:bold;border:0;border-radius:8px;margin:10px 0}
-.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #9bb7cb;border-radius:6px;padding:10px;min-height:42px;margin-top:8px}
-.historyitem{background:#fff;border-radius:6px;padding:8px;margin:6px 0;overflow-wrap:anywhere}
-.bottom{position:sticky;bottom:0;background:#087c87;color:#fff;display:flex;justify-content:space-around;gap:4px;padding:10px 4px;font-size:12px;text-align:center}
-.bottom span{cursor:pointer}
-@media(max-width:420px){.wrap{padding:0 7px}.panel{padding:8px}.board{gap:3px}.tile b{font-size:11px}.tile input{height:23px}.hbrow{grid-template-columns:32px repeat(10,minmax(0,1fr));gap:2px}.hbrow input{height:23px;font-size:11px}.hbrow .tag{font-size:12px}.selectrow{gap:7px}.selectrow select{padding:9px;font-size:13px}}
+*{box-sizing:border-box}body{margin:0;background:#eaf4ff;color:#172536;font-family:Arial,sans-serif}
+header{background:#087c87;color:#fff;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:18px}
+main{max-width:650px;margin:10px auto;padding:0 8px}.panel{background:#cfe6fa;border:1px solid #679caf;border-radius:10px;padding:9px;margin-bottom:10px}
+h2{font-size:16px;margin:2px 0 8px;color:#123f68}.hint{font-size:12px;color:#42596c;margin:4px 0 8px}
+.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+.tile{min-width:0;text-align:center;padding:2px 1px;border:1px solid #c45d6c;border-radius:5px;background:#f9fcff;cursor:pointer}
+.tile b{display:block;font-size:10px;line-height:13px}.tile input{width:100%;min-width:0;height:18px;border:1px solid #9db6c8;border-radius:4px;text-align:center;padding:0;font-size:10px}
+.tile.active{background:#e2ffe8;border-color:#07833b;outline:1px solid #07833b}
+.row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}button{border:0;border-radius:6px;padding:9px 13px;background:#087d39;color:#fff;font-weight:bold;font-size:13px}button.blue{background:#1976b9}button.red{background:#d94350}
+input,textarea,select{font:inherit}.field{width:100%;padding:9px;border:1px solid #789bb3;border-radius:6px;background:#fff;margin:4px 0 8px}
+textarea{width:100%;min-height:65px;padding:8px;border:1px solid #789bb3;border-radius:6px;background:#fff}
+.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #a5bacb;border-radius:6px;padding:9px;min-height:38px;font-size:14px}
+.histitem{background:#fff;border-radius:5px;padding:7px;margin:5px 0;font-size:13px;overflow-wrap:anywhere}
+@media(max-width:380px){main{padding:0 5px}.panel{padding:7px}.board{gap:2px}.tile{padding:1px}.tile b{font-size:9px}.tile input{height:16px;font-size:9px}button{padding:8px 10px}}
 </style>
 </head>
 <body>
-<header class="top"><span>Number Board</span><button onclick="saveAll()">Save</button></header>
-<div class="wrap">
-<div class="notice">इस पेज पर नंबर चुनें, सामान्य नोट लिखें और अपना बोर्ड सेव करें।</div>
+<header><span>Number Board</span><span id="savedCount">0 Saved</span></header>
+<main>
 <section class="panel">
-<div class="selectrow">
-<select id="category"><option>सामान्य सूची</option><option>सूची 1</option><option>सूची 2</option><option>अन्य</option></select>
-<select id="view"><option>सामान्य बोर्ड</option><option>दृश्य 1</option><option>दृश्य 2</option></select>
-</div>
+<h2>01–100 Compact Board</h2>
+<p class="hint">नंबर चुनने के लिए बॉक्स पर टैप करें। नीचे छोटा नोट लिख सकते हैं।</p>
 <div class="board" id="board"></div>
-<div class="section-title">A–J</div>
-<div class="hbrow"><b class="tag">A.</b><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div>
-<div class="hbrow" id="rowA"><b class="tag">H.</b></div>
-<div class="hbrow"><b class="tag">B.</b><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div>
-<div class="hbrow" id="rowB"><b class="tag">H.</b></div>
-
-<div class="entrygrid">
-<div><label for="type">नोट का प्रकार</label><select id="type" class="field"><option>सामान्य</option><option>व्यक्तिगत नोट</option><option>अन्य</option></select></div>
-<div><label for="number">नंबर / शीर्षक</label><input id="number" class="field" placeholder="नंबर या शीर्षक"></div>
-<div style="grid-column:1/-1"><label for="note">नोट लिखें</label><textarea id="note" placeholder="यहाँ सामान्य नोट लिखें..."></textarea></div>
-</div>
-<div class="buttons"><button class="action" onclick="addNote()">DONE</button><button class="action clear" onclick="clearInputs()">CLEAR</button><button class="action blue" onclick="saveAll()">SAVE BOARD</button></div>
-<div class="section-title">नोट / परिणाम</div><div class="result" id="result">आपके सेव किए गए नोट यहाँ दिखाई देंगे।</div>
+<div class="row"><button onclick="saveBoard()">SAVE BOARD</button><button class="blue" onclick="selectAll()">SELECT ALL</button><button class="red" onclick="clearBoard()">CLEAR BOARD</button></div>
 </section>
-<button class="yellow" onclick="showHistory()">Board History</button>
-<section class="panel" id="historyPanel"><div class="section-title">History</div><div id="history">अभी कोई हिस्ट्री नहीं है।</div><div class="buttons"><button class="action clear" onclick="clearHistory()">CLEAR HISTORY</button></div></section>
-</div>
-<nav class="bottom"><span onclick="window.scrollTo({top:0,behavior:'smooth'})">Board</span><span onclick="document.getElementById('note').focus()">Notes</span><span onclick="showHistory()">History</span><span onclick="clearInputs()">Clear</span></nav>
+
+<section class="panel">
+<h2>सामान्य Maths Calculator</h2>
+<p class="hint">उदाहरण: 12 into (3+2), 12 intu 3, (20+5) × 4, 100/4</p>
+<input id="expr" class="field" placeholder="गणित लिखें..." autocomplete="off">
+<div class="row"><button onclick="calculate()">CALCULATE</button><button class="blue" onclick="copyAnswer()">COPY</button><button class="red" onclick="clearCalc()">CLEAR</button></div>
+<div id="answer" class="result" style="margin-top:8px">उत्तर यहाँ दिखाई देगा।</div>
+</section>
+
+<section class="panel">
+<h2>सामान्य नोट्स</h2>
+<input id="noteTitle" class="field" placeholder="शीर्षक / नंबर (वैकल्पिक)">
+<textarea id="noteText" placeholder="अपना सामान्य नोट लिखें..."></textarea>
+<div class="row"><button onclick="addNote()">DONE / SAVE NOTE</button><button class="red" onclick="clearNote()">CLEAR</button></div>
+<div id="notes" class="result" style="margin-top:8px">अभी कोई नोट नहीं है।</div>
+</section>
+
+<section class="panel">
+<h2>Calculation History</h2><div id="history" class="hint">अभी कोई हिस्ट्री नहीं है।</div>
+<div class="row"><button class="red" onclick="clearHistory()">CLEAR HISTORY</button></div>
+</section>
+</main>
 <script>
 const board=document.getElementById('board');
-for(let n=1;n<=100;n++){const d=document.createElement('div');d.className='tile';d.dataset.n=n;d.innerHTML='<b>'+String(n).padStart(2,'0')+'</b><input aria-label="नंबर '+n+' का नोट" maxlength="10">';d.addEventListener('click',e=>{if(e.target.tagName!=='INPUT')d.classList.toggle('active')});board.appendChild(d)}
-for(const id of ['rowA','rowB'])for(let i=0;i<10;i++){const inp=document.createElement('input');inp.maxLength=8;inp.setAttribute('aria-label',id+' '+i);document.getElementById(id).appendChild(inp)}
-let notes=[];
-function addNote(){const title=document.getElementById('number').value.trim();const note=document.getElementById('note').value.trim();if(!title&&!note){alert('पहले नंबर/शीर्षक या नोट लिखें।');return}const item={type:document.getElementById('type').value,title,note,when:new Date().toLocaleString()};notes.unshift(item);renderNotes();clearInputs(false);saveAll(false)}
-function renderNotes(){const out=document.getElementById('result');out.textContent=notes.length?notes.map(x=>(x.title?x.title+' — ':'')+x.note+' ('+x.type+')').join('\n'):'आपके सेव किए गए नोट यहाँ दिखाई देंगे।';const h=document.getElementById('history');h.textContent='';if(!notes.length)h.textContent='अभी कोई हिस्ट्री नहीं है।';else notes.forEach(x=>{const d=document.createElement('div');d.className='historyitem';d.textContent=(x.title?x.title+' — ':'')+x.note+' | '+x.type+' | '+x.when;h.appendChild(d)})}
-function clearInputs(clearResult=true){document.getElementById('number').value='';document.getElementById('note').value='';if(clearResult)document.getElementById('result').textContent='इनपुट साफ़ कर दिया गया।'}
-function saveAll(show=true){const data={cells:[...board.children].map(c=>({value:c.querySelector('input').value,active:c.classList.contains('active')})),a:[...document.querySelectorAll('#rowA input')].map(x=>x.value),b:[...document.querySelectorAll('#rowB input')].map(x=>x.value),notes,category:document.getElementById('category').value,view:document.getElementById('view').value};try{localStorage.setItem('simpleNumberBoard',JSON.stringify(data));if(show)alert('बोर्ड सेव हो गया।')}catch(e){if(show)alert('इस ब्राउज़र में सेव नहीं हो पाया।')}}
-function loadAll(){try{const d=JSON.parse(localStorage.getItem('simpleNumberBoard')||'null');if(!d)return;d.cells?.forEach((x,i)=>{if(board.children[i]){board.children[i].querySelector('input').value=x.value||'';board.children[i].classList.toggle('active',!!x.active)}});['a','b'].forEach(k=>{(d[k]||[]).forEach((v,i)=>{const el=document.querySelectorAll('#row'+k.toUpperCase()+' input')[i];if(el)el.value=v})});notes=d.notes||[];document.getElementById('category').value=d.category||'सामान्य सूची';document.getElementById('view').value=d.view||'सामान्य बोर्ड';renderNotes()}catch(e){}}
-function clearHistory(){if(!confirm('सभी नोट्स की हिस्ट्री साफ़ करें?'))return;notes=[];renderNotes();saveAll(false)}
-function showHistory(){document.getElementById('historyPanel').scrollIntoView({behavior:'smooth'})}
-loadAll();
+for(let n=1;n<=100;n++){
+ const el=document.createElement('div');el.className='tile';el.dataset.n=n;
+ const b=document.createElement('b');b.textContent=String(n).padStart(2,'0');
+ const inp=document.createElement('input');inp.maxLength=8;inp.setAttribute('aria-label','नंबर '+n+' का नोट');
+ el.append(b,inp);el.addEventListener('click',e=>{if(e.target!==inp)el.classList.toggle('active')});board.append(el);
+}
+let historyItems=[],noteItems=[];
+function saveBoard(){const d=[...board.children].map(x=>({v:x.querySelector('input').value,s:x.classList.contains('active')}));try{localStorage.setItem('compactBoard',JSON.stringify(d));localStorage.setItem('compactNotes',JSON.stringify(noteItems));document.getElementById('savedCount').textContent=d.filter(x=>x.v||x.s).length+' Saved';alert('Board सेव हो गया।')}catch(e){alert('सेव नहीं हो पाया।')}}
+function loadBoard(){try{const d=JSON.parse(localStorage.getItem('compactBoard')||'[]');d.forEach((x,i)=>{if(board.children[i]){board.children[i].querySelector('input').value=x.v||'';board.children[i].classList.toggle('active',!!x.s)}});noteItems=JSON.parse(localStorage.getItem('compactNotes')||'[]');renderNotes();document.getElementById('savedCount').textContent=d.filter(x=>x.v||x.s).length+' Saved'}catch(e){}}
+function selectAll(){[...board.children].forEach(x=>x.classList.add('active'))}
+function clearBoard(){if(!confirm('बोर्ड साफ़ करें?'))return;[...board.children].forEach(x=>{x.querySelector('input').value='';x.classList.remove('active')});localStorage.removeItem('compactBoard');document.getElementById('savedCount').textContent='0 Saved'}
+function parseMath(input){
+ let s=input.toLowerCase().replace(/\b(into|intu)\b/g,'*').replace(/[×x]/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
+ let i=0;
+ function expr(){let v=term();while(s[i]==='+'||s[i]==='-'){let op=s[i++],r=term();v=op==='+'?v+r:v-r}return v}
+ function term(){let v=factor();while(s[i]==='*'||s[i]==='/'||s[i]==='%'){let op=s[i++],r=factor();if(op==='*')v*=r;else if(op==='/'){if(r===0)throw Error('शून्य से भाग नहीं कर सकते।');v/=r}else v%=r}return v}
+ function factor(){if(s[i]==='+'){i++;return factor()}if(s[i]==='-'){i++;return -factor()}if(s[i]==='('){i++;let v=expr();if(s[i]!==')')throw Error('ब्रैकेट पूरा नहीं है।');i++;return v}let start=i;while(/[0-9.]/.test(s[i]||'')&&i<s.length)i++;if(start===i)throw Error('गणित की अभिव्यक्ति जाँचें।');let t=s.slice(start,i);if((t.match(/\./g)||[]).length>1)throw Error('नंबर सही लिखें।');return Number(t)}
+ if(!s)throw Error('पहले गणित लिखें।');
+ if(!/^[0-9.+\-*/()%]+$/.test(s))throw Error('केवल सामान्य गणित के अंक और चिन्ह लिखें।');
+ const value=expr();if(i!==s.length||!Number.isFinite(value))throw Error('गणित की अभिव्यक्ति सही नहीं है।');return value;
+}
+function calculate(){const raw=document.getElementById('expr').value;const out=document.getElementById('answer');try{const v=parseMath(raw);const a=Number.isInteger(v)?String(v):String(Number(v.toFixed(8)));out.textContent='Expression: '+raw+'\nAnswer: '+a;historyItems.unshift(raw+' = '+a);renderHistory()}catch(e){out.textContent='त्रुटि: '+e.message}}
+function renderHistory(){const h=document.getElementById('history');h.textContent='';if(!historyItems.length){h.textContent='अभी कोई हिस्ट्री नहीं है।';return}historyItems.forEach(t=>{const d=document.createElement('div');d.className='histitem';d.textContent=t;h.append(d)})}
+function clearHistory(){historyItems=[];renderHistory()}
+function clearCalc(){document.getElementById('expr').value='';document.getElementById('answer').textContent='उत्तर यहाँ दिखाई देगा।'}
+function copyAnswer(){const t=document.getElementById('answer').textContent;if(navigator.clipboard&&t&&!t.includes('यहाँ'))navigator.clipboard.writeText(t).then(()=>alert('कॉपी हो गया।')).catch(()=>alert('कॉपी नहीं हो पाया।'))}
+function addNote(){const title=document.getElementById('noteTitle').value.trim(),text=document.getElementById('noteText').value.trim();if(!title&&!text){alert('पहले नोट लिखें।');return}noteItems.unshift((title?title+' — ':'')+text);renderNotes();clearNote();saveBoard()}
+function renderNotes(){const n=document.getElementById('notes');n.textContent=noteItems.length?noteItems.join('\n\n'):'अभी कोई नोट नहीं है।'}
+function clearNote(){document.getElementById('noteTitle').value='';document.getElementById('noteText').value=''}
+document.getElementById('expr').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
+loadBoard();
 </script>
-</body>
-</html>
+</body></html>
