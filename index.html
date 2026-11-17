@@ -143,7 +143,7 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px 4px;
 </section>
 </main>
 <script>
-let currentPage='homePage',historyPages=[],previewGroups=[],parseErrors=[],ledger=[],selected=new Set(),passcode='';
+let currentPage='homePage',historyPages=[],previewGroups=[],parseErrors=[],unmultipliedParts=[],ledger=[],selected=new Set(),passcode='';
 function loginApp(event){event.preventDefault();const name=$('loginName').value.trim().toLowerCase();const password=$('loginPassword').value;if(name==='kk'&&password==='8946'){$('loginScreen').classList.add('hidden');$('loginPassword').value='';$('loginError').textContent='';return false}$('loginError').textContent='Login या password गलत है।';$('loginPassword').value='';return false}
 const $=id=>document.getElementById(id);
 function navigate(id){if(currentPage!==id)historyPages.push(currentPage);$('homePage').classList.add('hidden');document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$(id).classList.remove('hidden');currentPage=id;window.scrollTo(0,0)}
@@ -153,22 +153,21 @@ function parseLine(line,wpMode){
  let groups=[],occupied=[],m;
  const br=/((?:\d+(?:[\s,.;:/\\|#=_-]+\d+)*))\s*\(\s*(\d+(?:\.\d+)?)\s*\)?\s*(wp|write|joda\s*cut|jodacut|jc)?/gi;
  while((m=br.exec(line))!==null){
-  let ns=nums(m[1]);if(!ns.length)continue;occupied.push([m.index,br.lastIndex]);
+  let ns=nums(m[1]);if(!ns.length)continue;
   let v=Number(m[2]),mode=(m[3]||'').toLowerCase().replace(/\s+/g,'');
-  // A single digit-string longer than 2 digits is expanded into every ordered jodi.
-  // Normal mode keeps doubles (11, 22, ...); WRITE/JODA CUT removes doubles.
   if(ns.length===1 && ns[0].length>2){
    const digits=ns[0].split(''),generated=[];
    for(const a of digits)for(const b of digits){if(mode==='write'||mode==='jodacut'||mode==='jc'){if(a===b)continue;}generated.push(a+b)}
    ns=generated;
   }else if(ns.length===1 && ns[0].length!==2){
-   parseErrors.push('Error: '+m[0].trim()+' — नंबर में कम से कम 2 अंक होने चाहिए।');continue
+   parseErrors.push('Error: '+m[0].trim()+' — नंबर में कम से कम 2 अंक होने चाहिए।');
+   continue;
   }
   if(mode==='wp'){
    let original=new Set(ns),generated=[];
    ns.forEach(n=>{if(!generated.includes(n))generated.push(n);if(n.length===2){let rev=n[1]+n[0];if(!original.has(rev)&&!generated.includes(rev))generated.push(rev)}});ns=generated;
   }
-  groups.push({numbers:ns,value:v})
+  groups.push({numbers:ns,value:v});occupied.push([m.index,br.lastIndex]);
  }
  const ir=/\b(?:into|intu)\b/gi;
  while((m=ir.exec(line))!==null){
@@ -177,11 +176,28 @@ function parseLine(line,wpMode){
   if(lm&&rm){ns=nums(lm[1]);v=Number(rm[1]);start=pos-lm[0].length;finish=end+rm[0].length}
   else if(rm){v=Number(rm[1]);let tail=right.slice(rm[0].length),nm=tail.match(/^\s*[:=,;.-]*\s*((?:\d+)(?:[\s,.;:/\\|#=_-]+\d+)*)/);if(nm){ns=nums(nm[1]);finish=end+rm[0].length+nm[0].length}}
   else{let vm=left.match(/(\d+(?:\.\d+)?)\s*[:=,;-]*\s*$/);if(vm){v=Number(vm[1]);let bef=left.slice(0,vm.index),nm=bef.match(/((?:\d+)(?:[\s,.;:/\\|#=_-]+\d+)*)\s*$/);if(nm){ns=nums(nm[1]);start=nm.index}}}
-  if(ns.length&&v!==null&&v>0&&!occupied.some(([a,b])=>start<b&&finish>a)){occupied.push([start,finish]);if(ns.length===1 && ns[0].length!==2){parseErrors.push('Error: '+line.slice(Math.max(0,start),Math.min(line.length,finish)).trim()+' — '+ns[0]+' एक ही नंबर है; 2 अंकों वाला नंबर या अलग-अलग नंबर लिखें।');continue}groups.push({numbers:ns,value:v})}
+  if(ns.length&&v!==null&&v>0&&!occupied.some(([a,b])=>start<b&&finish>a)){
+   if(ns.length===1 && ns[0].length!==2){parseErrors.push('Error: '+line.slice(Math.max(0,start),Math.min(line.length,finish)).trim()+' — '+ns[0]+' एक ही नंबर है; 2 अंकों वाला नंबर या अलग-अलग नंबर लिखें।');continue}
+   occupied.push([start,finish]);groups.push({numbers:ns,value:v});
+  }
  }
+ // Keep every character that was not part of a successful multiplication.
+ let chars=line.split('');
+ occupied.forEach(([a,b])=>{for(let i=Math.max(0,a);i<Math.min(chars.length,b);i++)chars[i]=' '});
+ let remainder=chars.join('').replace(/[()[\]{}.,;:|/\\\-_=+*#]+/g,' ').replace(/\s+/g,' ').trim();
+ if(remainder)unmultipliedParts.push(remainder);
  return groups
 }
-function calculate(){previewGroups=[];parseErrors=[];$('message').value.split(/\n/).forEach(l=>previewGroups.push(...parseLine(l,false)));let total=0,lines=[];previewGroups.forEach(g=>{let t=g.numbers.length*g.value;total+=t;lines.push(g.numbers.join(', ')+' | '+g.numbers.length+' × '+g.value+' = '+t+'\nLine total = '+t)});if(parseErrors.length)lines.push('\nERRORS:',...parseErrors);lines.push('--------------------','GROUPS = '+previewGroups.length,'GRAND TOTAL = '+total);$('calcResult').textContent=lines.join('\n');renderBoard()}
+function calculate(){
+ previewGroups=[];parseErrors=[];unmultipliedParts=[];
+ $('message').value.split(/\n/).forEach(l=>previewGroups.push(...parseLine(l,false)));
+ let total=0,lines=[];
+ previewGroups.forEach(g=>{let t=g.numbers.length*g.value;total+=t;lines.push(g.numbers.join(' ')+' | '+g.numbers.length+' × '+g.value+' = '+t+'\nLine total = '+t)});
+ if(unmultipliedParts.length){lines.push('\n========== NOT MULTIPLIED / UNCALCULATED LIST ==========');unmultipliedParts.forEach((x,i)=>lines.push((i+1)+'. '+x))}
+ if(parseErrors.length)lines.push('\nERRORS:',...parseErrors);
+ lines.push('--------------------','GROUPS = '+previewGroups.length,'GRAND TOTAL = '+total);
+ $('calcResult').textContent=lines.join('\n');renderBoard()
+}
 function addToLedger(){if(!previewGroups.length)calculate();if(!previewGroups.length){alert('पहले नंबर और वैल्यू डालें।');return}previewGroups.forEach(g=>g.numbers.forEach(n=>ledger.push({number:keyNum(n),value:g.value})));previewGroups=[];renderLedger();renderBoard();navigate('boardPage')}
 function totals(preview=true){let o={};ledger.forEach(x=>o[x.number]=(o[x.number]||0)+x.value);if(preview)previewGroups.forEach(g=>g.numbers.forEach(n=>{let k=keyNum(n);o[k]=(o[k]||0)+g.value}));return o}
 function renderBoard(){let a=Number($('boardFrom').value)||1,b=Number($('boardTo').value)||100;if(a<0||b<a||b>999||b-a>500){a=1;b=100}let vals=totals(true);$('board').innerHTML='';for(let i=a;i<=b;i++){let n=keyNum(i),el=document.createElement('button');el.className='tile'+(selected.has(n)?' selected':'');el.innerHTML='<strong>'+n+'</strong><span>'+(vals[n]||0)+'</span>';el.onclick=()=>{selected.has(n)?selected.delete(n):selected.add(n);renderBoard()};$('board').appendChild(el)}$('points').textContent='POINTS: '+ledger.reduce((s,x)=>s+x.value,0)}
@@ -190,7 +206,7 @@ function renderLedger(){$('ledgerRows').innerHTML=ledger.map((x,i)=>'<tr><td>'+(
 function removeRow(i){ledger.splice(i,1);renderLedger()}function manualAdd(){let ns=nums($('manualNumber').value),v=Number($('manualValue').value);if(!ns.length||!Number.isFinite(v)||v<0){alert('नंबर और पॉइंट भरें।');return}ns.forEach(n=>ledger.push({number:keyNum(n),value:v}));$('manualNumber').value='';$('manualValue').value='';renderLedger()}
 function addJodi(){let ns=nums($('jodiInput').value),v=Number($('jodiValue').value);if(!ns.length||!Number.isFinite(v)||v<0){alert('नंबर और वैल्यू भरें।');return}ns.forEach(n=>ledger.push({number:keyNum(n),value:v}));renderLedger();navigate('ledgerPage')}
 function deleteAll(){if(confirm('सभी डेटा साफ़ करें?')){ledger=[];previewGroups=[];selected.clear();$('message').value='';$('calcResult').textContent='Calculation result yahan aayega.';renderLedger()}}
-function clearLedger(){if(confirm('Current Ledger साफ़ करें?')){ledger=[];renderLedger()}}function clearResult(){previewGroups=[];$('calcResult').textContent='Calculation result yahan aayega.';renderBoard()}function closeInput(){$('message').value=''}
+function clearLedger(){if(confirm('Current Ledger साफ़ करें?')){ledger=[];renderLedger()}}function clearResult(){previewGroups=[];unmultipliedParts=[];$('calcResult').textContent='Calculation result yahan aayega.';renderBoard()}function closeInput(){$('message').value=''}
 function pasteText(){navigator.clipboard?.readText().then(t=>{if(t)$('message').value=t}).catch(()=>alert('Message box में long-press करके Paste करें।'))}
 function findReplace(){let f=$('findText').value,r=$('replaceText').value,b=$('cleanMessage');if(!f){$('replaceStatus').textContent='Find में टेक्स्ट लिखें।';return}let c=b.value.split(f).length-1;if(!c){$('replaceStatus').textContent='यह टेक्स्ट नहीं मिला।';return}b.value=b.value.split(f).join(r);$('replaceStatus').textContent=c+' बदलाव किए गए। अगली बार नए टेक्स्ट पर फिर काम करेगा।'}
 function removeSymbols(){$('cleanMessage').value=$('cleanMessage').value.replace(/[.,/\\=*_#@%:;"'!?+–—-]/g,' ');$('replaceStatus').textContent='सिंबल हटाए गए।'}function useInCalculator(){$('message').value=$('cleanMessage').value;navigate('calcPage')}
