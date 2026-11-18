@@ -3,87 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Compact Number Board & Calculator</title>
+<title>KK Number Count & Calculator</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#eaf4ff;color:#172536;font-family:Arial,sans-serif}
-header{background:#087c87;color:#fff;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:18px}
-main{max-width:650px;margin:10px auto;padding:0 8px}.panel{background:#cfe6fa;border:1px solid #679caf;border-radius:10px;padding:9px;margin-bottom:10px}
-h2{font-size:16px;margin:2px 0 8px;color:#123f68}.hint{font-size:12px;color:#42596c;margin:4px 0 8px}
-.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
-.tile{min-width:0;text-align:center;padding:2px 1px;border:1px solid #c45d6c;border-radius:5px;background:#f9fcff;cursor:pointer}
-.tile b{display:block;font-size:10px;line-height:13px}.tile input{width:100%;min-width:0;height:18px;border:1px solid #9db6c8;border-radius:4px;text-align:center;padding:0;font-size:10px}
-.tile.active{background:#e2ffe8;border-color:#07833b;outline:1px solid #07833b}
-.row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}button{border:0;border-radius:6px;padding:9px 13px;background:#087d39;color:#fff;font-weight:bold;font-size:13px}button.blue{background:#1976b9}button.red{background:#d94350}
-input,textarea,select{font:inherit}.field{width:100%;padding:9px;border:1px solid #789bb3;border-radius:6px;background:#fff;margin:4px 0 8px}
-textarea{width:100%;min-height:65px;padding:8px;border:1px solid #789bb3;border-radius:6px;background:#fff}
-.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #a5bacb;border-radius:6px;padding:9px;min-height:38px;font-size:14px}
-.histitem{background:#fff;border-radius:5px;padding:7px;margin:5px 0;font-size:13px;overflow-wrap:anywhere}
-@media(max-width:380px){main{padding:0 5px}.panel{padding:7px}.board{gap:2px}.tile{padding:1px}.tile b{font-size:9px}.tile input{height:16px;font-size:9px}button{padding:8px 10px}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#172033}
+#login{min-height:100vh;display:grid;place-items:center;padding:18px;background:linear-gradient(135deg,#06183f,#174a83)}
+.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 8px 28px #0002}
+.login-card{width:min(100%,370px)}.logo{margin:0 auto 12px;width:58px;height:58px;border-radius:15px;background:#06183f;color:white;display:grid;place-items:center;font-size:24px;font-weight:bold}
+h1,h2,h3{margin-top:0}h1{text-align:center;color:#06183f;font-size:23px}.muted{text-align:center;color:#667085;font-size:14px}
+label{display:block;font-weight:600;margin:13px 0 6px}input,textarea{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;font-size:14px}
+textarea{min-height:90px;resize:vertical}button{border:0;border-radius:7px;padding:8px 10px;background:#1769aa;color:white;font-size:12px;font-weight:bold;cursor:pointer}
+button.green{background:#078b2c}button.gray{background:#667085}button.red{background:#c43d3d}
+.login-card button{width:100%;margin-top:17px}#loginError{color:#c62828;text-align:center;min-height:18px}
+#app{display:none}.top{background:#06183f;color:#fff;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.top h2{margin:0;font-size:20px}.top button{padding:9px 12px}
+nav{background:white;padding:12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 2px 8px #0001}
+nav button{font-size:13px;padding:10px 12px}
+main{max-width:950px;margin:auto;padding:15px}.panel{background:#fff;border-radius:13px;padding:17px;margin-bottom:14px;box-shadow:0 3px 12px #14213d0d}
+.panel h3{color:#06183f;margin-bottom:12px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.row button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.stat{background:#f1f5f9;padding:13px;border-radius:10px}.stat strong{display:block;font-size:24px;color:#078b2c;margin-top:4px}
+.hidden{display:none}.note{font-size:13px;color:#667085;line-height:1.5}
+#items{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{padding:7px 10px;background:#e8f1fb;border-radius:8px;font-weight:bold}
+#historyList{padding-left:20px}#historyList li{padding:6px 0;border-bottom:1px solid #edf0f4}
+@media(max-width:420px){.row button{min-width:42%}.top h2{font-size:17px}}
 </style>
 </head>
 <body>
-<header><span>Number Board</span><span id="savedCount">0 Saved</span></header>
+<section id="login">
+  <div class="card login-card">
+    <div class="logo">KK</div>
+    <h1>KK APP LOGIN</h1>
+    <p class="muted">लॉगिन करके ऐप खोलें</p>
+    <form id="loginForm">
+      <label for="user">Login</label><input id="user" placeholder="यूज़रनेम" autocomplete="username" required>
+      <label for="pass">Password</label><input id="pass" type="password" placeholder="पासवर्ड" autocomplete="current-password" required>
+      <button class="green" type="submit">LOGIN</button>
+      <p id="loginError"></p>
+    </form>
+  </div>
+</section>
+
+<section id="app">
+<header class="top"><h2>KK NUMBER COUNT</h2><button class="red" id="logout">LOGOUT</button></header>
+<nav>
+  <button data-page="home">HOME</button>
+  <button data-page="countPage">NUMBER COUNT</button>
+  <button data-page="calcPage">CALCULATOR</button>
+  <button data-page="historyPage">HISTORY</button>
+</nav>
 <main>
-<section class="panel">
-<h2>01–100 Compact Board</h2>
-<p class="hint">नंबर चुनने के लिए बॉक्स पर टैप करें। नीचे छोटा नोट लिख सकते हैं।</p>
-<div class="board" id="board"></div>
-<div class="row"><button onclick="saveBoard()">SAVE BOARD</button><button class="blue" onclick="selectAll()">SELECT ALL</button><button class="red" onclick="clearBoard()">CLEAR BOARD</button></div>
+<section class="panel page" id="home">
+  <h3>Welcome to KK App</h3>
+  <p>यह ऐप सामान्य नंबरों की गिनती और साधारण गणित के लिए है।</p>
+  <p class="note">यहाँ नंबरों की सूची में कुल आइटम गिने जा सकते हैं। इसमें दाँव, सट्टा, पलट या रकम लगाने की गणना शामिल नहीं है।</p>
 </section>
 
-<section class="panel">
-<h2>सामान्य Maths Calculator</h2>
-<p class="hint">उदाहरण: 12 into (3+2), 12 intu 3, (20+5) × 4, 100/4</p>
-<input id="expr" class="field" placeholder="गणित लिखें..." autocomplete="off">
-<div class="row"><button onclick="calculate()">CALCULATE</button><button class="blue" onclick="copyAnswer()">COPY</button><button class="red" onclick="clearCalc()">CLEAR</button></div>
-<div id="answer" class="result" style="margin-top:8px">उत्तर यहाँ दिखाई देगा।</div>
+<section class="panel page hidden" id="countPage">
+  <h3>Number Count Board</h3>
+  <label for="numberInput">नंबर या आइटम लिखें / पेस्ट करें</label>
+  <textarea id="numberInput" placeholder="उदाहरण: 23 45 78&#10;या: 23, 45, 78"></textarea>
+  <div class="row">
+    <button id="pasteBtn">PASTE</button><button class="green" id="countBtn">COUNT</button>
+    <button class="gray" id="copyBtn">COPY</button><button class="red" id="clearBtn">CLEAR</button>
+  </div>
+  <div class="stats">
+    <div class="stat">कुल आइटम<strong id="itemCount">0</strong></div>
+    <div class="stat">अलग-अलग आइटम<strong id="uniqueCount">0</strong></div>
+  </div>
+  <div id="items"></div>
+  <p class="note">गिनती स्पेस, कॉमा, नई लाइन या डॉट से अलग किए गए आइटम के आधार पर होती है।</p>
 </section>
 
-<section class="panel">
-<h2>सामान्य नोट्स</h2>
-<input id="noteTitle" class="field" placeholder="शीर्षक / नंबर (वैकल्पिक)">
-<textarea id="noteText" placeholder="अपना सामान्य नोट लिखें..."></textarea>
-<div class="row"><button onclick="addNote()">DONE / SAVE NOTE</button><button class="red" onclick="clearNote()">CLEAR</button></div>
-<div id="notes" class="result" style="margin-top:8px">अभी कोई नोट नहीं है।</div>
+<section class="panel page hidden" id="calcPage">
+  <h3>साधारण Calculator</h3>
+  <label for="expression">गणित का सवाल</label>
+  <input id="expression" inputmode="decimal" placeholder="उदाहरण: (25 + 15) × 2">
+  <div class="row">
+    <button data-insert="7">7</button><button data-insert="8">8</button><button data-insert="9">9</button><button data-insert="+">+</button>
+  </div>
+  <div class="row">
+    <button data-insert="4">4</button><button data-insert="5">5</button><button data-insert="6">6</button><button data-insert="-">−</button>
+  </div>
+  <div class="row">
+    <button data-insert="1">1</button><button data-insert="2">2</button><button data-insert="3">3</button><button data-insert="*">×</button>
+  </div>
+  <div class="row">
+    <button data-insert="0">0</button><button data-insert=".">.</button><button data-insert="/">÷</button><button data-insert="(">(</button>
+  </div>
+  <div class="row">
+    <button data-insert=")">)</button><button class="green" id="calculateBtn">CALCULATE</button><button class="red" id="calcClear">CLEAR</button>
+  </div>
+  <div class="stat" style="margin-top:12px">उत्तर<strong id="answer">—</strong></div>
+  <p class="note">केवल सामान्य जोड़, घटाव, गुणा, भाग और कोष्ठक।</p>
 </section>
 
-<section class="panel">
-<h2>Calculation History</h2><div id="history" class="hint">अभी कोई हिस्ट्री नहीं है।</div>
-<div class="row"><button class="red" onclick="clearHistory()">CLEAR HISTORY</button></div>
+<section class="panel page hidden" id="historyPage">
+  <h3>Calculation History</h3>
+  <ol id="historyList"><li>अभी कोई हिस्ट्री नहीं है।</li></ol>
+  <button class="red" id="clearHistory">CLEAR HISTORY</button>
 </section>
 </main>
+</section>
+
 <script>
-const board=document.getElementById('board');
-for(let n=1;n<=100;n++){
- const el=document.createElement('div');el.className='tile';el.dataset.n=n;
- const b=document.createElement('b');b.textContent=String(n).padStart(2,'0');
- const inp=document.createElement('input');inp.maxLength=8;inp.setAttribute('aria-label','नंबर '+n+' का नोट');
- el.append(b,inp);el.addEventListener('click',e=>{if(e.target!==inp)el.classList.toggle('active')});board.append(el);
+const LOGIN_NAME="KK", LOGIN_PASSWORD="8947";
+const $=id=>document.getElementById(id);
+$("loginForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if($("user").value.trim()===LOGIN_NAME && $("pass").value===LOGIN_PASSWORD){
+  $("login").style.display="none";$("app").style.display="block";$("loginError").textContent="";
+ }else{$("loginError").textContent="Login या Password गलत है।";}
+});
+$("logout").onclick=()=>{$("app").style.display="none";$("login").style.display="grid";$("pass").value="";};
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));$(id).classList.remove("hidden");}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+
+function getItems(){return $("numberInput").value.trim().split(/[\\s,.;]+/).filter(Boolean);}
+function doCount(){
+ const a=getItems();$("itemCount").textContent=a.length;
+ $("uniqueCount").textContent=new Set(a).size;
+ $("items").innerHTML="";
+ a.forEach(v=>{const s=document.createElement("span");s.className="chip";s.textContent=v;$("items").appendChild(s);});
 }
-let historyItems=[],noteItems=[];
-function saveBoard(){const d=[...board.children].map(x=>({v:x.querySelector('input').value,s:x.classList.contains('active')}));try{localStorage.setItem('compactBoard',JSON.stringify(d));localStorage.setItem('compactNotes',JSON.stringify(noteItems));document.getElementById('savedCount').textContent=d.filter(x=>x.v||x.s).length+' Saved';alert('Board सेव हो गया।')}catch(e){alert('सेव नहीं हो पाया।')}}
-function loadBoard(){try{const d=JSON.parse(localStorage.getItem('compactBoard')||'[]');d.forEach((x,i)=>{if(board.children[i]){board.children[i].querySelector('input').value=x.v||'';board.children[i].classList.toggle('active',!!x.s)}});noteItems=JSON.parse(localStorage.getItem('compactNotes')||'[]');renderNotes();document.getElementById('savedCount').textContent=d.filter(x=>x.v||x.s).length+' Saved'}catch(e){}}
-function selectAll(){[...board.children].forEach(x=>x.classList.add('active'))}
-function clearBoard(){if(!confirm('बोर्ड साफ़ करें?'))return;[...board.children].forEach(x=>{x.querySelector('input').value='';x.classList.remove('active')});localStorage.removeItem('compactBoard');document.getElementById('savedCount').textContent='0 Saved'}
-function parseMath(input){
- let s=input.toLowerCase().replace(/\b(into|intu)\b/g,'*').replace(/[×x]/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
- let i=0;
- function expr(){let v=term();while(s[i]==='+'||s[i]==='-'){let op=s[i++],r=term();v=op==='+'?v+r:v-r}return v}
- function term(){let v=factor();while(s[i]==='*'||s[i]==='/'||s[i]==='%'){let op=s[i++],r=factor();if(op==='*')v*=r;else if(op==='/'){if(r===0)throw Error('शून्य से भाग नहीं कर सकते।');v/=r}else v%=r}return v}
- function factor(){if(s[i]==='+'){i++;return factor()}if(s[i]==='-'){i++;return -factor()}if(s[i]==='('){i++;let v=expr();if(s[i]!==')')throw Error('ब्रैकेट पूरा नहीं है।');i++;return v}let start=i;while(/[0-9.]/.test(s[i]||'')&&i<s.length)i++;if(start===i)throw Error('गणित की अभिव्यक्ति जाँचें।');let t=s.slice(start,i);if((t.match(/\./g)||[]).length>1)throw Error('नंबर सही लिखें।');return Number(t)}
- if(!s)throw Error('पहले गणित लिखें।');
- if(!/^[0-9.+\-*/()%]+$/.test(s))throw Error('केवल सामान्य गणित के अंक और चिन्ह लिखें।');
- const value=expr();if(i!==s.length||!Number.isFinite(value))throw Error('गणित की अभिव्यक्ति सही नहीं है।');return value;
-}
-function calculate(){const raw=document.getElementById('expr').value;const out=document.getElementById('answer');try{const v=parseMath(raw);const a=Number.isInteger(v)?String(v):String(Number(v.toFixed(8)));out.textContent='Expression: '+raw+'\nAnswer: '+a;historyItems.unshift(raw+' = '+a);renderHistory()}catch(e){out.textContent='त्रुटि: '+e.message}}
-function renderHistory(){const h=document.getElementById('history');h.textContent='';if(!historyItems.length){h.textContent='अभी कोई हिस्ट्री नहीं है।';return}historyItems.forEach(t=>{const d=document.createElement('div');d.className='histitem';d.textContent=t;h.append(d)})}
-function clearHistory(){historyItems=[];renderHistory()}
-function clearCalc(){document.getElementById('expr').value='';document.getElementById('answer').textContent='उत्तर यहाँ दिखाई देगा।'}
-function copyAnswer(){const t=document.getElementById('answer').textContent;if(navigator.clipboard&&t&&!t.includes('यहाँ'))navigator.clipboard.writeText(t).then(()=>alert('कॉपी हो गया।')).catch(()=>alert('कॉपी नहीं हो पाया।'))}
-function addNote(){const title=document.getElementById('noteTitle').value.trim(),text=document.getElementById('noteText').value.trim();if(!title&&!text){alert('पहले नोट लिखें।');return}noteItems.unshift((title?title+' — ':'')+text);renderNotes();clearNote();saveBoard()}
-function renderNotes(){const n=document.getElementById('notes');n.textContent=noteItems.length?noteItems.join('\n\n'):'अभी कोई नोट नहीं है।'}
-function clearNote(){document.getElementById('noteTitle').value='';document.getElementById('noteText').value=''}
-document.getElementById('expr').addEventListener('keydown',e=>{if(e.key==='Enter')calculate()});
-loadBoard();
+$("countBtn").onclick=doCount;
+$("clearBtn").onclick=()=>{$("numberInput").value="";$("items").innerHTML="";$("itemCount").textContent="0";$("uniqueCount").textContent="0";};
+$("pasteBtn").onclick=async()=>{
+ try{$("numberInput").value=await navigator.clipboard.readText();doCount();}
+ catch(e){$("numberInput").focus();alert("Paste करने के लिए टेक्स्ट बॉक्स में दबाकर रखें और Paste चुनें।");}
+};
+$("copyBtn").onclick=async()=>{
+ const a=getItems();const text="Total items: "+a.length+"\\nUnique items: "+new Set(a).size+"\\nItems: "+a.join(", ");
+ try{await navigator.clipboard.writeText(text);alert("Count result copied.");}
+ catch(e){alert("इस ब्राउज़र में कॉपी उपलब्ध नहीं है।");}
+};
+
+document.querySelectorAll("[data-insert]").forEach(b=>b.onclick=()=>{
+ const el=$("expression");el.value+=b.dataset.insert;el.focus();
+});
+const history=[];
+function addHistory(s){history.unshift(s);$("historyList").innerHTML="";history.forEach(v=>{const li=document.createElement("li");li.textContent=v;$("historyList").appendChild(li);});}
+$("calculateBtn").onclick=()=>{
+ const expr=$("expression").value.trim();
+ if(!expr){$("answer").textContent="—";return;}
+ if(!/^[0-9+*/().\\s-]+$/.test(expr)){ $("answer").textContent="Invalid";return;}
+ try{
+  const result=Function('"use strict";return ('+expr+')')();
+  if(typeof result!=="number"||!Number.isFinite(result))throw Error();
+  const rounded=Number(result.toFixed(8));$("answer").textContent=rounded;
+  addHistory(expr+" = "+rounded);
+ }catch(e){$("answer").textContent="Invalid";}
+};
+$("calcClear").onclick=()=>{$("expression").value="";$("answer").textContent="—";};
+$("clearHistory").onclick=()=>{$("historyList").innerHTML="<li>अभी कोई हिस्ट्री नहीं है।</li>";history.length=0;};
 </script>
-</body></html>
+</body>
+</html>
